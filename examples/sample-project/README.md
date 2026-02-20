@@ -49,8 +49,8 @@ This directory shows how the governance templates map to a real project — a mu
 | `{{DATASET_2_FILE}}` | dataset_b.csv |
 | `{{PAGE_LIMIT}}` | 8 |
 | `{{MIN_REFS}}` | 2 |
-| `{{TIER_1_DOC}}` | Primary assignment specification |
-| `{{TIER_2_DOC}}` | Assignment FAQ / clarifications |
+| `{{TIER_1_DOC}}` | Primary project specification |
+| `{{TIER_2_DOC}}` | Project FAQ / clarifications |
 
 ---
 
@@ -64,6 +64,6 @@ This directory shows how the governance templates map to a real project — a mu
 
 4. **CONTRACT_CHANGE discipline is worth it.** Logging every material change made the audit trail trivial. When the backbone config needed correction, the CHANGELOG + ADR made the rationale clear.
 
-5. **Pre-submission cleanup is non-trivial.** The project needed an orphan branch rewrite to remove internal documents from git history. The PRE_SUBMISSION_CHECKLIST template captures this experience.
+5. **Pre-delivery cleanup is non-trivial.** The project needed an orphan branch rewrite to remove internal documents from git history. The PRE_SUBMISSION_CHECKLIST template captures this experience.
 
 6. **Risk register drives automation.** High-severity risks (leakage, test access, budget mismatch) each got an automated check. This caught issues that manual review would have missed.

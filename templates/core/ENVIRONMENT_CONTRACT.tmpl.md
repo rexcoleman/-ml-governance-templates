@@ -4,14 +4,14 @@
 
 | Placeholder | Description | Example |
 |-------------|-------------|---------|
-| `{{PROJECT_NAME}}` | Project or assignment name | Sentiment Analysis Benchmark |
+| `{{PROJECT_NAME}}` | Project name | Sentiment Analysis Benchmark |
 | `{{PYTHON_VERSION}}` | Pinned Python version | 3.10.13 |
 | `{{ENV_MANAGER}}` | Environment manager | mamba / conda / pip+venv |
 | `{{ENV_NAME}}` | Environment name | my-ml-project |
 | `{{ENV_FILE}}` | Environment definition file | environment.yml / requirements.txt |
 | `{{PLATFORM}}` | Target platform | Linux CPU-only |
 | `{{COMPANION_DOCS}}` | Companion contract list | DATA_CONTRACT, EXPERIMENT_CONTRACT, etc. |
-| `{{TIER_1_DOC}}` | Highest-authority document | Official assignment spec |
+| `{{TIER_1_DOC}}` | Highest-authority document | Primary requirements document |
 | `{{REPRO_COMMANDS}}` | Exact reproduction command sequence | See §7 |
 
 ---
@@ -38,7 +38,7 @@ This contract locks the compute environment for the **{{PROJECT_NAME}}** project
 
 - **OS:** {{PLATFORM}}
 - **Hardware:** *(e.g., CPU-only, GPU optional for exploration)*
-- **Constraint:** All report artifacts MUST be reproducible on the target platform. GPU may be used for exploration but MUST NOT be required for graded outputs.
+- **Constraint:** All final deliverables MUST be reproducible on the target platform. GPU may be used for exploration but MUST NOT be required for release artifacts.
 
 ---
 
@@ -160,7 +160,7 @@ The first experiment run MUST produce:
 
 ## 10) CPU Reproducibility Rule
 
-ALL report artifacts MUST be reproducible on CPU. This is non-negotiable for grader portability.
+ALL report artifacts MUST be reproducible on CPU. This is non-negotiable for independent verification.
 
 - Environment file MUST include a CPU-only build of the ML framework
 - Scripts MUST NOT fail if GPU is unavailable

@@ -12,7 +12,7 @@ A suite of 15 markdown templates that provide structure, discipline, and traceab
 - **Data integrity** — leakage prevention, fit-on-train discipline, test-split isolation
 - **Fair comparisons** — budget matching, shared initialization, multi-seed stability
 - **Change control** — CONTRACT_CHANGE protocol, decision records, changelog
-- **Submission readiness** — pre-flight checklists, academic honesty audits, report assembly
+- **Delivery readiness** — pre-flight checklists, attribution & compliance audits, report assembly
 
 ---
 
@@ -28,6 +28,8 @@ bash ml-governance-templates/scripts/init_project.sh /path/to/your/project
 # 3. Commit as your initial governance setup
 git add docs/ && git commit -m "Initialize project governance"
 ```
+
+**Prompt-driven alternative:** Use the [Prompt Playbook](PROMPT_PLAYBOOK.md) to walk through template customization with an AI assistant. The playbook provides copy-paste prompts for each stage — from raw problem statement through full template customization and consistency audit.
 
 ---
 
@@ -47,9 +49,9 @@ These 7 templates define the experiment infrastructure. Use them for any ML proj
 | `ARTIFACT_MANIFEST_SPEC` | Run IDs, SHA-256 hashing, integrity verification | You want verifiable outputs |
 | `SCRIPT_ENTRYPOINTS_SPEC` | CLI conventions, phase gates, exit codes | You have multiple scripts |
 
-### Tier 2: Project Management (For Multi-Week Projects)
+### Tier 2: Project Management (For Multi-Phase Projects)
 
-These 6 templates add project tracking. Use them when the project spans multiple weeks or has complex dependencies.
+These 6 templates add project tracking. Use them when the project spans multiple phases or has complex dependencies.
 
 | Template | Purpose |
 |----------|---------|
@@ -60,14 +62,14 @@ These 6 templates add project tracking. Use them when the project spans multiple
 | `CHANGELOG` | CONTRACT_CHANGE tracking |
 | `PRIOR_WORK_REUSE` | Strategy for reusing artifacts from prior projects |
 
-### Tier 3: Report Assembly (For Graded Deliverables)
+### Tier 3: Delivery & Compliance
 
-These 2 templates plus 1 reference file help assemble and verify the final report.
+These 2 templates plus 1 reference file help assemble and verify the final deliverables.
 
 | Template | Purpose |
 |----------|---------|
 | `REPORT_ASSEMBLY_PLAN` | Section outline, page budget, hypothesis templates, pre-flight checklist |
-| `PRE_SUBMISSION_CHECKLIST` | Academic honesty audit, artifact verification, git cleanup |
+| `PRE_SUBMISSION_CHECKLIST` | Attribution & compliance audit, artifact verification, git cleanup |
 | `IEEE_Report_Template.tex` | Standard IEEE LaTeX template (reference, not templatized) |
 
 ---
@@ -77,7 +79,7 @@ These 2 templates plus 1 reference file help assemble and verify the final repor
 ### Authority Hierarchy
 
 Every template supports a tiered authority structure:
-- **Tier 1:** The primary requirements document (assignment, spec, client requirements)
+- **Tier 1:** The primary requirements document (project specification, SOW, client requirements). *In academic contexts, this maps to the assignment spec; in industry, to the project charter or SOW.*
 - **Tier 2:** Clarifications and FAQ (cannot override Tier 1)
 - **Tier 3:** Derived/advisory specifications
 - **Contracts:** Your governance docs (subordinate to all tiers)
@@ -111,6 +113,28 @@ The framework treats data leakage as a critical invalidator:
 
 ---
 
+## Prompt-Driven Customization
+
+The [Prompt Playbook](PROMPT_PLAYBOOK.md) provides an 8-stage AI-assisted workflow covering initial setup, ongoing governance, and automated testing:
+
+**Initial Setup (Stages 1-5):**
+1. **Problem Statement → Structured Brief** — Extract objectives, datasets, methods, constraints
+2. **Structured Brief → Requirements** — Formal requirements with MUST/SHOULD categorization
+3. **Requirements → Template Selection** — Tier recommendation and customization order
+4. **Requirements → Template Customization** — Per-template prompts to fill all placeholders
+5. **Cross-Template Consistency Audit** — Verify cross-references and placeholder consistency
+
+**Ongoing Governance (Stages 6-7):**
+6. **Governance Audit** — Audit existing docs for gaps, staleness, and policy violations
+7. **Targeted Patches** — Impact analysis and patch generation for mid-project CONTRACT_CHANGEs
+
+**Automation (Stage 8):**
+8. **Test Code Generation** — Generate pytest suites for leakage prevention, budget enforcement, artifact integrity, and pre-delivery checks
+
+Each stage includes a copy-paste prompt, expected output description, and checkpoint criteria.
+
+---
+
 ## Customization
 
 Every template uses `{{PLACEHOLDER}}` syntax for project-specific values. Each template starts with a **Customization Guide** table listing all placeholders, their descriptions, and examples.
@@ -130,6 +154,7 @@ Every template uses `{{PLACEHOLDER}}` syntax for project-specific values. Each t
 ml-governance-templates/
 +-- README.md                              # This file
 +-- TEMPLATE_INDEX.md                      # All templates with descriptions
++-- PROMPT_PLAYBOOK.md                     # AI-assisted customization prompts
 +-- templates/
 |   +-- core/                              # Always use (7 templates)
 |   |   +-- DATA_CONTRACT.tmpl.md
@@ -139,14 +164,14 @@ ml-governance-templates/
 |   |   +-- FIGURES_TABLES_CONTRACT.tmpl.md
 |   |   +-- ARTIFACT_MANIFEST_SPEC.tmpl.md
 |   |   +-- SCRIPT_ENTRYPOINTS_SPEC.tmpl.md
-|   +-- management/                        # For multi-week projects (6 templates)
+|   +-- management/                        # For multi-phase projects (6 templates)
 |   |   +-- IMPLEMENTATION_PLAYBOOK.tmpl.md
 |   |   +-- TASK_BOARD.tmpl.md
 |   |   +-- RISK_REGISTER.tmpl.md
 |   |   +-- DECISION_LOG.tmpl.md
 |   |   +-- CHANGELOG.tmpl.md
 |   |   +-- PRIOR_WORK_REUSE.tmpl.md
-|   +-- report/                            # For graded deliverables (2 + 1 ref)
+|   +-- report/                            # Delivery & compliance (2 + 1 ref)
 |       +-- REPORT_ASSEMBLY_PLAN.tmpl.md
 |       +-- PRE_SUBMISSION_CHECKLIST.tmpl.md
 |       +-- IEEE_Report_Template.tex
@@ -161,6 +186,6 @@ ml-governance-templates/
 
 ## Origin
 
-These templates were extracted from the governance framework used in a graduate-level machine learning course project. The original project used 18 governance documents to manage a multi-part experiment comparing optimization algorithms, optimizer ablations, and regularization techniques across two datasets.
+These templates were extracted from the governance framework used in a production ML research project. The original project used 18 governance documents to manage a multi-part experiment comparing optimization algorithms, optimizer ablations, and regularization techniques across two datasets.
 
 Project-specific content (datasets, algorithms, metrics, budgets) has been replaced with `{{PLACEHOLDER}}` syntax. The reusable patterns — phase gates, leakage prevention, budget matching, CONTRACT_CHANGE protocol, risk tracking, and decision records — are preserved verbatim.

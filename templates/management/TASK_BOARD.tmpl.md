@@ -89,7 +89,7 @@ _Goal: {{GOAL_DESCRIPTION}}_
 
 ---
 
-## Phase {{N+2}} — Report & Submission
+## Phase {{N+2}} — Report & Delivery
 
 | ID | Task | Req | Inputs | Outputs | Own | Deps | DoD | Risk |
 |----|------|-----|--------|---------|-----|------|-----|------|
@@ -97,7 +97,7 @@ _Goal: {{GOAL_DESCRIPTION}}_
 | T{{N+2}}.2 | Write REPRO | *(cite)* | Commands, SHA | REPRO PDF | Report | T{{N+2}}.1 | All required items present | — |
 | T{{N+2}}.3 | Push code | *(cite)* | Codebase | Git SHA | Report | T{{N+1}}.3 | SHA matches REPRO | *(risk IDs)* |
 | T{{N+2}}.4 | Pre-flight | *(cite)* | Everything | Checklist pass | Report | T{{N+2}}.1-3 | All items pass | — |
-| T{{N+2}}.5 | Submit | *(cite)* | PDFs | Submission | Report | T{{N+2}}.4 | Before deadline | — |
+| T{{N+2}}.5 | Deliver | *(cite)* | PDFs | Delivery confirmation | Report | T{{N+2}}.4 | By delivery date | — |
 
 ---
 

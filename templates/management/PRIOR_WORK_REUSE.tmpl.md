@@ -16,7 +16,7 @@ The **{{PROJECT_NAME}}** project requires reusing components from a prior projec
 
 | Component | Prior Project Source | OL Destination | Why Needed |
 |-----------|-------------------|----------------|------------|
-| *(e.g.)* Model architecture | `src/model.py` | `src/backbone.py` | Required by assignment |
+| *(e.g.)* Model architecture | `src/model.py` | `src/backbone.py` | Required by project specification |
 | *(e.g.)* Data splits | `splits/*.npz` | `data/splits/*.json` | Same splits required |
 | *(e.g.)* Preprocessing | `src/preprocessing.py` | `src/preprocessing.py` | Consistency with prior work |
 | *(add rows)* | | | |

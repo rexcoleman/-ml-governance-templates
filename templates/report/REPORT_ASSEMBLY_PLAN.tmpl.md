@@ -12,14 +12,14 @@ This document provides the plan for assembling the final report. Every decision 
 
 | Constraint | Source | Penalty |
 |---|---|---|
-| Max {{PAGE_LIMIT}} pages (including figures + references) | *(cite)* | Content past limit not read |
+| Max {{PAGE_LIMIT}} pages (including figures + references) | *(cite)* | Content past limit not reviewed |
 | Written in {{FORMAT}} on {{PLATFORM}} | *(cite)* | Required format |
-| READ-ONLY link in report or submission | *(cite)* | *(penalty)* |
-| Paragraph prose; analysis MUST NOT be bullet lists | *(cite)* | *(penalty)* |
-| Two deliverables: Report + REPRO | *(cite)* | Incomplete submission |
+| READ-ONLY link in report or delivery | *(cite)* | Non-compliance |
+| Paragraph prose; analysis MUST NOT be bullet lists | *(cite)* | Non-compliance |
+| Two deliverables: Report + REPRO | *(cite)* | Incomplete delivery |
 | At least {{MIN_REFS}} peer-reviewed references | *(cite)* | Non-compliant |
 | AI Use Statement | *(cite)* | Non-compliant |
-| Single citation style | *(cite)* | Inconsistency docked |
+| Single citation style | *(cite)* | Non-compliance |
 
 ---
 
@@ -171,9 +171,9 @@ The REPRO document MUST contain:
 - [ ] **CRITICAL:** Baseline comparison per dataset
 - [ ] Decision rule / practical recommendation in conclusion
 
-### Submission
+### Delivery
 
 - [ ] Two deliverables (Report + REPRO)
-- [ ] Code pushed to institutional repository
+- [ ] Code pushed to designated repository
 - [ ] Commit SHA matches REPRO
-- [ ] Submitted before deadline
+- [ ] Delivered by delivery date

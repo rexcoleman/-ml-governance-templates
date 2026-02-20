@@ -102,7 +102,7 @@ Every figure and table caption MUST include:
 - [ ] All required tables present in `outputs/tables/`
 - [ ] Producer script runs without errors
 - [ ] Artifact manifest records SHA-256 for every figure/table
-- [ ] Captions drafted with takeaways (review before submission)
+- [ ] Captions drafted with takeaways (review before delivery)
 - [ ] Summary table has all required columns and rows
 - [ ] Test metrics in tables match `final_eval_results.json` exactly
 

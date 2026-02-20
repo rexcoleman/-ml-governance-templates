@@ -1,12 +1,14 @@
 # PRE-SUBMISSION CHECKLIST
 
-{{PROJECT_NAME}} — Academic Honesty & Submission Readiness Audit
+{{PROJECT_NAME}} — Attribution, Compliance & Delivery Readiness Audit
 
 ---
 
 ## Purpose
 
-This checklist ensures that the submitted repository and report are compliant with academic honesty policies, contain no prohibited artifacts, and are fully reproducible. Run this checklist before every submission.
+This checklist ensures that the delivered repository and report are compliant with attribution and IP policies, contain no prohibited artifacts, and are fully reproducible. Run this checklist before every delivery.
+
+*Adapt this section to your organization's IP/attribution policy. In academic contexts, this maps to academic honesty requirements; in industry, to IP compliance and contractual obligations.*
 
 ---
 
@@ -14,8 +16,8 @@ This checklist ensures that the submitted repository and report are compliant wi
 
 ### Files That MUST NOT Be in the Repo
 
-- [ ] **Course materials** — Assignment docs, FAQs, grading rubrics, spec documents provided by instructors
-- [ ] **Internal scaffolding** — Implementation playbooks, task boards, risk registers, decision logs, changelogs (unless the assignment requires them)
+- [ ] **Source materials** — Requirements documents, FAQs, evaluation criteria, specification documents provided by the project sponsor
+- [ ] **Internal scaffolding** — Implementation playbooks, task boards, risk registers, decision logs, changelogs (unless required by the project specification)
 - [ ] **Audit reports** — Any compliance audit documents
 - [ ] **Draft/scratch files** — Hypothesis drafts, notes, TODO lists
 - [ ] **Raw data** — Large data files should be gitignored, not committed
@@ -26,7 +28,7 @@ This checklist ensures that the submitted repository and report are compliant wi
 ### Verification Commands
 
 ```bash
-# Check for course materials (adapt patterns to your course)
+# Check for source materials (adapt patterns to your project)
 git ls-files | grep -iE "(assignment|rubric|faq|spec_requirements|honesty)" | head -20
 
 # Check for compiled files
@@ -61,7 +63,7 @@ git rev-list --objects --all | git cat-file --batch-check='%(objecttype) %(objec
 git checkout --orphan clean-main
 git rm -r --cached .
 git add -A
-git commit -m "Clean submission commit"
+git commit -m "Clean delivery commit"
 git branch -D main
 git branch -m clean-main main
 git reflog expire --expire=now --all
@@ -73,7 +75,7 @@ git gc --prune=now --aggressive
 ## 3) Report Content Audit
 
 - [ ] **Report link** — Valid READ-ONLY link (not a placeholder like `XXXX-REPLACE-ME`)
-- [ ] **Git SHA** — Matches the actual final commit pushed to the institutional repo
+- [ ] **Git SHA** — Matches the actual final commit pushed to the designated repository
 - [ ] **AI Use Statement** — Present, accurate, placed before References
 - [ ] **Test count** — If mentioned (e.g., "294 tests pass"), verify it matches `pytest` output
 - [ ] **Dataset statistics** — Row counts, feature counts, class distributions match actual data
@@ -93,21 +95,23 @@ git gc --prune=now --aggressive
 
 ---
 
-## 5) Institutional Repository Check
+## 5) Designated Repository Check
 
-- [ ] **Correct repo:** Code is on the institutional GitHub (not personal)
-- [ ] **Correct branch:** Main/master branch has the submission code
+- [ ] **Correct repo:** Code is on the designated repository (not a personal fork)
+- [ ] **Correct branch:** Main/master branch has the delivery code
 - [ ] **Commit SHA matches:** REPRO document SHA matches the actual pushed commit
 - [ ] **No extra commits after SHA:** If REPRO references a specific SHA, no subsequent commits change the code
 
+*In academic contexts, this maps to your institution's required repository. In industry, this maps to your organization's source control system.*
+
 ---
 
-## 6) Academic Honesty Specific
+## 6) Attribution & IP Compliance
 
-*(Adapt to your institution's policy.)*
+*Adapt to your organization's attribution policy.*
 
-- [ ] **No prior-semester materials:** No code, reports, or solutions from prior semesters
-- [ ] **No collaboration artifacts:** No shared code from classmates (unless permitted)
+- [ ] **No prior-engagement materials:** No code, reports, or artifacts from prior engagements that are not properly attributed
+- [ ] **No unauthorized collaboration artifacts:** No shared code from collaborators (unless permitted)
 - [ ] **AI disclosure:** All AI-assisted work properly disclosed per policy
 - [ ] **Citations:** All external references properly cited
 - [ ] **Original work:** Analysis and interpretation are original, not copied
@@ -120,8 +124,8 @@ git gc --prune=now --aggressive
 |------|--------|-------|
 | Report PDF within page limit | [ ] | |
 | REPRO PDF complete | [ ] | |
-| Code pushed to institutional repo | [ ] | |
+| Code pushed to designated repository | [ ] | |
 | SHA in REPRO matches push | [ ] | |
 | READ-ONLY link works in incognito | [ ] | |
-| Submission platform uploaded | [ ] | |
-| Before deadline | [ ] | |
+| Delivery platform uploaded | [ ] | |
+| By delivery date | [ ] | |

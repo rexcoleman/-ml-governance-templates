@@ -131,18 +131,18 @@ Each phase has a hard gate. No work in phase N+1 may begin until phase N's gate 
 
 ---
 
-### Phase {{N+2}} — Report Writing & Submission
+### Phase {{N+2}} — Report Writing & Delivery
 
-**Goal:** Report + REPRO submitted on time.
+**Goal:** Report + REPRO delivered by delivery date.
 
 | Step | Action | DoD |
 |------|--------|-----|
 | Draft report | Write in LaTeX editor; ≤ page limit | Paragraph prose; figures with takeaways; hypotheses resolved |
 | AI Use Statement | Add per requirements | Present before References |
 | REPRO document | Write with all reproduction details | Report link, Git SHA, commands, seeds, EDA confirmation |
-| Push code | Push to institutional repository | SHA matches REPRO |
+| Push code | Push to designated repository | SHA matches REPRO |
 | Pre-flight checklist | Run full checklist | All items pass |
-| Submit | Upload to submission platform | Before deadline |
+| Deliver | Upload to delivery platform | By delivery date |
 
 ---
 
@@ -217,7 +217,7 @@ Each phase has a hard gate. No work in phase N+1 may begin until phase N's gate 
 
 ## 5) Stop-Ship Checks
 
-Run ALL before submission. **CRITICAL** items risk zero or major point loss.
+Run ALL before delivery. **CRITICAL** items risk invalidation or critical compliance failure.
 
 ### Data Integrity (CRITICAL)
 
@@ -255,7 +255,7 @@ Run ALL before submission. **CRITICAL** items risk zero or major point loss.
 - [ ] Sufficient peer-reviewed references
 - [ ] Consistent citation style
 - [ ] READ-ONLY link present
-- [ ] Two deliverables submitted (Report + REPRO)
+- [ ] Two deliverables released (Report + REPRO)
 
 ---
 

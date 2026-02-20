@@ -8,11 +8,11 @@
 
 ### Purpose
 
-This register catalogues risks that can invalidate runs, lose points, or block submission. Every entry is anchored to a specific requirement. The register is action-oriented: each risk has a concrete detection test, a mitigation step, and a phase-gate owner.
+This register catalogues risks that can invalidate runs, fail acceptance criteria, or block delivery. Every entry is anchored to a specific requirement. The register is action-oriented: each risk has a concrete detection test, a mitigation step, and a phase-gate owner.
 
 ### How to Use
 
-- **When to review:** At every phase gate and before submission. Re-scan all High-severity rows before final delivery.
+- **When to review:** At every phase gate and before delivery. Re-scan all High-severity rows before final release.
 - **How to update:** Add new risks via `CONTRACT_CHANGE` commit. Mark mitigated risks as `CLOSED` with the commit SHA. Do not delete rows.
 - **Owner codes:** `Data` = data pipeline | `Training` = experiment scripts | `Eval` = evaluation/metrics | `Report` = report writing
 
@@ -20,7 +20,7 @@ This register catalogues risks that can invalidate runs, lose points, or block s
 
 ### Top Critical Invalidators
 
-*(List the issues that, if present at submission, result in zero or major point loss. These are your non-negotiables.)*
+*(List the issues that, if present at delivery, result in critical invalidation or non-compliance. These are your non-negotiables.)*
 
 1. **{{INVALIDATOR_1}}** — *(e.g., Wrong datasets)* → *(consequence)*
 2. **{{INVALIDATOR_2}}** — *(e.g., Preprocessing leakage)* → *(consequence)*
@@ -59,7 +59,7 @@ This register catalogues risks that can invalidate runs, lose points, or block s
 | R-F3 | Missing hypotheses or resolution | *(cite)* | High | Med | Search report text | Write before experiments; resolve with evidence | Report | Phase 1 |
 | R-F4 | Missing baseline comparison | *(cite)* | Med | Med | Search for baseline reference | Include baseline row in summary table | Report | Phase 3 |
 | R-F5 | Missing AI Use Statement | *(cite)* | Med | Low | Ctrl-F report | Add before References | Report | Phase 3 |
-| R-F6 | Code on wrong repository | *(cite)* | Low | Low | Verify repo URL | Push to institutional repo | Report | Final |
+| R-F6 | Code on wrong repository | *(cite)* | Low | Low | Verify repo URL | Push to designated repo | Report | Final |
 
 ---
 
@@ -72,4 +72,4 @@ This register catalogues risks that can invalidate runs, lose points, or block s
 | Budget equality | R-C1, R-C2 | Parse summary.json per part | Post-experiment |
 | Init-weight match | *(method-specific)* | Forward-pass equality check | Start of comparison experiments |
 | Budget config schema | R-B3, R-C2 | Validate required keys | Phase 0 gate |
-| Manifest integrity | R-E1 | `verify_manifests.py` | Pre-submission |
+| Manifest integrity | R-E1 | `verify_manifests.py` | Pre-delivery |

@@ -6,7 +6,7 @@ Fill in all `{{PLACEHOLDER}}` values before use. Delete this section when custom
 
 | Placeholder | Description | Example |
 |-------------|-------------|---------|
-| `{{PROJECT_NAME}}` | Project or assignment name | Sentiment Analysis Benchmark |
+| `{{PROJECT_NAME}}` | Project name | Sentiment Analysis Benchmark |
 | `{{DATASET_N_NAME}}` | Human-readable dataset name | IMDB Reviews |
 | `{{DATASET_N_FILE}}` | Raw data filename | dataset_a.csv |
 | `{{DATASET_N_TASK}}` | ML task type | binary classification |
@@ -66,7 +66,7 @@ Raw data files MUST NOT be committed to git. Add `data/raw/**` to `.gitignore`. 
 
 ### 3.1 Split Source
 
-*(Describe how splits are created: from a prior project, generated fresh, provided by course, etc.)*
+*(Describe how splits are created: from a prior project, generated fresh, provided by the project specification, etc.)*
 
 **Method:** {{SPLIT_METHOD}}
 **Seed:** {{SPLIT_SEED}}
@@ -141,7 +141,7 @@ Automated checks to detect leakage. Each tripwire has a unique ID for cross-refe
 - After any change to preprocessing code
 - Before starting any experiment phase
 - At every phase gate
-- Before final submission
+- Before final delivery
 
 ---
 

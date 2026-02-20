@@ -24,9 +24,9 @@ Complete list of all governance templates with descriptions, dependencies, and w
 
 | # | Template | File | Depends On | When to Use |
 |---|----------|------|------------|-------------|
-| 8 | **Implementation Playbook** | `IMPLEMENTATION_PLAYBOOK.tmpl.md` | All core contracts | Multi-week project; need phase gates and iteration discipline |
+| 8 | **Implementation Playbook** | `IMPLEMENTATION_PLAYBOOK.tmpl.md` | All core contracts | Multi-phase project; need phase gates and iteration discipline |
 | 9 | **Task Board** | `TASK_BOARD.tmpl.md` | Playbook | Need task tracking with dependencies and critical path |
-| 10 | **Risk Register** | `RISK_REGISTER.tmpl.md` | All core contracts | Project has grading criteria or compliance requirements |
+| 10 | **Risk Register** | `RISK_REGISTER.tmpl.md` | All core contracts | Project has acceptance criteria or compliance requirements |
 | 11 | **Decision Log** | `DECISION_LOG.tmpl.md` | — | Making architectural decisions that need to be recorded |
 | 12 | **Changelog** | `CHANGELOG.tmpl.md` | Decision Log | Tracking CONTRACT_CHANGE commits |
 | 13 | **Prior Work Reuse** | `PRIOR_WORK_REUSE.tmpl.md` | Data, Environment | Reusing code/data/models from a prior project |
@@ -38,8 +38,16 @@ Complete list of all governance templates with descriptions, dependencies, and w
 | # | Template | File | Depends On | When to Use |
 |---|----------|------|------------|-------------|
 | 14 | **Report Assembly Plan** | `REPORT_ASSEMBLY_PLAN.tmpl.md` | Figures/Tables, Metrics | Writing a structured technical report with figures and hypotheses |
-| 15 | **Pre-Submission Checklist** | `PRE_SUBMISSION_CHECKLIST.tmpl.md` | All | Final submission audit (academic honesty, reproducibility, artifacts) |
+| 15 | **Pre-Delivery Checklist** | `PRE_SUBMISSION_CHECKLIST.tmpl.md` | All | Final delivery audit (attribution & compliance, reproducibility, artifacts) |
 | ref | **IEEE Report Template** | `IEEE_Report_Template.tex` | — | Need a LaTeX starting point for IEEE-format papers |
+
+---
+
+## Prompt Playbook
+
+| # | Document | File | Purpose |
+|---|----------|------|---------|
+| — | **Prompt Playbook** | `PROMPT_PLAYBOOK.md` | AI-assisted 8-stage workflow: initial setup (Stages 1-5), governance audits & patches (Stages 6-7), and test code generation (Stage 8) |
 
 ---
 
@@ -51,14 +59,14 @@ Use when you have a simple, single-part experiment:
 - `DATA_CONTRACT`
 - `METRICS_CONTRACT`
 
-### Standard (Course Project)
-Use for a multi-part graded project:
+### Standard (Multi-Phase Project)
+Use for a multi-phase project with delivery requirements:
 - All 7 core contracts
 - `IMPLEMENTATION_PLAYBOOK`
 - `RISK_REGISTER`
 - `REPORT_ASSEMBLY_PLAN`
 - `PRE_SUBMISSION_CHECKLIST`
 
-### Full (Complex Multi-Week Project)
+### Full (Complex Multi-Phase Project)
 Use for projects with prior work reuse, multiple experimental parts, and strict compliance:
 - All 15 templates
