@@ -47,7 +47,7 @@ Complete list of all governance templates with descriptions, dependencies, and w
 
 | # | Document | File | Purpose |
 |---|----------|------|---------|
-| — | **Prompt Playbook** | `PROMPT_PLAYBOOK.md` | AI-assisted 8-stage workflow: initial setup (Stages 1-5), governance audits & patches (Stages 6-7), and test code generation (Stage 8) |
+| — | **Prompt Playbook** | `PROMPT_PLAYBOOK.md` | AI-assisted 9-stage workflow: initial setup (1-5), RFP traceability audit (6), governance audits & patches (7-8), and test code generation (9) |
 
 ---
 

@@ -12,11 +12,14 @@ This playbook provides a series of copy-paste prompts that walk you from a raw p
 
 **How to use:**
 1. **Initial setup:** Work through Stages 1 → 5 in order to go from problem statement to filled templates
-2. **Ongoing governance:** Use Stage 6 (Audit) periodically and Stage 7 (Patches) when changes occur
-3. **Automation:** Use Stage 8 (Test Code) to generate executable compliance tests
-4. Copy each prompt, paste it into your AI assistant, and attach the required inputs
-5. Review the output at each checkpoint before proceeding
-6. Each stage is self-contained — you can restart any stage without losing prior work
+2. **Source fidelity:** Run Stage 6 (RFP Traceability Audit) after every batch of template work — this is the hallucination firewall
+3. **Ongoing governance:** Use Stage 7 (Governance Audit) periodically and Stage 8 (Patches) when changes occur
+4. **Automation:** Use Stage 9 (Test Code) to generate executable compliance tests
+5. Copy each prompt, paste it into your AI assistant, and attach the required inputs
+6. Review the output at each checkpoint before proceeding
+7. Each stage is self-contained — you can restart any stage without losing prior work
+
+**On hallucination risk:** AI assistants will confidently fabricate metric values, dataset statistics, budget numbers, and deadline dates. This playbook treats hallucination as a governance-level threat. Every prompt includes "do not invent" guardrails, and Stage 6 exists specifically to cross-check AI outputs against the original source documents. Do not skip it.
 
 ---
 
@@ -187,10 +190,14 @@ A formal requirements document with 30-60 numbered requirements, an authority hi
 
 ### Checkpoint
 Before proceeding to Stage 3, verify:
-- [ ] Every MUST requirement traces to a specific source document
+- [ ] Every MUST requirement traces to a specific source document with a direct quote or close paraphrase
 - [ ] No invented requirements — everything is grounded in source materials
+- [ ] No semantic reinterpretation of ambiguous language — ambiguities are flagged as open items, not silently resolved
 - [ ] Acceptance criteria are testable (not vague)
 - [ ] Risk-relevant requirements are flagged
+- [ ] Spot-check 5 requirements against the original RFP: does the requirement accurately reflect the source, or has the AI subtly shifted the meaning?
+
+**Hallucination warning:** This stage is the highest-risk for hallucination. The Stage 2 output becomes the single source of truth for Stages 3-5. If the AI misinterprets a requirement here, that error propagates through every template. Always verify the output against the original RFP before proceeding.
 
 ---
 
@@ -476,9 +483,11 @@ For each template:
 6. For CHANGELOG: record the initial governance setup as the first entry
 
 RULES:
+- Do NOT invent phase gates, task descriptions, timelines, or risk scenarios. All phases MUST derive from EXPERIMENT_CONTRACT and SCRIPT_ENTRYPOINTS_SPEC. All tasks MUST tie to concrete requirements. All risks MUST trace to specific requirement IDs.
 - Phase commands MUST match SCRIPT_ENTRYPOINTS_SPEC exactly.
 - Risk sources MUST reference specific requirements by ID.
 - Task dependencies MUST form a valid DAG (no circular dependencies).
+- If a value is not specified in the requirements or completed contracts, mark it as "[TODO: specify]" — do NOT guess.
 - PRIOR_WORK_REUSE: only fill if the requirements specify prior work reuse. Otherwise, write: "Not applicable — this is a standalone project."
 
 ---
@@ -625,14 +634,127 @@ Before finalizing your governance setup:
 
 ---
 
-## Stage 6: Governance Audit
+## Stage 6: RFP Traceability Audit
 
 ### Goal
-Audit an existing project's governance documents against the framework to find gaps, stale references, and policy violations. Use this after initial setup to verify completeness, or periodically during the project to catch drift.
+Cross-check AI-generated governance documents against the original source materials (RFP, project specification, SOW, or assignment) line-by-line. This is the hallucination firewall — it catches cases where the AI subtly shifted a requirement's meaning, invented a constraint, or dropped a critical detail during Stages 1-4.
+
+**When to run:**
+- After completing Stages 1-5 (before committing governance docs)
+- After every Stage 8 patch cycle (to verify patches didn't introduce drift)
+- At every phase gate (to verify ongoing alignment)
+- Whenever you suspect an AI output "sounds right but might not be"
+
+### Input
+- The **original source documents** (RFP, project specification, SOW — the raw, unprocessed Tier 1/2 authority)
+- The Stage 2 requirements document
+- All filled governance templates from Stage 4
+
+### Prompt
+
+```
+You are an independent verification auditor. Your SOLE job is to check whether a set of project governance documents accurately reflect the original source materials. You are looking for hallucinations, semantic drift, and silent reinterpretations.
+
+I will provide:
+1. ORIGINAL SOURCE MATERIALS — the raw, authoritative documents (RFP, project specification, SOW, etc.)
+2. REQUIREMENTS DOCUMENT — the AI-extracted requirements from Stage 2
+3. FILLED GOVERNANCE TEMPLATES — the customized project governance documents
+
+Perform ALL of the following checks:
+
+## 1. Requirements Fidelity (Stage 2 vs Original)
+For EVERY MUST requirement in the requirements document:
+- Find the specific sentence/paragraph in the original source that justifies it
+- Quote both the original text and the requirement text side by side
+- Flag any semantic differences: additions, omissions, reinterpretations, or scope changes
+- Flag any MUST requirement that has NO corresponding text in the original (potential hallucination)
+
+Severity:
+- **HALLUCINATION**: Requirement exists in Stage 2 output but has NO basis in the original source
+- **DRIFT**: Requirement exists but the meaning has been subtly shifted
+- **OMISSION**: Original source states a requirement that is missing from Stage 2 output
+- **ACCURATE**: Requirement faithfully reflects the original
+
+## 2. Numeric Value Verification
+For EVERY concrete number in the governance documents (budgets, seeds, thresholds, page limits, feature counts, dataset sizes, split ratios, deadlines):
+- Trace it to the original source document
+- If the number is not in the original source, flag it as UNGROUNDED
+- If the number is marked as "[TODO: specify]", that's acceptable
+- If the number was invented by the AI without a source, flag as HALLUCINATION
+
+## 3. Constraint Completeness
+- List every constraint, rule, or requirement from the original source
+- For each, verify it appears in at least one governance document
+- Flag any original constraint that is not represented anywhere (OMISSION)
+
+## 4. Authority Hierarchy Accuracy
+- Verify the Tier 1/2/3 document mapping matches what the original source materials actually are
+- Check that nothing has been promoted (e.g., advisory guidance treated as Tier 1) or demoted (e.g., mandatory requirement treated as SHOULD)
+
+## 5. Scope Creep Check
+- Flag any governance document content that goes beyond what the original source requires
+- This includes: extra deliverables, additional methods, invented evaluation criteria, or constraints the AI added "for best practice" without marking them as SHOULD
+- Scope creep is not always wrong, but it MUST be flagged and distinguished from source requirements
+
+OUTPUT FORMAT:
+For each finding:
+- **ID:** RFP-001, RFP-002, etc.
+- **Type:** HALLUCINATION | DRIFT | OMISSION | UNGROUNDED | SCOPE_CREEP | ACCURATE
+- **Severity:** Critical (hallucination/omission of MUST) / Warning (drift/scope creep) / Info (minor)
+- **Original text:** [Direct quote from source, with document name and location]
+- **Governance text:** [What the governance document says]
+- **Gap:** [Specific discrepancy]
+- **Recommended fix:** [How to correct it]
+
+End with:
+- **Fidelity score:** X of Y requirements verified as ACCURATE
+- **Hallucination count:** N items with no source basis
+- **Drift count:** N items with shifted meaning
+- **Omission count:** N source requirements not represented
+- Summary: Is the governance suite safe to use, or does it need remediation?
+
+---
+
+ORIGINAL SOURCE MATERIALS:
+
+[Paste the raw RFP, project specification, SOW, or assignment — exactly as received, unedited]
+
+REQUIREMENTS DOCUMENT (Stage 2 output):
+
+[Paste the AI-generated requirements document]
+
+FILLED GOVERNANCE TEMPLATES:
+
+[Paste all filled templates from docs/]
+```
+
+### Expected Output
+A traceability report with every requirement checked against the source, a fidelity score, and hallucination/drift/omission counts.
+
+### Checkpoint
+Before proceeding (or before committing governance docs):
+- [ ] Zero HALLUCINATION findings (any hallucinated content must be removed or replaced with source-grounded values)
+- [ ] All DRIFT findings reviewed — either corrected to match source or accepted with explicit rationale in DECISION_LOG
+- [ ] All OMISSION findings addressed — either added to governance docs or explicitly scoped out with justification
+- [ ] UNGROUNDED numeric values either traced to source or changed to "[TODO: specify]"
+- [ ] Fidelity score ≥ 90% (if below, re-run Stages 2-4 for affected requirements)
+- [ ] SCOPE_CREEP items reviewed — acceptable additions marked as SHOULD (not MUST)
+
+**Iteration guidance:** If this audit surfaces more than 3 Critical findings, do not patch individual docs. Instead, re-run Stage 2 with the original source, fix the requirements document, then re-run the affected Stage 4 sub-prompts. This is faster and less error-prone than cascading fixes.
+
+---
+
+## Stage 7: Governance Audit (Code vs Docs)
+
+### Goal
+Audit an existing project's governance documents against the actual codebase to find gaps, stale references, and policy violations. Use this after initial setup to verify completeness, or periodically during the project to catch drift.
+
+**Distinction from Stage 6:** Stage 6 checks *docs vs original RFP* (are we governing the right things?). Stage 7 checks *code vs docs* (is the code doing what the docs say?).
 
 ### Input
 - All filled governance documents from the project's `docs/` directory
 - The project's current codebase (or a summary of scripts, configs, and output directories)
+- The original source materials (RFP / project specification) for the source authority spot-check
 - Optionally: recent git log showing CONTRACT_CHANGE commits
 
 ### Prompt
@@ -693,10 +815,20 @@ Scan for common violations:
 
 Report: List of suspected violations with file paths and line numbers.
 
+## 7. Source Authority Spot-Check
+Take 5 critical governance rules (highest-severity items from RISK_REGISTER) and trace each back to the original requirements document:
+- Does the governance rule accurately reflect the original requirement?
+- Has the rule drifted from its source during implementation?
+- Are there any requirements from the source that were dropped or weakened?
+
+Report: Spot-check results with quotes from both governance docs and source materials.
+
+(For a comprehensive source fidelity audit, use Stage 6: RFP Traceability Audit.)
+
 OUTPUT FORMAT:
 For each finding:
 - **Finding ID:** AUDIT-001, AUDIT-002, etc.
-- **Category:** Coverage | Staleness | Compliance | Risk | Gate | Integrity
+- **Category:** Coverage | Staleness | Compliance | Risk | Gate | Integrity | Source Fidelity
 - **Severity:** Critical / Warning / Info
 - **Description:** What was found
 - **Evidence:** Specific file, line, or document reference
@@ -731,7 +863,7 @@ After receiving the audit report:
 
 ---
 
-## Stage 7: Targeted Patches (CONTRACT_CHANGE Workflow)
+## Stage 8: Targeted Patches (CONTRACT_CHANGE Workflow)
 
 ### Goal
 When a mid-project change occurs (new dependency, budget adjustment, added method, schema change), generate the minimal set of edits across all affected governance documents. This ensures CONTRACT_CHANGE discipline is maintained without manually hunting through every template.
@@ -743,7 +875,7 @@ When a mid-project change occurs (new dependency, budget adjustment, added metho
 
 ---
 
-### Stage 7a: Impact Analysis
+### Stage 8a: Impact Analysis
 
 #### Prompt
 
@@ -812,10 +944,10 @@ An ordered list of 5-30 edits with exact old/new text, plus draft CHANGELOG and 
 
 ---
 
-### Stage 7b: Patch Generation
+### Stage 8b: Patch Generation
 
 #### Input
-- Stage 7a output (impact analysis)
+- Stage 8a output (impact analysis)
 - The specific governance documents that need editing
 
 #### Prompt
@@ -843,7 +975,7 @@ RULES:
 
 IMPACT ANALYSIS:
 
-[Paste Stage 7a output here]
+[Paste Stage 8a output here]
 
 DOCUMENTS TO PATCH:
 
@@ -863,7 +995,7 @@ After applying patches:
 
 ---
 
-## Stage 8: Test Code Generation
+## Stage 9: Test Code Generation
 
 ### Goal
 Generate pytest test code that programmatically validates governance compliance: leakage prevention, budget enforcement, schema validation, determinism, and artifact integrity. These tests turn governance rules into executable checks.
@@ -875,7 +1007,7 @@ Generate pytest test code that programmatically validates governance compliance:
 
 ---
 
-### Stage 8a: Leakage & Data Integrity Tests
+### Stage 9a: Leakage & Data Integrity Tests
 
 #### Prompt
 
@@ -932,7 +1064,7 @@ A complete `tests/test_data_integrity.py` file with 10-15 test functions, fixtur
 
 ---
 
-### Stage 8b: Budget & Compute Discipline Tests
+### Stage 9b: Budget & Compute Discipline Tests
 
 #### Prompt
 
@@ -995,7 +1127,7 @@ A complete `tests/test_experiment_discipline.py` file with 12-18 test functions.
 
 ---
 
-### Stage 8c: Artifact Integrity & Reproducibility Tests
+### Stage 9c: Artifact Integrity & Reproducibility Tests
 
 #### Prompt
 
@@ -1060,7 +1192,7 @@ A complete `tests/test_artifacts.py` file with 14-18 test functions.
 
 ---
 
-### Stage 8d: Pre-Delivery Smoke Tests
+### Stage 9d: Pre-Delivery Smoke Tests
 
 #### Prompt
 
@@ -1119,7 +1251,7 @@ A complete `tests/test_pre_delivery.py` file with 12-15 test functions plus a `c
 
 ---
 
-### Stage 8 Checkpoint
+### Stage 9 Checkpoint
 
 After generating all test modules:
 - [ ] All test files are syntactically valid (`python -m py_compile tests/test_*.py`)
@@ -1139,16 +1271,20 @@ After generating all test modules:
 
 3. **Iterate within stages.** If Stage 1 output is incomplete, refine it before moving to Stage 2. Each stage assumes high-quality input from the previous one.
 
-4. **Use extended thinking.** If your AI assistant supports extended thinking or chain-of-thought (e.g., Claude), enable it for Stages 2, 5, 6, and 7a where complex reasoning about requirements, consistency, and change impact is needed.
+4. **Use extended thinking.** If your AI assistant supports extended thinking or chain-of-thought (e.g., Claude), enable it for Stages 2, 5, 6, and 8a where complex reasoning about requirements, consistency, and change impact is needed.
 
 5. **Keep a "decisions made" log.** As you customize templates, note any judgment calls you make. These become seed entries for your DECISION_LOG.
 
 6. **Don't skip Stage 5.** Cross-template consistency is where most governance failures hide. A Risk Register that references non-existent scripts or a playbook with wrong budget values will cause problems downstream.
 
-7. **Run audits regularly.** Stage 6 isn't just for initial setup. Run it at every phase gate to catch governance drift before it compounds. Even a quick audit after a burst of coding can surface forgotten CONTRACT_CHANGEs.
+7. **Don't skip Stage 6.** This is your hallucination firewall. AI assistants will confidently produce governance documents that *sound* authoritative but subtly deviate from the original RFP. Run Stage 6 after every batch of AI-assisted template work, and again at every phase gate. If you only run one audit, make it this one.
 
-8. **Use Stage 7 for every material change.** It's tempting to just edit one file when a budget changes. Stage 7a's impact analysis catches the 5 other files you'd forget to update.
+8. **Run Stage 7 regularly.** Code-vs-docs audits catch governance drift during implementation. Run at every phase gate and after any burst of coding to surface forgotten CONTRACT_CHANGEs.
 
-9. **Generate tests early.** Run Stage 8 right after initial template customization. The generated tests become your automated phase gate checks and catch contract violations as you code, not at delivery time.
+9. **Use Stage 8 for every material change.** It's tempting to just edit one file when a budget changes. Stage 8a's impact analysis catches the 5 other files you'd forget to update.
 
-10. **Compile tests before trusting them.** AI-generated test code may have import errors or reference non-existent paths. Always run `python -m py_compile` and `pytest --collect-only` before relying on the test suite.
+10. **Generate tests early.** Run Stage 9 right after initial template customization. The generated tests become your automated phase gate checks and catch contract violations as you code, not at delivery time.
+
+11. **Compile tests before trusting them.** AI-generated test code may have import errors or reference non-existent paths. Always run `python -m py_compile` and `pytest --collect-only` before relying on the test suite.
+
+12. **Treat the original RFP as immutable ground truth.** Never let AI-generated documents replace your original source materials. The Stage 2 requirements doc is a *derivative* — always keep the original RFP accessible for re-verification.

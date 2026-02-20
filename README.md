@@ -115,7 +115,7 @@ The framework treats data leakage as a critical invalidator:
 
 ## Prompt-Driven Customization
 
-The [Prompt Playbook](PROMPT_PLAYBOOK.md) provides an 8-stage AI-assisted workflow covering initial setup, ongoing governance, and automated testing:
+The [Prompt Playbook](PROMPT_PLAYBOOK.md) provides a 9-stage AI-assisted workflow covering initial setup, source verification, ongoing governance, and automated testing:
 
 **Initial Setup (Stages 1-5):**
 1. **Problem Statement → Structured Brief** — Extract objectives, datasets, methods, constraints
@@ -124,12 +124,15 @@ The [Prompt Playbook](PROMPT_PLAYBOOK.md) provides an 8-stage AI-assisted workfl
 4. **Requirements → Template Customization** — Per-template prompts to fill all placeholders
 5. **Cross-Template Consistency Audit** — Verify cross-references and placeholder consistency
 
-**Ongoing Governance (Stages 6-7):**
-6. **Governance Audit** — Audit existing docs for gaps, staleness, and policy violations
-7. **Targeted Patches** — Impact analysis and patch generation for mid-project CONTRACT_CHANGEs
+**Source Fidelity (Stage 6):**
+6. **RFP Traceability Audit** — Line-by-line cross-check of AI outputs against original source documents; the hallucination firewall
 
-**Automation (Stage 8):**
-8. **Test Code Generation** — Generate pytest suites for leakage prevention, budget enforcement, artifact integrity, and pre-delivery checks
+**Ongoing Governance (Stages 7-8):**
+7. **Governance Audit** — Audit code vs docs for gaps, staleness, and policy violations
+8. **Targeted Patches** — Impact analysis and patch generation for mid-project CONTRACT_CHANGEs
+
+**Automation (Stage 9):**
+9. **Test Code Generation** — Generate pytest suites for leakage prevention, budget enforcement, artifact integrity, and pre-delivery checks
 
 Each stage includes a copy-paste prompt, expected output description, and checkpoint criteria.
 
