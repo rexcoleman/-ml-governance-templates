@@ -1,6 +1,6 @@
 # DECISION LOG
 
-<!-- version: 1.0 -->
+<!-- version: 2.0 -->
 <!-- created: 2026-02-20 -->
 <!-- last_validated_against: CS_7641_Machine_Learning_OL_Report -->
 
@@ -23,12 +23,39 @@
 
 **Downstream (depends on this contract):**
 - See [CHANGELOG](CHANGELOG.tmpl.md) for CONTRACT_CHANGE entries triggered by decisions (cross-reference ADR IDs)
+- See [RISK_REGISTER](RISK_REGISTER.tmpl.md) for risk entries mitigated by decisions
+- See [IMPLEMENTATION_PLAYBOOK](IMPLEMENTATION_PLAYBOOK.tmpl.md) §5 for change control procedure referencing ADR entries
 
 ## Purpose
 
 This log records architectural and methodological decisions for the **{{PROJECT_NAME}}** project using a lightweight ADR (Architecture Decision Record) format. Each decision captures the context, alternatives, rationale, and consequences so that future changes are informed rather than accidental.
 
 **Relationship to CHANGELOG:** When a decision triggers a `CONTRACT_CHANGE` commit, the change MUST also be logged in CHANGELOG with a cross-reference to the ADR ID.
+
+---
+
+## When to Create an ADR
+
+Create a new ADR when:
+- A decision affects multiple contracts or specs
+- A decision resolves an ambiguity in authority documents
+- A decision involves tradeoffs that future contributors need to understand
+- A `CONTRACT_CHANGE` commit is triggered by a methodological choice
+- A risk mitigation strategy is selected from multiple options
+
+Do NOT create an ADR for routine implementation choices that follow directly from a single contract requirement with no alternatives.
+
+---
+
+## Status Lifecycle
+
+```
+Proposed → Accepted → [Superseded by ADR-YYYY]
+```
+
+- **Proposed:** Under discussion; not yet binding.
+- **Accepted:** Binding; implementation may proceed.
+- **Superseded:** Replaced by a newer ADR. MUST cite the superseding ADR ID. Do NOT delete superseded entries.
 
 ---
 
@@ -40,29 +67,39 @@ Copy this block for each new decision:
 ## ADR-XXXX: [Short title]
 
 - **Date:** YYYY-MM-DD
-- **Status:** Proposed | Accepted | Superseded
+- **Status:** Proposed | Accepted | Superseded by ADR-YYYY
 
 ### Context
-[Problem statement and constraints. Cite authority documents when relevant.]
+[Problem statement and constraints. Cite authority documents by tier and section.]
 
 ### Decision
-[The chosen approach.]
+[The chosen approach. Be specific enough that someone can implement it without ambiguity.]
 
 ### Alternatives Considered
-1. [Alternative A] — [why rejected]
-2. [Alternative B] — [why rejected]
+
+| Option | Description | Verdict | Reason |
+|--------|-------------|---------|--------|
+| A (chosen) | [approach] | **Accepted** | [why best] |
+| B | [approach] | Rejected | [why not] |
+| C | [approach] | Rejected | [why not] |
 
 ### Rationale
-[Why this approach is best given the project constraints.]
+[Why this approach is best given the project constraints. Cite authority documents.]
 
 ### Consequences
 [Tradeoffs and risks. Reference RISK_REGISTER entries if applicable.]
 
-### Implementation Notes
-[Which contracts/specs and scripts are affected.]
+### Contracts Affected
+
+| Contract | Section | Change Required |
+|----------|---------|----------------|
+| [contract name] | §N | [what changes] |
 
 ### Evidence Plan
-[What artifacts, figures, or tests will validate this decision.]
+
+| Validation | Command / Artifact | Expected Result |
+|------------|-------------------|-----------------|
+| [what to verify] | [command or file path] | [pass criteria] |
 ```
 
 ---
@@ -79,22 +116,32 @@ Copy this block for each new decision:
 - **Status:** Proposed
 
 ### Context
-*(Describe the problem and constraints.)*
+*(Describe the problem and constraints. Cite authority documents by tier and section.)*
 
 ### Decision
-*(State the chosen approach.)*
+*(State the chosen approach with enough specificity to implement.)*
 
 ### Alternatives Considered
-1. *(Alternative and why rejected)*
+
+| Option | Description | Verdict | Reason |
+|--------|-------------|---------|--------|
+| A (chosen) | *(approach)* | **Accepted** | *(why best)* |
+| B | *(approach)* | Rejected | *(why not)* |
 
 ### Rationale
-*(Why this is the best choice.)*
+*(Why this is the best choice given project constraints.)*
 
 ### Consequences
-*(Tradeoffs, risks, downstream effects.)*
+*(Tradeoffs, risks, downstream effects. Reference RISK_REGISTER entries.)*
 
-### Implementation Notes
-*(Affected contracts, scripts, configs.)*
+### Contracts Affected
+
+| Contract | Section | Change Required |
+|----------|---------|----------------|
+| *(contract)* | §N | *(what changes)* |
 
 ### Evidence Plan
-*(How to verify the decision was implemented correctly.)*
+
+| Validation | Command / Artifact | Expected Result |
+|------------|-------------------|-----------------|
+| *(what to verify)* | *(command or file)* | *(pass criteria)* |
