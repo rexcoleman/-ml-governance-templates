@@ -1,5 +1,21 @@
 # PRIOR WORK REUSE STRATEGY
 
+<!-- version: 1.0 -->
+<!-- created: 2026-02-20 -->
+<!-- last_validated_against: CS_7641_Machine_Learning_OL_Report -->
+
+> **Authority Hierarchy**
+>
+> | Priority | Document | Role |
+> |----------|----------|------|
+> | Tier 1 | `{{TIER1_DOC}}` | Primary spec — highest authority |
+> | Tier 2 | `{{TIER2_DOC}}` | Clarifications — cannot override Tier 1 |
+> | Tier 3 | `{{TIER3_DOC}}` | Advisory only — non-binding if inconsistent with Tier 1/2 |
+> | Contract | This document | Implementation detail — subordinate to all tiers above |
+>
+> **Conflict rule:** When a higher-tier document and this contract disagree, the higher tier wins.
+> Update this contract via `CONTRACT_CHANGE` or align implementation to the higher tier.
+
 {{PROJECT_NAME}} — Reuse Analysis & Implementation Plan
 
 ---

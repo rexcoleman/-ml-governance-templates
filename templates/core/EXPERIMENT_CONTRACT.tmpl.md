@@ -1,5 +1,21 @@
 # EXPERIMENT CONTRACT
 
+<!-- version: 1.0 -->
+<!-- created: 2026-02-20 -->
+<!-- last_validated_against: CS_7641_Machine_Learning_OL_Report -->
+
+> **Authority Hierarchy**
+>
+> | Priority | Document | Role |
+> |----------|----------|------|
+> | Tier 1 | `{{TIER1_DOC}}` | Primary spec — highest authority |
+> | Tier 2 | `{{TIER2_DOC}}` | Clarifications — cannot override Tier 1 |
+> | Tier 3 | `{{TIER3_DOC}}` | Advisory only — non-binding if inconsistent with Tier 1/2 |
+> | Contract | This document | Implementation detail — subordinate to all tiers above |
+>
+> **Conflict rule:** When a higher-tier document and this contract disagree, the higher tier wins.
+> Update this contract via `CONTRACT_CHANGE` or align implementation to the higher tier.
+
 ## Customization Guide
 
 | Placeholder | Description | Example |
@@ -10,6 +26,9 @@
 | `{{BACKBONE_DESCRIPTION}}` | Model architecture description | PyTorch compact MLP from prior project |
 | `{{SEED_LIST}}` | Stability seeds | [42, 123, 456, 789, 1024] |
 | `{{DEFAULT_SEED}}` | Primary seed | 42 |
+| `{{TIER1_DOC}}` | Tier 1 authority document | Project requirements spec |
+| `{{TIER2_DOC}}` | Tier 2 authority document | FAQ or clarifications document |
+| `{{TIER3_DOC}}` | Tier 3 authority document | Course TAs' Piazza clarifications |
 
 ---
 
@@ -25,13 +44,6 @@ This contract defines the experimental protocol for **{{PROJECT_NAME}}**.
 | *(e.g.)* Part 2 | *(e.g.)* Optimizer Ablations | *(e.g.)* Adult only | *(e.g.)* 7 optimizers | grad_evals |
 | *(e.g.)* Part 3 | *(e.g.)* Regularization Study | *(e.g.)* Adult only | *(e.g.)* 4 techniques + combo | grad_evals |
 | *(add parts)* | | | | |
-
-### 1.2 Authority
-
-| Priority | Document | Role |
-|----------|----------|------|
-| Tier 1 | `{{TIER_1_DOC}}` | Highest authority |
-| Tier 2 | `{{TIER_2_DOC}}` | Clarifications |
 
 ---
 

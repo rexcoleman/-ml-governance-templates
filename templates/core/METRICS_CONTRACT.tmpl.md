@@ -1,5 +1,21 @@
 # METRICS & EVALUATION CONTRACT
 
+<!-- version: 1.0 -->
+<!-- created: 2026-02-20 -->
+<!-- last_validated_against: CS_7641_Machine_Learning_OL_Report -->
+
+> **Authority Hierarchy**
+>
+> | Priority | Document | Role |
+> |----------|----------|------|
+> | Tier 1 | `{{TIER1_DOC}}` | Primary spec — highest authority |
+> | Tier 2 | `{{TIER2_DOC}}` | Clarifications — cannot override Tier 1 |
+> | Tier 3 | `{{TIER3_DOC}}` | Advisory only — non-binding if inconsistent with Tier 1/2 |
+> | Contract | This document | Implementation detail — subordinate to all tiers above |
+>
+> **Conflict rule:** When a higher-tier document and this contract disagree, the higher tier wins.
+> Update this contract via `CONTRACT_CHANGE` or align implementation to the higher tier.
+
 ## Customization Guide
 
 | Placeholder | Description | Example |
@@ -12,20 +28,15 @@
 | `{{OPTIMIZATION_OBJECTIVE}}` | What experiments minimize/maximize | validation loss |
 | `{{THRESHOLD_DEFINITION}}` | How convergence threshold is defined | Derived from baseline run |
 | `{{SANITY_CHECKS}}` | Required sanity baselines | Dummy classifier, shuffled labels |
+| `{{TIER1_DOC}}` | Tier 1 authority document | Project requirements spec |
+| `{{TIER2_DOC}}` | Tier 2 authority document | FAQ or clarifications document |
+| `{{TIER3_DOC}}` | Tier 3 authority document | Course TAs' Piazza clarifications |
 
 ---
 
 ## 1) Purpose & Scope
 
 This contract defines how metrics are computed, thresholds are set, and evaluation results are validated for the **{{PROJECT_NAME}}** project.
-
-**Authority hierarchy:**
-
-| Priority | Document | Role |
-|----------|----------|------|
-| Tier 1 | `{{TIER_1_DOC}}` | Highest authority |
-| Tier 2 | `{{TIER_2_DOC}}` | Clarifications |
-| Tier 3 | `{{TIER_3_DOC}}` | Advisory only |
 
 ---
 

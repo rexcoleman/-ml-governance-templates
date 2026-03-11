@@ -1,5 +1,21 @@
 # ENVIRONMENT CONTRACT
 
+<!-- version: 1.0 -->
+<!-- created: 2026-02-20 -->
+<!-- last_validated_against: CS_7641_Machine_Learning_OL_Report -->
+
+> **Authority Hierarchy**
+>
+> | Priority | Document | Role |
+> |----------|----------|------|
+> | Tier 1 | `{{TIER1_DOC}}` | Primary spec — highest authority |
+> | Tier 2 | `{{TIER2_DOC}}` | Clarifications — cannot override Tier 1 |
+> | Tier 3 | `{{TIER3_DOC}}` | Advisory only — non-binding if inconsistent with Tier 1/2 |
+> | Contract | This document | Implementation detail — subordinate to all tiers above |
+>
+> **Conflict rule:** When a higher-tier document and this contract disagree, the higher tier wins.
+> Update this contract via `CONTRACT_CHANGE` or align implementation to the higher tier.
+
 ## Customization Guide
 
 | Placeholder | Description | Example |
@@ -11,7 +27,9 @@
 | `{{ENV_FILE}}` | Environment definition file | environment.yml / requirements.txt |
 | `{{PLATFORM}}` | Target platform | Linux CPU-only |
 | `{{COMPANION_DOCS}}` | Companion contract list | DATA_CONTRACT, EXPERIMENT_CONTRACT, etc. |
-| `{{TIER_1_DOC}}` | Highest-authority document | Primary requirements document |
+| `{{TIER1_DOC}}` | Tier 1 authority document | Project requirements spec |
+| `{{TIER2_DOC}}` | Tier 2 authority document | FAQ or clarifications document |
+| `{{TIER3_DOC}}` | Tier 3 authority document | Course TAs' Piazza clarifications |
 | `{{REPRO_COMMANDS}}` | Exact reproduction command sequence | See §7 |
 
 ---
@@ -23,14 +41,6 @@ This contract locks the compute environment for the **{{PROJECT_NAME}}** project
 **Companion contracts:**
 
 *(List each companion contract and its relationship.)*
-
-**Authority hierarchy:**
-
-| Priority | Document | Role |
-|----------|----------|------|
-| Tier 1 | `{{TIER_1_DOC}}` | Highest authority |
-| Tier 2 | `{{TIER_2_DOC}}` | Clarifications |
-| Tier 3 | `{{TIER_3_DOC}}` | Advisory only |
 
 ---
 

@@ -26,4 +26,6 @@ These repos contain the battle-tested governance docs that v2.0 upgrades are ext
 
 ## Current Status
 - EXECUTION_PLAN.md is locked in and committed
-- Phase 1 has not started yet
+- Phase 1 in progress:
+  - Step 1.1 (U4: template versioning) — DONE
+  - Step 1.2 (U1: authority hierarchy header) — DONE

@@ -1,5 +1,21 @@
 # DATA CONTRACT
 
+<!-- version: 1.0 -->
+<!-- created: 2026-02-20 -->
+<!-- last_validated_against: CS_7641_Machine_Learning_OL_Report -->
+
+> **Authority Hierarchy**
+>
+> | Priority | Document | Role |
+> |----------|----------|------|
+> | Tier 1 | `{{TIER1_DOC}}` | Primary spec — highest authority |
+> | Tier 2 | `{{TIER2_DOC}}` | Clarifications — cannot override Tier 1 |
+> | Tier 3 | `{{TIER3_DOC}}` | Advisory only — non-binding if inconsistent with Tier 1/2 |
+> | Contract | This document | Implementation detail — subordinate to all tiers above |
+>
+> **Conflict rule:** When a higher-tier document and this contract disagree, the higher tier wins.
+> Update this contract via `CONTRACT_CHANGE` or align implementation to the higher tier.
+
 ## Customization Guide
 
 Fill in all `{{PLACEHOLDER}}` values before use. Delete this section when customization is complete.
@@ -17,6 +33,9 @@ Fill in all `{{PLACEHOLDER}}` values before use. Delete this section when custom
 | `{{SPLIT_RATIOS}}` | Train/val/test proportions | 64/16/20 |
 | `{{PREPROCESSING_STEPS}}` | Per-dataset preprocessing pipeline | StandardScaler, OneHotEncoder, SimpleImputer |
 | `{{DATA_SOURCE}}` | Where raw data comes from | Kaggle, UCI ML Repository, Hugging Face |
+| `{{TIER1_DOC}}` | Tier 1 authority document | Project requirements spec |
+| `{{TIER2_DOC}}` | Tier 2 authority document | FAQ or clarifications document |
+| `{{TIER3_DOC}}` | Tier 3 authority document | Course TAs' Piazza clarifications |
 | `{{COMPANION_DOCS}}` | List of companion contract filenames | EXPERIMENT_CONTRACT, METRICS_CONTRACT, etc. |
 
 ---
@@ -37,15 +56,6 @@ This contract defines the data governance rules for the **{{PROJECT_NAME}}** pro
 | Document | Relationship |
 |----------|-------------|
 | `{{COMPANION_DOCS}}` | *(List each companion contract and its relationship to data governance)* |
-
-**Authority hierarchy:**
-
-| Priority | Document | Role |
-|----------|----------|------|
-| Tier 1 | `{{TIER_1_DOC}}` | Highest authority; overrides all others |
-| Tier 2 | `{{TIER_2_DOC}}` | Clarifications; cannot override Tier 1 |
-| Tier 3 | `{{TIER_3_DOC}}` | Advisory only |
-| Contracts | Project specs in `docs/` | Implementation detail; subordinate to Tier 1/2 |
 
 ---
 

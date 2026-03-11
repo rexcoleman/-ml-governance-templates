@@ -1,5 +1,21 @@
 # IMPLEMENTATION PLAYBOOK
 
+<!-- version: 1.0 -->
+<!-- created: 2026-02-20 -->
+<!-- last_validated_against: CS_7641_Machine_Learning_OL_Report -->
+
+> **Authority Hierarchy**
+>
+> | Priority | Document | Role |
+> |----------|----------|------|
+> | Tier 1 | `{{TIER1_DOC}}` | Primary spec — highest authority |
+> | Tier 2 | `{{TIER2_DOC}}` | Clarifications — cannot override Tier 1 |
+> | Tier 3 | `{{TIER3_DOC}}` | Advisory only — non-binding if inconsistent with Tier 1/2 |
+> | Contract | This document | Implementation detail — subordinate to all tiers above |
+>
+> **Conflict rule:** When a higher-tier document and this contract disagree, the higher tier wins.
+> Update this contract via `CONTRACT_CHANGE` or align implementation to the higher tier.
+
 {{PROJECT_NAME}} — Execution Playbook
 
 ---
@@ -12,18 +28,7 @@ This playbook is the single operational document for implementing the **{{PROJEC
 
 ---
 
-## 1) Authority Hierarchy & Conflict Resolution
-
-### 1.1 Tiered Authority
-
-| Priority | Document | Path | Role |
-|----------|----------|------|------|
-| **Tier 1** | {{TIER_1_DOC_NAME}} | `docs/{{TIER_1_DOC_FILE}}` | Highest authority; overrides everything below |
-| **Tier 2** | {{TIER_2_DOC_NAME}} | `docs/{{TIER_2_DOC_FILE}}` | Clarifications; cannot override Tier 1 |
-| **Tier 3** | {{TIER_3_DOC_NAME}} | `docs/{{TIER_3_DOC_FILE}}` | Advisory only; used only when aligned with T1/T2 |
-| Contracts | Project specs | `docs/*.md` | Implementation detail; subordinate to T1/T2 |
-
-### 1.2 Conflict Resolution Rules
+## 1) Conflict Resolution Rules
 
 1. **T1 vs anything:** T1 wins. No exceptions.
 2. **T2 vs T3 or contracts:** T2 wins.
@@ -31,7 +36,7 @@ This playbook is the single operational document for implementing the **{{PROJEC
 4. **Contract vs contract:** Resolve by tracing both to T1/T2. The one with stronger grounding wins. If ambiguous, record in DECISION_LOG and pick the conservative interpretation.
 5. **Silence:** If T1/T2 are silent, contracts may specify choices using SHOULD (not MUST).
 
-### 1.3 MUST vs SHOULD Convention
+### MUST vs SHOULD Convention
 
 - **MUST** = backed by explicit T1/T2 requirement or a contract clause directly implementing one
 - **SHOULD** = project-level hardening or best practice not explicitly mandated by T1/T2
