@@ -1,7 +1,7 @@
 # ML Governance Templates — Claude Code Context
 
 ## Project Purpose
-Reusable governance framework for ML experiment projects. Currently v1.0 (15 templates). Upgrading to v2.0 (25 templates) per `EXECUTION_PLAN.md`.
+Reusable governance framework for ML experiment projects. Currently v1.8 (21 templates, all deepened). Upgrading to v2.0 (25 templates) per `EXECUTION_PLAN.md`.
 
 ## Key Files
 - `EXECUTION_PLAN.md` — master plan with 31 upgrades (U1-U31), 3 phases, quality gates
@@ -26,14 +26,18 @@ These repos contain the battle-tested governance docs that v2.0 upgrades are ext
 
 ## Current Status
 - EXECUTION_PLAN.md is locked in and committed
-- Phase 1 in progress:
-  - Step 1.1 (U4: template versioning) — DONE
-  - Step 1.2 (U1: authority hierarchy header) — DONE
-  - Step 1.3 (U2: cross-contract references) — DONE
-  - Step 1.4 (U5: HYPOTHESIS_CONTRACT) — DONE
-  - Step 1.5 (U6: AI_DIVISION_OF_LABOR) — DONE
-  - Step 1.6 (U7: REPRODUCIBILITY_SPEC) — DONE
-  - Step 1.7 (U8+U28: CONFIGURATION_SPEC) — DONE
-  - Step 1.8 (U9: TEST_ARCHITECTURE) — DONE
-  - Step 1.9 (Update TEMPLATE_INDEX.md) — DONE
-  - Step 1.10 (Tag v1.5-foundation) — DONE
+- Phase 1 (Foundation) — COMPLETE, tagged `v1.5-foundation`
+  - Steps 1.1-1.10 (U1-U9, U28): All DONE
+- Phase 2 (Deepen Existing Templates) — COMPLETE, tagged `v1.8-deepened`
+  - Step 2.1 (U12: DATA_CONTRACT leakage tripwires + split hash) — DONE
+  - Step 2.2 (U13: EXPERIMENT_CONTRACT budgets + init + composition) — DONE
+  - Step 2.3 (U14: METRICS_CONTRACT threshold + sanity + per-class) — DONE
+  - Step 2.4 (U15: FIGURES_TABLES_CONTRACT captions + viz catalog) — DONE
+  - Step 2.5 (U16: ARTIFACT_MANIFEST_SPEC provenance + determinism) — DONE
+  - Step 2.6 (U17: PRIOR_WORK_REUSE decision tree + verification) — DONE
+  - Step 2.7 (U18: RISK_REGISTER taxonomy + automation hooks) — DONE
+  - Step 2.8 (U19: DECISION_LOG alternatives + contracts affected) — DONE
+  - Step 2.9 (U20: CHANGELOG backward-compat + regen tracking) — DONE
+  - Step 2.10 (U21: IMPLEMENTATION_PLAYBOOK Phase 0 + DoD + hooks) — DONE
+  - Step 2.11 (U3: Verification annotations across 8 templates) — DONE
+- Phase 3 (New Templates + Final Polish) — NOT STARTED
