@@ -1,6 +1,6 @@
 # IMPLEMENTATION PLAYBOOK
 
-<!-- version: 1.0 -->
+<!-- version: 2.0 -->
 <!-- created: 2026-02-20 -->
 <!-- last_validated_against: CS_7641_Machine_Learning_OL_Report -->
 
@@ -64,17 +64,33 @@ Each phase has a hard gate. No work in phase N+1 may begin until phase N's gate 
 
 ### Phase 0 — Environment & Governance Lock
 
-**Goal:** Infrastructure ready, budgets locked, splits frozen.
+**Goal:** Infrastructure ready, budgets locked, splits frozen, prior work integrated.
 
-| Step | Command / Action | DoD |
-|------|-----------------|-----|
-| Create environment | `{{ENV_MANAGER}} env create -f {{ENV_FILE}}` | Exits 0; env active |
-| Verify environment | `bash scripts/verify_env.sh` | Exits 0; versions printed |
-| Populate budgets | Fill all keys in `{{BUDGET_CONFIG}}` | All keys non-null; cross-part budget constraints satisfied |
-| Lock data splits | Verify/generate split files | Split files in `data/splits/`; hashes recorded |
-| Commit governance | `git commit -m "CONTRACT_CHANGE: ..."` | All contracts + configs committed |
+| # | Step | Command / Action | DoD | Verification |
+|---|------|-----------------|-----|-------------|
+| 0.1 | Create environment | `{{ENV_MANAGER}} env create -f {{ENV_FILE}}` | Exits 0; env active | `{{ENV_MANAGER}} env list \| grep {{ENV_NAME}}` |
+| 0.2 | Verify environment | `bash scripts/verify_env.sh` | Exits 0; versions printed | Script prints Python + all key library versions |
+| 0.3 | Vendor prior work *(if applicable)* | See [PRIOR_WORK_REUSE](PRIOR_WORK_REUSE.tmpl.md) §8 | Provenance record written; hashes verified | `python scripts/verify_{{PRIOR_PROJECT}}_snapshot.py` exits 0 |
+| 0.4 | Convert/verify data splits | `python scripts/check_data_ready.py` | Exits 0; split files in `data/splits/` | SHA-256 hashes match provenance record |
+| 0.5 | Populate budgets | Fill all keys in `{{BUDGET_CONFIG}}` | All keys non-null | Assert cross-part budget constraints (e.g., `part3.grad_evals == part2.grad_evals`) |
+| 0.6 | Lock baseline metrics | Populate `{{BASELINE_CONFIG}}` | Contains baseline test metrics per dataset | File committed alongside budgets |
+| 0.7 | Run config schema validation | `python scripts/validate_config.py` *(if available)* | Exits 0; all required keys present | Required keys per EXPERIMENT_CONTRACT §2 |
+| 0.8 | Commit governance | `git commit -m "CONTRACT_CHANGE: Phase 0 lock"` | All contracts + configs committed | `git diff --cached` shows expected files |
 
-**Gate:** All steps pass. Record in CHANGELOG.
+**Gate Definition of Done:**
+- [ ] Environment creates and activates without errors
+- [ ] `verify_env.sh` exits 0
+- [ ] Prior work snapshot verified *(if applicable)*
+- [ ] Data splits present with recorded hashes
+- [ ] Budget config fully populated; cross-part constraints satisfied
+- [ ] Baseline metrics config present
+- [ ] All files committed as `CONTRACT_CHANGE`
+- [ ] CHANGELOG entry recorded
+
+**Integration hooks:**
+- RISK_REGISTER: Verify all Phase 0 risks (R-A1, R-A2, R-A3, R-C2, R-H*) are addressed
+- DECISION_LOG: Record any ADRs for ambiguities resolved during setup
+- TASK_BOARD: Mark all Phase 0 tasks as Done
 
 ---
 
@@ -82,14 +98,22 @@ Each phase has a hard gate. No work in phase N+1 may begin until phase N's gate 
 
 **Goal:** Data verified, leakage prevented, EDA complete.
 
-| Step | Command | DoD |
-|------|---------|-----|
-| Verify raw data | `python scripts/check_data_ready.py` | Exits 0; files present |
-| Run leakage tripwires | `python scripts/check_leakage.py` | Exits 0; all tripwires pass |
-| Run EDA | `python scripts/run_eda.py --dataset {{DATASET}} --seed {{DEFAULT_SEED}}` | Exits 0; EDA summaries written |
-| Save initial weights | *(Implemented in training scripts)* | `state_dict` saved per seed |
+| # | Step | Command | DoD |
+|---|------|---------|-----|
+| 1.1 | Verify raw data | `python scripts/check_data_ready.py` | Exits 0; raw files present with correct hashes |
+| 1.2 | Run leakage tripwires | `python scripts/check_leakage.py` | Exits 0; LT-1, LT-2, LT-3 all pass |
+| 1.3 | Run EDA | `python scripts/run_eda.py --dataset {{DATASET}} --seed {{DEFAULT_SEED}}` | Exits 0; EDA summaries written |
+| 1.4 | Save initial weights | *(Implemented in training scripts)* | `state_dict` saved per seed |
 
-**Gate:** All checks pass; EDA summaries exist.
+**Gate Definition of Done:**
+- [ ] `check_data_ready.py` exits 0
+- [ ] `check_leakage.py` exits 0
+- [ ] EDA summaries exist for all datasets
+- [ ] Initial weights saved
+
+**Integration hooks:**
+- RISK_REGISTER: Verify R-A1 through R-A5 addressed
+- TASK_BOARD: Mark Phase 1 tasks Done
 
 ---
 
@@ -126,28 +150,54 @@ Each phase has a hard gate. No work in phase N+1 may begin until phase N's gate 
 
 **Goal:** *(One-sentence goal)*
 
-| Step | Command | DoD |
-|------|---------|-----|
-| Run experiments | `python scripts/run_{{PART}}.py ...` | All methods complete; budget matched; required fields logged |
-| Multi-seed stability | Repeat for each seed in stability list | All seeds complete; dispersion computable |
-| Verify outputs | Inspect summary.json files | Required fields present; budget usage consistent |
+| # | Step | Command | DoD |
+|---|------|---------|-----|
+| {{N}}.1 | Run experiments | `python scripts/run_{{PART}}.py --dataset {{DATASET}} --seed {{DEFAULT_SEED}}` | All methods complete; `over_budget=false`; required fields logged |
+| {{N}}.2 | Multi-seed stability | Repeat for each seed in `{{SEED_LIST}}` | All seeds complete; dispersion computable |
+| {{N}}.3 | Verify budget match | Assert equal `budget_used` across methods per seed | Budget parity confirmed |
+| {{N}}.4 | Verify init weights *(if applicable)* | Forward-pass equality check at run start | Identical starting point confirmed |
+| {{N}}.5 | Verify output schema | Validate `summary.json` against schema | All required fields present |
 
-**Gate:** Exit gate checklist (see EXPERIMENT_CONTRACT) all pass.
+**Gate Definition of Done:**
+- [ ] All method × seed combinations complete
+- [ ] `over_budget` is `false` for all runs (or flagged + excluded)
+- [ ] Budget equality verified across methods within this part
+- [ ] Init weight consistency verified *(where required)*
+- [ ] `summary.json` schema validation passes
+- [ ] `config_resolved.yaml` written for every run
+
+**Integration hooks:**
+- RISK_REGISTER: Verify all Phase {{N}} risks are addressed (see phase-gate risk ownership table)
+- DECISION_LOG: Record any ADRs (e.g., threshold ℓ value, method-specific choices)
+- CHANGELOG: Record any `CONTRACT_CHANGE` commits triggered during experiments
+- TASK_BOARD: Mark all Phase {{N}} tasks Done
 
 ---
 
 ### Phase {{N+1}} — Final Evaluation & Artifact Assembly
 
-**Goal:** Test split accessed once; all figures/tables generated.
+**Goal:** Test split accessed once; all figures/tables generated; manifests verified.
 
-| Step | Command | DoD |
-|------|---------|-----|
-| Final eval | `python scripts/final_eval.py --seed {{DEFAULT_SEED}}` | Test split accessed once; results written |
-| Generate artifacts | `python scripts/make_report_artifacts.py --seed {{DEFAULT_SEED}}` | All figures/tables produced |
-| Verify manifests | `python scripts/verify_manifests.py` | SHA-256 verified; zero mismatches |
-| Verify no test leakage | Grep per-run outputs for test metric keys | Zero matches |
+| # | Step | Command | DoD |
+|---|------|---------|-----|
+| {{N+1}}.1 | Final eval | `python scripts/final_eval.py --seed {{DEFAULT_SEED}}` | Test split accessed once; `final_eval_results.json` written |
+| {{N+1}}.2 | Generate artifacts | `python scripts/{{PRODUCER_SCRIPT}} --seed {{DEFAULT_SEED}}` | All figures/tables produced; no re-training |
+| {{N+1}}.3 | Verify manifests | `python scripts/verify_manifests.py` | Exits 0; SHA-256 verified; zero mismatches, zero missing |
+| {{N+1}}.4 | Verify no test leakage | Grep per-run outputs for test metric keys | Zero matches outside `final_eval_results.json` |
+| {{N+1}}.5 | Determinism check | Re-run producer script; compare hashes | Identical outputs on re-run |
 
-**Gate:** All verifications pass. Artifacts are report-ready.
+**Gate Definition of Done:**
+- [ ] `final_eval_results.json` contains test metrics for all datasets
+- [ ] All required figures present in `outputs/figures/`
+- [ ] All required tables present in `outputs/tables/`
+- [ ] `verify_manifests.py` exits 0
+- [ ] No test metric keys in per-run outputs
+- [ ] Summary table has all required columns + baseline row
+- [ ] Test metrics in tables match `final_eval_results.json` exactly
+
+**Integration hooks:**
+- RISK_REGISTER: Re-scan ALL High-severity risks (final delivery gate)
+- TASK_BOARD: Mark Phase {{N+1}} tasks Done
 
 ---
 
@@ -237,45 +287,59 @@ Each phase has a hard gate. No work in phase N+1 may begin until phase N's gate 
 
 ## 5) Stop-Ship Checks
 
-Run ALL before delivery. **CRITICAL** items risk invalidation or critical compliance failure.
+Run ALL before delivery. **CRITICAL** items risk invalidation or critical compliance failure. Each check includes a verification command or procedure.
 
 ### Data Integrity (CRITICAL)
 
-- [ ] Correct datasets used (no substitutes)
-- [ ] No preprocessing leakage (fit on train only)
-- [ ] Test split accessed exactly once, only via final_eval
+| # | Check | Verification Command |
+|---|-------|---------------------|
+| 1 | Correct datasets used | `python scripts/check_data_ready.py` exits 0 |
+| 2 | No preprocessing leakage | `python scripts/check_leakage.py` exits 0 |
+| 3 | Test split accessed once via final_eval only | `grep -r "test_accuracy\|test_f1" outputs/` — matches only in `final_eval_results.json` |
 
 ### Compute Discipline (CRITICAL)
 
-- [ ] Budgets matched within each part
-- [ ] All methods start from same init weights (where required)
-- [ ] Cross-part budget constraints satisfied
-- [ ] Over-budget runs marked and excluded
+| # | Check | Verification Command |
+|---|-------|---------------------|
+| 4 | Budgets matched within each part | Parse `summary.json` per part; assert equal `budget_used` |
+| 5 | Same init weights where required | Forward-pass equality check from saved `state_dict` |
+| 6 | Cross-part budget constraints | Assert linked budget keys are equal per `{{BUDGET_CONFIG}}` |
+| 7 | Over-budget runs marked + excluded | Check `over_budget` field; verify excluded from head-to-head claims |
+| 8 | Reproducible on target platform | Re-run representative experiment; verify identical outputs |
 
 ### Metrics (CRITICAL)
 
-- [ ] Required metrics present for each dataset
-- [ ] Sanity checks run and reported
-- [ ] Dispersion shown (median + IQR), not just means
+| # | Check | Verification Command |
+|---|-------|---------------------|
+| 9 | Required metrics per dataset | Verify keys in `final_eval_results.json` |
+| 10 | Sanity checks run and reported | `ls outputs/sanity_checks/` — expected files present |
+| 11 | Dispersion shown (median + IQR) | Review all seed-aggregated claims for dispersion |
 
 ### Artifacts (CRITICAL)
 
-- [ ] All required figures present
-- [ ] All required tables present
-- [ ] Summary table has required columns + baseline row
+| # | Check | Verification Command |
+|---|-------|---------------------|
+| 12 | All required figures present | `ls outputs/figures/` — all expected files |
+| 13 | All required tables present | `ls outputs/tables/` — all expected files |
+| 14 | Summary table has required columns + baseline | Inspect T1 CSV for locked columns |
+| 15 | Manifests verified | `python scripts/verify_manifests.py` exits 0 |
 
 ### Report Compliance
 
-- [ ] Within page limit
-- [ ] Paragraph prose in results/discussion (no excess bullets)
-- [ ] Hypotheses stated before experiments, resolved with evidence
-- [ ] Baseline comparison per dataset
-- [ ] Decision rule / practical recommendation in conclusion
-- [ ] AI Use Statement present
-- [ ] Sufficient peer-reviewed references
-- [ ] Consistent citation style
-- [ ] READ-ONLY link present
-- [ ] Two deliverables released (Report + REPRO)
+| # | Check | Severity | Verification |
+|---|-------|----------|-------------|
+| 16 | Within page limit | CRITICAL | Page count check |
+| 17 | Paragraph prose in analysis (no excess bullets) | CRITICAL | Manual review |
+| 18 | Hypotheses stated before experiments | CRITICAL | Present in report before results |
+| 19 | Hypotheses resolved with quantitative evidence | CRITICAL | Present in conclusion with numbers |
+| 20 | Baseline comparison per dataset | CRITICAL | In text + summary table |
+| 21 | Decision rule in conclusion | CRITICAL | Practical recommendation present |
+| 22 | Failures explained, causes attributed | CRITICAL | Divergence/plateaus discussed |
+| 23 | Figure/table captions have takeaways | CRITICAL | Every caption includes interpretation |
+| 24 | AI Use Statement present | IMPORTANT | Search for "AI Use Statement" |
+| 25 | Sufficient peer-reviewed references | IMPORTANT | Count bibliography entries |
+| 26 | READ-ONLY link present | IMPORTANT | Verify link opens in incognito |
+| 27 | Two deliverables released | CRITICAL | Report + REPRO submitted |
 
 ---
 
