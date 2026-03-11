@@ -70,6 +70,7 @@ Specific sections and appendices to add to the 15 existing templates.
 | **U18** | `RISK_REGISTER.tmpl.md` | (a) **Critical invalidator list** — top 10 issues that cause project failure or major point loss. (b) **8-category risk taxonomy** — Data & Leakage, Evaluation Discipline, Compute Fairness, Method-Specific (×N per project), Artifact & Reproducibility, Report Compliance. (c) **Automation hooks section** — table mapping risks to executable checks: Risk ID → Script → Exit Code → Phase Gate. (d) **Phase-gate ownership** — each risk assigned to a phase where it's verified. |
 | **U19** | `DECISION_LOG.tmpl.md` | (a) **"Alternatives Considered"** — per ADR section documenting options evaluated and why rejected. (b) **"Contracts Affected"** — list of downstream contracts/specs impacted by the decision. (c) **"Evidence Plan"** — what artifacts or scripts validate that the decision was implemented correctly. |
 | **U20** | `CHANGELOG.tmpl.md` | (a) **Backward-compatibility field** — per entry: "compatible" or "breaking" with explanation. (b) **Artifacts impacted + regeneration tracking** — which outputs need re-running. (c) **Risk mitigation cross-reference** — which RISK_REGISTER entries this change addresses. (d) **Change trigger taxonomy** — categorized list of common triggers: environment (deps, Python version), data (paths, splits, preprocessing), experiments (budgets, method list, init protocol), metrics (thresholds, metric definitions), scripts (CLI flags, output schemas), figures/tables (columns, captions), manifests (run IDs, hashing rules). |
+| — | `SCRIPT_ENTRYPOINTS_SPEC.tmpl.md` | No Tier C upgrade needed — v1.0 coverage is sufficient. Receives only Tier A meta-governance (U1-U4). |
 | **U21** | `IMPLEMENTATION_PLAYBOOK.tmpl.md` | (a) **Detailed Phase 0 template** — environment verify, data check, leakage tripwires, prior-work verification (if applicable), split confirmation, baseline recording, governance commit. (b) **Phase gate DoD checklists** — per-phase verification commands (not just prose). (c) **Integration hooks** — explicit references to TASK_BOARD (update status), RISK_REGISTER (re-scan high-severity), DECISION_LOG (record ADRs triggered during phase). |
 
 ### 2.4 Tier D: Structural & Infrastructure Improvements
@@ -230,7 +231,7 @@ ml-governance-templates/
 - [ ] `TEMPLATE_INDEX.md` updated with all 21 templates and dependency information
 - [ ] `init_project.sh` copies new templates
 - [ ] All `{{PLACEHOLDER}}` syntax is consistent (no typos, no broken references)
-- [ ] At least 1 real project has been set up using the Phase 1 templates to validate usability
+- [ ] At least 1 real project has been set up using the Phase 1 templates to validate usability (validation project need not be completed — a governance setup commit using the templates is sufficient)
 
 ### Phase 2 Exit Gate
 
