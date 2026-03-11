@@ -229,3 +229,75 @@ The following changes require a `CONTRACT_CHANGE` commit:
 - Changing the data privacy policy
 - Modifying the citation chain rule
 - Changing information flow controls (§6)
+
+---
+
+## Appendix A: Research Tool Organization Guide
+
+This appendix defines information flow controls between categories of research tools. It complements the per-tool governance in §4 with a system-level view of how tools interact through the human integration point.
+
+### A.1 Tool Categories
+
+| Category | Examples | Primary Output | Leakage Risk |
+|----------|----------|---------------|:------------:|
+| **Retrieval tools** | Semantic Scholar, Google Scholar, arXiv API, library databases | Papers, abstracts, citation metadata | Low |
+| **Chat assistants** | Claude, ChatGPT, Gemini | Explanations, outlines, code, checklists | Medium |
+| **Coding copilots** | GitHub Copilot, Cursor, Claude Code | Code completions, refactors, test scaffolding | Medium |
+| **Note-taking tools** | Obsidian, Notion, Zotero, Logseq | Structured notes, literature tables, annotations | Low |
+| **Data analysis tools** | Jupyter, pandas-profiling, automated EDA | Summary statistics, plots, data profiles | High (data exposure) |
+
+### A.2 Information Flow Rules
+
+```
+                    ┌────────────────────┐
+                    │   HUMAN JUDGMENT   │
+                    │  (integration hub)  │
+                    └──┬───┬───┬───┬───┬─┘
+                       │   │   │   │   │
+              ┌────────┘   │   │   │   └────────┐
+              ▼            ▼   ▼   ▼            ▼
+         Retrieval     Chat  Copilot  Notes   Analysis
+          Tools       Assist         Tools    Tools
+```
+
+**Rule 1: Hub-and-spoke topology.** All information flows through the human. No tool-to-tool direct data transfer.
+
+**Rule 2: Source verification.** When a retrieval tool returns a paper or claim, the human MUST verify the source exists before passing information to any other tool or the report.
+
+**Rule 3: No data forwarding.** Data analysis tool outputs (raw statistics, data samples, profiles) MUST NOT be pasted into external chat assistants unless the data is explicitly public and permitted by §2.3.
+
+**Rule 4: Copilot context boundary.** Coding copilots see source code in the active editor. They MUST NOT be given test set results, proprietary data, or other students' code as context.
+
+**Rule 5: Note tool as audit trail.** Note-taking tools serve as the human's memory and decision record. Key AI interactions should be summarized in notes for provenance tracking.
+
+### A.3 Permitted Information Transfers
+
+| From → To | Permitted Content | Prohibited Content |
+|-----------|-------------------|-------------------|
+| Retrieval → Notes | Paper titles, abstracts, DOIs, key findings | Full copyrighted text |
+| Retrieval → Chat assistant | Paper abstracts for explanation requests | Full paper PDFs (unless open-access and permitted) |
+| Chat assistant → Copilot | Architecture ideas, algorithm pseudocode | Paste-ready code blocks without review |
+| Chat assistant → Notes | Summarized explanations, checklists | Raw chat transcripts as "sources" |
+| Analysis → Notes | Summary statistics, plot descriptions | Raw data samples, PII, private features |
+| Analysis → Chat assistant | Aggregated metrics, public dataset stats | Raw data, test set results, private data |
+| Copilot → Notes | Code decisions, rationale for design choices | N/A |
+| Notes → Chat assistant | Your own outlines, questions, interpretations | Other students' work, proprietary notes |
+
+### A.4 Verification Protocol
+
+Before passing information between tool categories, verify:
+
+1. **Source exists:** If the information originated from a retrieval tool, confirm the paper/source is real (not hallucinated).
+2. **Data classification:** If the information includes data, confirm it is classified as public per §2.3.
+3. **Human understanding:** You understand the information well enough to explain it without the tool. If not, learn it before passing it on.
+4. **Provenance recorded:** The transfer is noted in your tool interaction log (§8) if it involves a significant decision or claim.
+
+### A.5 Common Anti-Patterns
+
+| Anti-Pattern | Risk | Correct Approach |
+|-------------|------|-----------------|
+| Pasting chat assistant output directly into copilot as a spec | Hallucinated requirements propagate to code | Review and rewrite the spec in your own words first |
+| Feeding analysis tool output into chat assistant for interpretation | Data leakage to external service; AI-generated analysis | Interpret results yourself; use chat assistant only for general methodology questions |
+| Using retrieval tool results as citations without verification | Hallucinated papers enter the report | Verify every paper exists via DOI or library search |
+| Copying copilot-generated code into chat assistant for explanation | May expose proprietary patterns | Simplify the code question; share only the relevant snippet |
+| Treating note-tool summaries of AI output as primary sources | Laundering AI output through notes | Notes record YOUR understanding, not AI's words verbatim |
