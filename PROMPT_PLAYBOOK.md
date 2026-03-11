@@ -11,13 +11,14 @@ This playbook provides a series of copy-paste prompts that walk you from a raw p
 **Designed for:** Claude, ChatGPT, and other LLM assistants. Prompts are optimized for Claude's structured output capabilities but work with any capable model.
 
 **How to use:**
-1. **Initial setup:** Work through Stages 1 → 5 in order to go from problem statement to filled templates
-2. **Source fidelity:** Run Stage 6 (RFP Traceability Audit) after every batch of template work — this is the hallucination firewall
-3. **Ongoing governance:** Use Stage 7 (Governance Audit) periodically and Stage 8 (Patches) when changes occur
-4. **Automation:** Use Stage 9 (Test Code) to generate executable compliance tests
-5. Copy each prompt, paste it into your AI assistant, and attach the required inputs
-6. Review the output at each checkpoint before proceeding
-7. Each stage is self-contained — you can restart any stage without losing prior work
+1. **Initial setup:** Work through Stages 1 → 1b → 2 → 3 → 4a-4e → 5 in order to go from problem statement to filled templates
+2. **Specialized templates:** Use Stages 4f-4k as needed for hypothesis pre-registration, unsupervised evaluation, RL environments, adversarial evaluation, publication briefs, and academic integrity
+3. **Source fidelity:** Run Stage 6 (RFP Traceability Audit) after every batch of template work — this is the hallucination firewall
+4. **Ongoing governance:** Use Stage 7 (Governance Audit) periodically and Stage 8 (Patches) when changes occur
+5. **Automation:** Use Stage 9 (Test Code) to generate executable compliance tests
+6. Copy each prompt, paste it into your AI assistant, and attach the required inputs
+7. Review the output at each checkpoint before proceeding
+8. Each stage is self-contained — you can restart any stage without losing prior work
 
 **On hallucination risk:** AI assistants will confidently fabricate metric values, dataset statistics, budget numbers, and deadline dates. This playbook treats hallucination as a governance-level threat. Every prompt includes "do not invent" guardrails, and Stage 6 exists specifically to cross-check AI outputs against the original source documents. Do not skip it.
 
@@ -107,6 +108,84 @@ Before proceeding to Stage 2, verify:
 - [ ] Ambiguities are flagged, not silently resolved
 - [ ] No fabricated information (datasets, metrics, deadlines)
 - [ ] MUST vs SHOULD distinction is applied correctly
+
+---
+
+## Stage 1b: Authority Hierarchy Setup
+
+### Goal
+Establish the tiered authority hierarchy for the project before any template customization begins. This hierarchy determines which documents take precedence when conflicts arise, and is referenced by every governance template.
+
+### Input
+- Stage 1 output (structured brief)
+- All source documents (RFP, specification, FAQ, clarifications, advisory notes)
+
+### Prompt
+
+```
+You are an ML governance architect. I will provide a structured project brief and all source documents. Your job is to establish the authority hierarchy that governs all project decisions.
+
+Produce a document with EXACTLY these sections:
+
+## 1. Document Inventory
+List every source document with:
+- Document name
+- Document type (specification, FAQ, email, advisory, etc.)
+- Date / version
+- Author / authority
+
+## 2. Authority Tier Assignment
+Assign each document to a tier:
+
+| Tier | Role | Assigned Document(s) |
+|------|------|---------------------|
+| Tier 1 | Primary specification — highest authority, overrides everything | *(name the document)* |
+| Tier 2 | Clarifications — supplements Tier 1, cannot override it | *(name the document(s))* |
+| Tier 3 | Advisory — non-binding if inconsistent with Tier 1/2 | *(name the document(s))* |
+| Contracts | Project governance documents (subordinate to all tiers above) | All governance templates |
+
+## 3. Conflict Resolution Rules
+For each pair of adjacent tiers, provide an example of how a conflict would be resolved:
+- Tier 1 vs Tier 2 conflict → Tier 1 wins; example: ...
+- Tier 2 vs Tier 3 conflict → Tier 2 wins; example: ...
+- Tier 3 vs Contract conflict → Tier 3 wins; example: ...
+
+## 4. Placeholder Values
+Provide the exact strings to use for these placeholders across all governance templates:
+- {{TIER1_DOC}} = ...
+- {{TIER2_DOC}} = ...
+- {{TIER3_DOC}} = ...
+
+## 5. Authority Gaps
+Flag any areas where no source document provides guidance. These become DECISION_LOG entries where the project team must make autonomous decisions.
+
+RULES:
+- Every document MUST be assigned to exactly one tier.
+- Tier 1 MUST be a single document (or tightly coupled set with no internal conflicts).
+- Do NOT invent documents or promote advisory materials to Tier 1/2 status.
+- If only one source document exists, it is Tier 1 and Tiers 2-3 are "N/A".
+
+---
+
+HERE IS THE STRUCTURED BRIEF:
+
+[Paste Stage 1 output here]
+
+SOURCE DOCUMENTS:
+
+[Paste or list all source documents with their full text]
+```
+
+### Expected Output
+A 1-page authority hierarchy document with tier assignments, conflict resolution rules, and placeholder values for all templates.
+
+### Checkpoint
+Before proceeding to Stage 2, verify:
+- [ ] Every source document is assigned to exactly one tier
+- [ ] Tier 1 is the most authoritative document (not an FAQ or advisory)
+- [ ] No document is assigned to a higher tier than warranted by its actual authority
+- [ ] {{TIER1_DOC}}, {{TIER2_DOC}}, {{TIER3_DOC}} placeholder values are defined
+- [ ] Authority gaps are flagged (not silently filled)
 
 ---
 
@@ -558,6 +637,396 @@ TEMPLATE — PRE_SUBMISSION_CHECKLIST:
 
 [Paste blank template here]
 ```
+
+---
+
+### Stage 4f: Hypothesis Pre-Registration
+
+#### Input
+- Stage 2 output (requirements document)
+- Completed Metrics and Data contracts
+- Blank `HYPOTHESIS_CONTRACT.tmpl.md`
+- *(Optional)* Blank `LEAN_HYPOTHESIS.tmpl.md` (if using publishing profile)
+
+#### Prompt
+
+```
+You are a research methodology specialist. I will provide a requirements document, completed contracts, and blank hypothesis templates. Your job is to define pre-registered hypotheses with temporal gating.
+
+TEMPLATES TO FILL:
+- HYPOTHESIS_CONTRACT — Technical hypotheses with prediction, mechanism, and evidence format
+- LEAN_HYPOTHESIS (optional) — Strategic hypothesis framing with kill criteria
+
+For HYPOTHESIS_CONTRACT:
+1. Define one hypothesis per experimental question
+2. Each hypothesis MUST have: prediction (specific, measurable), mechanism (why you expect this), evidence required (what data would confirm/refute)
+3. Set temporal gate: hypotheses MUST be registered BEFORE any experiment runs
+4. Define the statistical test or comparison method for each hypothesis
+
+For LEAN_HYPOTHESIS (if applicable):
+1. Define the customer-problem hypothesis (who benefits, what problem, why it matters)
+2. Fill the assumptions register (each assumption with type and test method)
+3. Define kill criteria with specific thresholds and actions
+4. Design the Minimum Viable Experiment (MVE) — smallest experiment testing the core hypothesis
+5. Set resource allocation priorities for experiment parts
+
+RULES:
+- Hypotheses MUST be falsifiable. If you can't specify what would refute it, it's not a hypothesis.
+- Do NOT define hypotheses that simply restate the experimental procedure.
+- Predictions MUST reference specific metrics from METRICS_CONTRACT.
+- Kill criteria thresholds MUST be concrete numbers, not qualitative ("too high").
+- If the requirements don't specify hypotheses, derive them from the experimental questions — but flag them as "[DERIVED — not in source requirements]".
+
+---
+
+REQUIREMENTS DOCUMENT:
+
+[Paste Stage 2 output here]
+
+COMPLETED CONTRACTS:
+
+[Paste completed Metrics and Data contracts here]
+
+TEMPLATE — HYPOTHESIS_CONTRACT:
+
+[Paste blank template here]
+
+TEMPLATE — LEAN_HYPOTHESIS (if using):
+
+[Paste blank template here]
+```
+
+#### Expected Output
+Completed hypothesis contracts with 2-6 pre-registered hypotheses and (optionally) kill criteria and MVE definition.
+
+---
+
+### Stage 4g: Unsupervised Evaluation Selection
+
+#### Input
+- Stage 2 output (requirements document)
+- Completed Data and Metrics contracts
+- `METRICS_CONTRACT.tmpl.md` Appendix B (unsupervised evaluation menu)
+- Completed Figures/Tables contract
+
+#### Prompt
+
+```
+You are an unsupervised ML evaluation specialist. I will provide a requirements document and completed contracts for a clustering, dimensionality reduction, or density estimation project. Your job is to activate and customize the unsupervised-specific appendices.
+
+TASKS:
+1. **METRICS_CONTRACT Appendix B activation:**
+   - Select internal validation metrics (Silhouette, Calinski-Harabasz, Davies-Bouldin, etc.)
+   - Select external validation metrics if labels are available (ARI, NMI, etc.)
+   - Define stability metrics (Jaccard across seeds, cluster membership consistency)
+   - Set sanity baselines (random assignment expected scores)
+
+2. **FIGURES_TABLES_CONTRACT §8.5 activation:**
+   - Define elbow plot specifications (metric vs K, with knee annotation)
+   - Define silhouette plot specifications (per-cluster silhouette coefficients)
+   - Define cluster visualization (PCA/t-SNE/UMAP with cluster coloring)
+   - Define cluster profile visualizations (radar charts, parallel coordinates)
+
+3. **Cross-reference consistency:**
+   - Verify metric names in Appendix B match METRICS_CONTRACT §2 definitions
+   - Verify figure specifications reference correct metric names
+   - Verify K-selection methodology is consistent across all documents
+
+RULES:
+- Select metrics appropriate to the clustering method (e.g., Silhouette is not ideal for DBSCAN with noise points).
+- Define K-selection methodology explicitly (elbow + silhouette gap, or other method).
+- External validation metrics ONLY if ground-truth labels are available — do NOT assume labels exist.
+- All metric thresholds must be justified (e.g., "Silhouette > 0.5 indicates reasonable structure").
+
+---
+
+REQUIREMENTS DOCUMENT:
+
+[Paste Stage 2 output here]
+
+COMPLETED CONTRACTS:
+
+[Paste completed Data, Metrics, and Figures/Tables contracts here]
+```
+
+#### Expected Output
+Activated unsupervised appendices with metric selections, visualization specs, and K-selection methodology.
+
+---
+
+### Stage 4h: RL Environment Design
+
+#### Input
+- Stage 2 output (requirements document)
+- Completed Environment Contract
+- Blank `ENVIRONMENT_SPEC.tmpl.md`
+- Completed Metrics Contract (with Appendix C activated for RL policy evaluation)
+
+#### Prompt
+
+```
+You are an RL environment specialist. I will provide a requirements document, a completed Environment Contract, and a blank RL Environment Spec template. Your job is to fully specify the MDP and environment configuration.
+
+TEMPLATE TO FILL:
+- ENVIRONMENT_SPEC — Full MDP definition with state/action/transition/reward/discount/termination
+
+For each environment in the project:
+1. **MDP Definition:**
+   - State space: dimensions, ranges, meaning of each component
+   - Action space: discrete/continuous, dimensions, meaning of each action
+   - Transition dynamics: deterministic/stochastic, reference to simulator
+   - Reward function: formula AND tabular format for clarity
+   - Discount factor: value and justification
+   - Termination conditions: distinguish termination (failure) vs truncation (time limit)
+
+2. **Environment Configuration:**
+   - List all configurable parameters with defaults and valid ranges
+   - Define wrapper stack (observation wrappers, reward shaping, action clipping)
+   - Lock environment version to specific library release
+
+3. **Reproducibility:**
+   - Seeding protocol (where and how seeds are applied)
+   - Version locking (exact library + commit hash if custom)
+   - Determinism verification command
+
+4. **Visualization Requirements:**
+   - State space diagram
+   - Policy overlay visualization
+   - Value/reward heatmaps (if applicable)
+
+5. **Reward Sensitivity Analysis:**
+   - Define scale sensitivity protocol
+   - Define discount sweep range
+   - Define reward shaping ablation (if applicable)
+
+RULES:
+- Every state dimension MUST have a physical meaning and unit (if applicable).
+- Reward function MUST be specified both as a formula and as a lookup table (for discrete cases).
+- Termination vs truncation MUST be explicitly distinguished — this affects bootstrapping in policy gradient methods.
+- Custom environments MUST include version-locking to a specific git SHA.
+- Do NOT use environment wrappers without documenting their effect on the MDP.
+
+---
+
+REQUIREMENTS DOCUMENT:
+
+[Paste Stage 2 output here]
+
+COMPLETED ENVIRONMENT_CONTRACT:
+
+[Paste completed Environment Contract here]
+
+TEMPLATE — ENVIRONMENT_SPEC:
+
+[Paste blank template here]
+```
+
+#### Expected Output
+A fully specified RL environment document with MDP definition, configuration, seeding protocol, and visualization requirements.
+
+---
+
+### Stage 4i: Adversarial Evaluation Setup
+
+#### Input
+- Stage 2 output (requirements document)
+- Completed Experiment, Metrics, and Data contracts
+- Blank `ADVERSARIAL_EVALUATION.tmpl.md`
+
+#### Prompt
+
+```
+You are an adversarial ML evaluation specialist. I will provide a requirements document, completed contracts, and a blank adversarial evaluation template. Your job is to define the threat model and evaluation protocol.
+
+TEMPLATE TO FILL:
+- ADVERSARIAL_EVALUATION — Threat model, perturbation types, robustness metrics, evaluation protocol
+
+1. **Threat Model Definition:**
+   - Attacker knowledge level (white-box, black-box, grey-box)
+   - Attacker goal (targeted, untargeted, availability)
+   - Perturbation norm (L∞, L2, L0, semantic)
+   - Perturbation budget (ε value and justification)
+   - Attack surface (input, training data, reward, environment)
+
+2. **Perturbation Type Selection:**
+   - Activate relevant sections: input evasion (§3.1), data poisoning (§3.2), reward perturbation (§3.3, RL only), environment modification (§3.4, RL only)
+   - For each active section: select attack methods, define parameters, set iteration counts
+
+3. **Robustness Metrics:**
+   - Define clean accuracy, robust accuracy, attack success rate, accuracy drop
+   - Set certified radius (if using certified defenses)
+   - Define robustness-accuracy trade-off acceptance threshold
+
+4. **Evaluation Protocol:**
+   - Define adaptive attack requirement (attacker adapts to defense)
+   - Define baseline comparison (undefended, random perturbation, strongest known attack)
+   - Set budget for adversarial evaluation compute
+
+RULES:
+- Threat model MUST be defined BEFORE selecting attack methods.
+- Perturbation budget (ε) MUST be justified with domain reasoning (e.g., "L∞ = 8/255 is standard for CIFAR-10").
+- Do NOT evaluate only weak attacks — include at least one adaptive attack.
+- RL-specific sections (§3.3, §3.4) should only be activated for RL projects.
+- Report adversarial results separately from clean results — never merge them.
+
+---
+
+REQUIREMENTS DOCUMENT:
+
+[Paste Stage 2 output here]
+
+COMPLETED CONTRACTS:
+
+[Paste completed Experiment, Metrics, and Data contracts here]
+
+TEMPLATE — ADVERSARIAL_EVALUATION:
+
+[Paste blank template here]
+```
+
+#### Expected Output
+A completed adversarial evaluation spec with threat model, attack selection, robustness metrics, and evaluation protocol.
+
+---
+
+### Stage 4j: Publication Brief Drafting
+
+#### Input
+- Stage 2 output (requirements document)
+- Completed Report Assembly Plan and Hypothesis Contract
+- Blank `PUBLICATION_BRIEF.tmpl.md`
+
+#### Prompt
+
+```
+You are a scientific communication strategist. I will provide a requirements document, completed contracts, and a blank publication brief template. Your job is to define the communication strategy for the project deliverables.
+
+TEMPLATE TO FILL:
+- PUBLICATION_BRIEF — Target reader, takeaway, demonstration, anti-claims, portfolio alignment, message governance
+
+1. **Target Reader & Takeaway:**
+   - Define the primary reader profile (who, what they evaluate, how much time they have, technical level)
+   - Craft a one-sentence takeaway — the single thought the reader should have after reading
+   - Rule: every report section must contribute to this takeaway
+
+2. **Primary Demonstration:**
+   - Fill the competency-evidence table: what the project proves, how, with what evidence
+   - Fill the "What This Project Does NOT Prove" table — explicit limitations to prevent overclaiming
+
+3. **Anti-Claims:**
+   - Define statements the report MUST NOT make (unbounded generalizations, proof claims, novelty claims)
+   - For each anti-claim, provide the acceptable alternative phrasing
+   - Define hedging requirements for comparative claims
+
+4. **Portfolio Alignment:**
+   - Place this project in the author's broader body of work
+   - Define the skill narrative (what growth this project demonstrates)
+   - Identify transferable artifacts with value beyond the immediate deliverable
+
+5. **Message Governance:**
+   - Define 3-5 key messages in priority order with supporting evidence
+   - Map each report section to the key messages it supports
+   - Set page budgets per section
+
+RULES:
+- The one-sentence takeaway MUST be achievable given the project scope — do not overpromise.
+- Anti-claims are based on the project's actual limitations, not generic disclaimers.
+- Every key message MUST have specific artifact evidence (figure ID, table ID, or metric).
+- Page budgets MUST sum to ≤ the page limit from requirements.
+- Do NOT add portfolio context that is speculative — only include confirmed career/educational goals.
+
+---
+
+REQUIREMENTS DOCUMENT:
+
+[Paste Stage 2 output here]
+
+COMPLETED CONTRACTS:
+
+[Paste completed Report Assembly Plan and Hypothesis Contract here]
+
+TEMPLATE — PUBLICATION_BRIEF:
+
+[Paste blank template here]
+```
+
+#### Expected Output
+A completed publication brief with reader profile, anti-claims, message-to-section mapping, and portfolio alignment.
+
+---
+
+### Stage 4k: Academic Integrity Verification
+
+#### Input
+- Stage 2 output (requirements document)
+- Completed AI Division of Labor and Prior Work Reuse contracts
+- Blank `ACADEMIC_INTEGRITY_FIREWALL.tmpl.md`
+
+#### Prompt
+
+```
+You are an academic integrity compliance specialist. I will provide a requirements document, completed contracts, and a blank integrity firewall template. Your job is to define the boundaries of acceptable content reuse, collaboration, and AI assistance.
+
+TEMPLATE TO FILL:
+- ACADEMIC_INTEGRITY_FIREWALL — Three walls, transferable/prohibited lists, verification commands
+
+1. **Three Walls:**
+   - Data Wall: Classify every data artifact as transferable (with conditions) or prohibited
+   - Code Wall: Classify every code source (prior project, open source, AI-generated, classmate)
+   - Content Wall: Classify every content type (prose, figures, analysis, AI text)
+
+2. **Transferable vs Prohibited Lists:**
+   - For each transferable artifact: specify the required documentation (provenance, disclosure, citation)
+   - For each prohibited artifact: explain why and state the consequence
+
+3. **Verification Commands:**
+   - Data provenance check (hash verification of reused data)
+   - Code provenance check (vendor snapshot integrity)
+   - Content originality check (self-plagiarism detection)
+   - AI usage verification (AI Use Statement exists and matches AI_DIVISION_OF_LABOR)
+
+4. **AI Tool Boundaries:**
+   - Summarize the AI tool usage rules from AI_DIVISION_OF_LABOR
+   - Define the AI Use Statement format for the report
+   - Ensure consistency between this firewall and the AI Division of Labor contract
+
+5. **Pre-Submission Checklist:**
+   - Customize the 10-item integrity checklist for the specific project
+   - Add any institution-specific requirements from {{HONOR_CODE_REF}}
+
+RULES:
+- Wall classifications MUST be conservative — when in doubt, classify as prohibited.
+- Verification commands MUST be executable (not pseudocode).
+- If no prior work reuse exists, state explicitly: "No prior work reuse — Wall 1 and Wall 2 prior-project sections are N/A."
+- AI boundaries MUST match AI_DIVISION_OF_LABOR exactly — no unilateral relaxation.
+- Honor code reference MUST be a specific policy document, not a generic "follow your institution's rules."
+
+---
+
+REQUIREMENTS DOCUMENT:
+
+[Paste Stage 2 output here]
+
+COMPLETED CONTRACTS:
+
+[Paste completed AI Division of Labor and Prior Work Reuse contracts here]
+
+TEMPLATE — ACADEMIC_INTEGRITY_FIREWALL:
+
+[Paste blank template here]
+```
+
+#### Expected Output
+A completed academic integrity firewall with wall classifications, verification commands, and pre-submission checklist.
+
+#### Checkpoint
+After completing all specialized stages (4f-4k):
+- [ ] All activated templates are consistent with the core templates from Stages 4a-4e
+- [ ] Hypothesis predictions reference metrics from METRICS_CONTRACT
+- [ ] Kill criteria reference budgets from EXPERIMENT_CONTRACT
+- [ ] Anti-claims reference actual project limitations
+- [ ] Verification commands are executable (not pseudocode)
+- [ ] No conflicts between ACADEMIC_INTEGRITY_FIREWALL and AI_DIVISION_OF_LABOR
 
 ---
 
