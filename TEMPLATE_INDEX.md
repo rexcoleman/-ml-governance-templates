@@ -138,7 +138,7 @@ bash scripts/init_project.sh /path/to/project --profile optimization
 
 ---
 
-### Unsupervised Analysis (10 templates)
+### Unsupervised Analysis (21 templates)
 
 **Use for:** Clustering, dimensionality reduction, density estimation projects.
 
@@ -151,9 +151,20 @@ bash scripts/init_project.sh /path/to/project --profile optimization
 | FIGURES_TABLES_CONTRACT | Activate §8.5 (unsupervised figures: elbow, silhouette, cluster viz) |
 | ARTIFACT_MANIFEST_SPEC | — |
 | HYPOTHESIS_CONTRACT | — |
+| AI_DIVISION_OF_LABOR | — |
+| CONFIGURATION_SPEC | — |
+| SCRIPT_ENTRYPOINTS_SPEC | — |
+| TEST_ARCHITECTURE | — |
+| IMPLEMENTATION_PLAYBOOK | — |
+| PRIOR_WORK_REUSE | — |
+| DECISION_LOG | — |
+| CHANGELOG | — |
+| RISK_REGISTER | — |
+| TASK_BOARD | — |
 | REPORT_ASSEMBLY_PLAN | — |
 | REPRODUCIBILITY_SPEC | — |
 | PRE_SUBMISSION_CHECKLIST | — |
+| EXECUTION_MANIFEST | — |
 
 ```bash
 bash scripts/init_project.sh /path/to/project --profile unsupervised

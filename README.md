@@ -103,7 +103,7 @@ Choose a profile based on project type. See [TEMPLATE_INDEX.md](TEMPLATE_INDEX.m
 | **Minimal** | 3 | Quick experiments, prototypes |
 | **Supervised ML** | 9 | Classification/regression with formal report |
 | **Optimization Benchmark** | 11 | Optimizer comparisons, ablation studies |
-| **Unsupervised Analysis** | 10 | Clustering, dimensionality reduction |
+| **Unsupervised Analysis** | 21 | Clustering, dimensionality reduction |
 | **RL / Agent Study** | 22 | Reinforcement learning, full delivery |
 | **Full + Publishing** | 25 | Complex projects with publication goals |
 

@@ -1,6 +1,6 @@
 # ML Governance Templates v2.0 — Execution Plan
 
-> **Purpose:** Step-by-step plan to upgrade `ml-governance-templates` from v1.0 (15 templates, skeleton-level) to v2.0 (25 templates, production-grade governance).
+> **Purpose:** Step-by-step plan to upgrade `ml-governance-templates` from v1.0 (15 templates, skeleton-level) to v2.0 (26 templates, production-grade governance).
 > **Source analysis:** `Moonshots_Career_Thesis_v2/analysis/personal/cs7641_a3_a4_gap_narrowing_plan.md` §5
 > **Scope:** General-purpose — not tied to any specific course or project. All upgrades apply to any ML experiment project.
 > **Last updated:** 2026-03-11
@@ -77,14 +77,14 @@ Specific sections and appendices to add to the 15 existing templates.
 
 | ID | Improvement | Where |
 |----|------------|-------|
-| **U22** | **Quickstart profiles** — pre-selected template subsets for common project types with guidance on which Tier C appendices to activate. Profiles: Minimal (3 templates), Supervised ML (9), Optimization Benchmark (11), Unsupervised Analysis (10), RL / Agent Study (11), Full + Publishing (all 25). | `TEMPLATE_INDEX.md` |
+| **U22** | **Quickstart profiles** — pre-selected template subsets for common project types with guidance on which Tier C appendices to activate. Profiles: Minimal (3 templates), Supervised ML (9), Optimization Benchmark (11), Unsupervised Analysis (21), RL / Agent Study (11), Full + Publishing (all 26). | `TEMPLATE_INDEX.md` |
 | **U23** | **Worked examples per profile** — for each quickstart profile, a sample `README.md` showing placeholder fills for a representative project. No course-specific content — use generic, illustrative examples. | `examples/` subdirectories |
 | **U24** | **Prompt Playbook update** — add stages: authority hierarchy setup (1b), hypothesis pre-registration (4b), unsupervised evaluation selection (4c), RL environment design (4d), adversarial evaluation setup (4e), publication brief drafting (4f), academic integrity verification (4g). | `PROMPT_PLAYBOOK.md` |
 | **U25** | **Execution manifest template** — `EXECUTION_MANIFEST.tmpl.md`: auto-generated methods summary + results index pattern. "Report numbers must come from these artifacts, not manually copied from plots." | `templates/report/` |
 | **U26** | **Research tool organization guide** — appendix to `AI_DIVISION_OF_LABOR.tmpl.md` covering information flow controls between research tools (retrieval tools, chat assistants, coding copilots, note-taking tools). | Appendix in U6 |
 | **U27** | **Template dependency graph** — Mermaid diagram showing which templates depend on which. | `TEMPLATE_INDEX.md` |
 | **U28** | **Scoring metric config pattern** — appendix to `CONFIGURATION_SPEC.tmpl.md` showing how to encode metric selection in YAML with test enforcement (assert statements verifying the config value matches what the code computes). | Appendix in U8 |
-| **—** | **README.md rewrite** — update to reflect 25 templates, new directory structure, 4 tiers, quickstart profiles, publishing tier. | `README.md` |
+| **—** | **README.md rewrite** — update to reflect 26 templates, new directory structure, 4 tiers, quickstart profiles, publishing tier. | `README.md` |
 | **—** | **`init_project.sh` update** — add profile-based init: `init_project.sh /path --profile supervised` copies only the relevant subset. | `scripts/init_project.sh` |
 
 ---
@@ -150,9 +150,9 @@ Specific sections and appendices to add to the 15 existing templates.
 | 3.9 | **U23: Worked examples** | Create `examples/{supervised,optimization,unsupervised,rl-agent,publishing}/README.md` with representative placeholder fills. No course-specific content. | 3.8 |
 | 3.10 | **U24: Prompt Playbook update** | Add stages 1b (authority hierarchy), 4b-4g (hypothesis, unsupervised eval, RL env, adversarial, publication brief, integrity verification). | 3.1–3.7 |
 | 3.11 | **U26: Research tool organization guide** | Add as appendix to `AI_DIVISION_OF_LABOR.tmpl.md`. | 1.5 |
-| 3.12 | **README.md rewrite** | Update to reflect 25 templates, 4 tiers, new directory structure, quickstart profiles, publishing tier. | 3.1–3.11 |
+| 3.12 | **README.md rewrite** | Update to reflect 26 templates, 4 tiers, new directory structure, quickstart profiles, publishing tier. | 3.1–3.11 |
 | 3.13 | **`init_project.sh` update** | Add `--profile` flag for profile-based template copying. | 3.8 |
-| 3.14 | **Commit + tag `v2.0`** | Full v2.0 release: 25 templates, 6 quickstart profiles, updated Playbook, examples, infrastructure. | 3.1–3.13 |
+| 3.14 | **Commit + tag `v2.0`** | Full v2.0 release: 26 templates, 6 quickstart profiles, updated Playbook, examples, infrastructure. | 3.1–3.13 |
 
 ---
 
@@ -161,7 +161,7 @@ Specific sections and appendices to add to the 15 existing templates.
 ```
 ml-governance-templates/
 ├── README.md                                    # Updated for v2.0
-├── TEMPLATE_INDEX.md                           # 25 templates + dependency graph + 6 profiles
+├── TEMPLATE_INDEX.md                           # 26 templates + dependency graph + 6 profiles
 ├── PROMPT_PLAYBOOK.md                          # 9 + 7 new stages
 ├── EXECUTION_PLAN.md                           # This file
 ├── templates/
@@ -216,7 +216,7 @@ ml-governance-templates/
 | **Minimal** (3) | Environment, Data, Metrics | Quick single-experiment project, no report deliverable |
 | **Supervised ML** (9) | All 7 original core + Hypothesis + Configuration | Supervised learning study with train/val/test evaluation |
 | **Optimization Benchmark** (11) | All core + Hypothesis + Config + Risk Register + Playbook | Multi-method comparison study with budget matching |
-| **Unsupervised Analysis** (10) | All core (minus Adversarial/Environment Spec) + Hypothesis + Config + Test Architecture | Clustering / dimensionality reduction study |
+| **Unsupervised Analysis** (21) | All core (minus Adversarial/Environment Spec) + all management + all report | Clustering / dimensionality reduction study |
 | **RL / Agent Study** (11) | All core + Environment Spec + Hypothesis + Config + Test Architecture | MDP / RL / agent-based study |
 | **Full + Publishing** (all 25) | Everything | Multi-phase project with publication goal and market validation |
 
@@ -243,7 +243,7 @@ ml-governance-templates/
 
 ### Phase 3 Exit Gate (v2.0 Release)
 
-- [ ] All 25 templates pass internal consistency check
+- [ ] All 26 templates pass internal consistency check
 - [ ] 6 quickstart profiles defined with template lists
 - [ ] 5+ worked examples created (one per non-trivial profile)
 - [ ] Prompt Playbook updated with new stages

@@ -1,6 +1,6 @@
 # Worked Example: Unsupervised Analysis — Customer Segmentation
 
-This example shows representative placeholder fills for the **Unsupervised Analysis** quickstart profile (10 templates).
+This example shows representative placeholder fills for the **Unsupervised Analysis** quickstart profile (21 templates).
 
 ---
 
