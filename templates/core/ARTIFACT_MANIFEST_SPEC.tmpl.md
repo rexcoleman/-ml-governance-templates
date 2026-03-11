@@ -1,6 +1,6 @@
 # ARTIFACT MANIFEST SPECIFICATION
 
-<!-- version: 1.0 -->
+<!-- version: 2.0 -->
 <!-- created: 2026-02-20 -->
 <!-- last_validated_against: CS_7641_Machine_Learning_OL_Report -->
 
@@ -48,17 +48,32 @@ This specification defines how experiment outputs are identified, hashed, and re
 
 ### 2.1 Run ID Format
 
-Every experiment run has a unique ID following this scheme:
+Every experiment run MUST be assigned a deterministic `run_id` constructed as:
 
 ```
 {{RUN_ID_FORMAT}}
 ```
 
-**Examples:**
-- *(e.g.)* `part1_adult_rhc_seed42`
-- *(e.g.)* `part2_adult_adam_seed123`
+**Components:**
+- `part`: experiment part identifier (e.g., `part1`, `part2`, `final_eval`, `sanity_check`)
+- `dataset`: dataset name (lowercase)
+- `method`: algorithm or technique name (lowercase, underscores)
+- `seed`: integer seed value
 
-### 2.2 Output Directory
+**Examples:**
+- `part1_adult_rhc_seed42`
+- `part2_adult_adam_seed123`
+- `final_eval_adult_seed42`
+- `sanity_check_adult_dummy_seed42`
+
+### 2.2 Run ID Rules
+
+- `run_id` MUST be **deterministic**: identical inputs (part, dataset, method, seed) MUST produce the identical `run_id`
+- DO NOT include timestamps, UUIDs, or hostnames in the `run_id`
+- `run_id` MUST appear in `summary.json` (key: `"run_id"`) and `run_manifest.json` (key: `"run_id"`)
+- `run_id` MUST match the directory path: `outputs/{part}/{dataset}/{method}/seed_{seed}/`
+
+### 2.3 Output Directory
 
 Each run's outputs go to:
 
@@ -79,7 +94,30 @@ Every run directory MUST contain:
 | `config_resolved.yaml` | YAML | Full resolved configuration |
 | `run_manifest.json` | JSON | {{HASH_ALGORITHM}} hashes of all files in this run |
 
-### 3.1 Run Manifest Schema (`run_manifest.json`)
+### 3.1 `config_resolved.yaml` Requirements
+
+The `config_resolved.yaml` file is the single source of truth for what a run actually used. It MUST include:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `run_id` | str | Deterministic run ID (§2.1) |
+| `timestamp_utc` | str | ISO 8601 timestamp |
+| `git_sha` | str | Git commit SHA at run time |
+| `seed` | int | Random seed |
+| `dataset` | str | Dataset name |
+| `method` | str | Algorithm/technique name |
+| `budget_type` | str | `grad_evals`, `func_evals`, or `episodes` |
+| `budget_value` | int | Allocated budget |
+| `scoring_metric` | str | Primary metric name |
+| `scoring_direction` | str | `minimize` or `maximize` |
+| All hyperparameters | varies | Every tunable parameter that affects run behavior |
+| `_resolution_sources` | dict | *(Recommended)* Which config level provided each key |
+
+**Rule:** `config_resolved.yaml` MUST be written **before** the run begins (not reconstructed after). It MUST be included in the per-run manifest hash.
+
+See [CONFIGURATION_SPEC](CONFIGURATION_SPEC.tmpl.md) §4 for full resolved config dump requirements.
+
+### 3.2 Run Manifest Schema (`run_manifest.json`)
 
 ```json
 {
@@ -104,7 +142,63 @@ Every run directory MUST contain:
 
 ---
 
-## 4) Global Artifact Manifest
+## 4) Global Provenance Files
+
+In addition to per-run provenance, the project MUST maintain global provenance files written once per full reproduction sequence.
+
+### 4.1 Provenance Triplet
+
+Three files in `outputs/provenance/` form the global provenance record:
+
+| File | Contents | When Written |
+|------|----------|-------------|
+| `versions.txt` | Python version + all key library versions + platform info | Start of reproduction sequence |
+| `git_commit_sha.txt` | Output of `git rev-parse HEAD`; second line "dirty" if working tree is dirty | Start of reproduction sequence |
+| `run_log.json` | Ordered list of run_ids executed with exit codes and wall-clock times | Updated after each run |
+
+#### `versions.txt` Schema
+
+```
+python: {{PYTHON_VERSION}}
+numpy: <version>
+pandas: <version>
+scikit-learn: <version>
+matplotlib: <version>
+torch: <version>
+platform: <platform string>
+machine: <architecture>
+cuda_available: <bool>
+```
+
+#### `run_log.json` Schema
+
+```json
+{
+  "timestamp_utc": "<ISO 8601>",
+  "runs": [
+    {"run_id": "<str>", "script": "<str>", "exit_code": 0, "wall_clock_sec": 0.0}
+  ]
+}
+```
+
+**Note:** Timestamps in `run_log.json` are for audit only. They MUST NOT appear in any artifact used for reproducibility hashing.
+
+### 4.2 Provenance in Global Manifest
+
+The global manifest (§5) MUST reference the provenance files:
+
+```json
+{
+  "provenance": {
+    "versions_txt_sha256": "<hex string>",
+    "git_commit_sha_txt_sha256": "<hex string>"
+  }
+}
+```
+
+---
+
+## 5) Global Artifact Manifest
 
 A single global manifest records all runs and report-ready artifacts.
 
@@ -156,7 +250,22 @@ All hashes use **{{HASH_ALGORITHM}}** (e.g., SHA-256).
 
 ### 5.3 Determinism Requirement
 
-Running the same experiment with the same seed, data, and environment MUST produce byte-identical outputs. If outputs differ, the determinism contract (ENVIRONMENT_CONTRACT §8) has been violated.
+Running the same experiment with the same seed, data, and environment MUST produce **byte-identical outputs** (excluding timestamps in `run_log.json`). This is non-negotiable.
+
+**What MUST be deterministic:**
+- `metrics.csv` — identical values at every step
+- `summary.json` — identical final metrics and budget accounting
+- `config_resolved.yaml` — identical resolved configuration
+- Figure PDFs — identical renderings (no random jitter, timestamps, or non-deterministic layout)
+- Table CSVs — identical rows and values
+
+**What MAY vary:**
+- `run_log.json` timestamps (audit only, not used for hashing)
+- Log file timestamps (if logs are not hashed)
+
+**Verification:** Run the same experiment twice with the same seed. Compare SHA-256 hashes of all output files. If any hash differs, investigate and fix before locking the manifest.
+
+**Forbidden in hashed artifacts:** timestamps, random UUIDs, host-specific paths, non-deterministic float formatting. Use fixed-precision formatting for all numeric values in CSVs.
 
 ### 5.4 Verification
 
