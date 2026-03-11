@@ -130,6 +130,8 @@ Is the prior project frozen (submitted/released)?
 
 Every extracted file MUST have a SHA-256 hash recorded for verification.
 
+**Verification:** `python scripts/verify_{{PRIOR_PROJECT}}_snapshot.py` recomputes hashes of all extracted files and compares against recorded values. Exits non-zero on any mismatch.
+
 | # | Source Path | What to Extract | Destination | SHA-256 | Approx Size |
 |---|-----------|-----------------|-------------|---------|-------------|
 | 1 | *(path)* | *(what — class names, function names, or "full file")* | *(dest)* | *(hash)* | *(lines or KB)* |
@@ -250,6 +252,8 @@ When prior project artifacts use a different format than the current project req
 - MUST verify output integrity (no overlap, full coverage, etc.)
 - MUST exit non-zero on any failure
 - MUST be idempotent (running twice produces identical output)
+
+**Verification:** Run conversion script twice; compare output file hashes. Second run MUST produce byte-identical output. Exit code MUST be 0 on both runs.
 
 ---
 

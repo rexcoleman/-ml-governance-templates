@@ -63,6 +63,8 @@ The producer script MUST:
 - Generate all figures and tables in a single invocation
 - Write the artifact manifest as its final step
 
+**Verification:** Run producer script twice; compare SHA-256 hashes of all outputs. Zero differences confirms determinism. `python scripts/verify_manifests.py` exits 0.
+
 ---
 
 ## 3) Required Figures
@@ -111,6 +113,8 @@ The summary table MUST include these columns at minimum. Additional columns may 
 - **Never report bare means without dispersion** — single-point estimates are not credible for comparative claims
 - Dispersion MUST appear as adjacent columns, parenthetical notation, or footnotes
 
+**Verification:** Inspect summary table for dispersion indicators (±, IQR, std) adjacent to every seed-aggregated value. Bare single numbers without dispersion fail this check.
+
 ### Summary Table Requirements
 
 - [ ] Includes all methods from all experimental parts
@@ -127,6 +131,8 @@ The summary table MUST include these columns at minimum. Additional columns may 
 ### 5.1 Figure Takeaway Rule
 
 Every figure and table caption MUST include an **interpretive takeaway** — a sentence explaining what the result means, tied to the experiment's mechanism. DO NOT merely restate the legend or describe the data.
+
+**Verification:** Review each caption for a sentence that explains *why* the result occurred, not just *what* it shows. Captions that only describe axes or legend entries fail this check.
 
 | Element | Required | Description |
 |---------|----------|-------------|

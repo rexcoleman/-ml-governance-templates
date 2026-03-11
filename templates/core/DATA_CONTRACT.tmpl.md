@@ -75,6 +75,8 @@ This contract defines the data governance rules for the **{{PROJECT_NAME}}** pro
 
 Raw data files MUST NOT be committed to git. Add `data/raw/**` to `.gitignore`. Data placement instructions go in the REPRO document.
 
+**Verification:** `git ls-files data/raw/` returns empty. `.gitignore` contains `data/raw/**`.
+
 ---
 
 ## 3) Split Discipline
@@ -140,9 +142,13 @@ The following MUST hold for every split file:
 4. **Deterministic:** Given the same seed and source data, the split MUST be identical
 5. **Hash match:** `split_hash` matches recomputed value from index arrays
 
+**Verification:** `python scripts/check_data_ready.py` validates all 5 invariants and exits non-zero on any failure.
+
 ### 3.4 Test-Split Access Policy
 
 The held-out test split is accessible exclusively through the final evaluation script. The data-loading utility MUST default to `allow_test=False` and raise a `ValueError` if test indices are requested by any other script.
+
+**Verification:** `python scripts/check_leakage.py` LT-2 (test index isolation) exits 0. Grep per-run outputs for test metric keys returns zero matches.
 
 ### 3.5 Prior-Project Split Inheritance
 
@@ -202,6 +208,8 @@ test_final = prior_test  # unchanged from prior project
 ### 4.1 Fit-on-Train Rule
 
 All preprocessing transformations (scalers, encoders, imputers) MUST be fit exclusively on `X_train`. Validation and test sets receive only `.transform()` calls. This is non-negotiable.
+
+**Verification:** `python scripts/check_leakage.py` LT-1 (fit isolation) and LT-3 (transform-only) exit 0.
 
 ```python
 # CORRECT
@@ -354,6 +362,8 @@ assert np.array_equal(pred_1, pred_2), \
 ## 6) EDA & Preprocessing Compatibility
 
 If this project builds on a prior project (e.g., Phase 1 → Phase 2), EDA and preprocessing MUST be consistent unless changes are disclosed and justified.
+
+**Verification:** Compare `outputs/eda/` summaries with prior project. If identical, REPRO document includes no-change confirmation (§6.1). If different, change disclosure template (§6.2) is completed.
 
 ### 6.1 No-Change Confirmation
 

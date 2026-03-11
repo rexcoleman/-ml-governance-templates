@@ -73,6 +73,8 @@ Every experiment run MUST be assigned a deterministic `run_id` constructed as:
 - `run_id` MUST appear in `summary.json` (key: `"run_id"`) and `run_manifest.json` (key: `"run_id"`)
 - `run_id` MUST match the directory path: `outputs/{part}/{dataset}/{method}/seed_{seed}/`
 
+**Verification:** For each run directory, assert `summary.json["run_id"] == run_manifest.json["run_id"]` and both match the directory path components.
+
 ### 2.3 Output Directory
 
 Each run's outputs go to:
@@ -114,6 +116,8 @@ The `config_resolved.yaml` file is the single source of truth for what a run act
 | `_resolution_sources` | dict | *(Recommended)* Which config level provided each key |
 
 **Rule:** `config_resolved.yaml` MUST be written **before** the run begins (not reconstructed after). It MUST be included in the per-run manifest hash.
+
+**Verification:** `config_resolved.yaml` timestamp precedes `metrics.csv` first entry timestamp. `run_manifest.json` includes a hash entry for `config_resolved.yaml`.
 
 See [CONFIGURATION_SPEC](CONFIGURATION_SPEC.tmpl.md) §4 for full resolved config dump requirements.
 

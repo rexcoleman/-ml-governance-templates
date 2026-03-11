@@ -63,6 +63,8 @@ This contract defines how metrics are computed, thresholds are set, and evaluati
 - Additional metrics may be reported if justified and consistent, but MUST NOT replace primary metrics.
 - All metric computations MUST be centralized in a single module to prevent inconsistent calls.
 
+**Verification:** Assert primary metric keys exist in every `summary.json` and `final_eval_results.json`. Grep codebase for metric computation calls — all MUST import from the centralized module.
+
 ---
 
 ## 3) Primary Optimization Objective
@@ -100,6 +102,8 @@ All experiments optimize: **{{OPTIMIZATION_OBJECTIVE}}**
 - **Symbol:** ℓ (or equivalent)
 - **Derivation:** {{THRESHOLD_DEFINITION}}
 - **Lock rule:** The threshold MUST be defined once and used consistently across all comparable experiments. Changing it after experiments begin requires a `CONTRACT_CHANGE`.
+
+**Verification:** `git log` for budget config edits after threshold lock. Assert `threshold_l` value is identical across all `config_resolved.yaml` files that reference it.
 
 ### 5.2 Setting Procedure (Test-Safe)
 
@@ -164,6 +168,8 @@ Sanity checks MUST be run before main experiments to establish pipeline credibil
 - Sanity checks MUST be produced and recorded BEFORE main experiments begin
 - If dummy or shuffled-label results are anomalous (e.g., shuffled F1 substantially above chance), MUST investigate and fix before proceeding
 - Experiment results produced without passing sanity checks are not credible
+
+**Verification:** `ls outputs/sanity_checks/` confirms expected JSON files exist. Dummy accuracy ≈ majority proportion; shuffled F1 ≈ chance level. Git log confirms sanity check commit precedes experiment commits.
 
 ### 7.3 Logging
 
@@ -249,6 +255,8 @@ Per-class reporting is REQUIRED when:
 
 DO NOT silently average away tail-class failures. If a method achieves high macro-F1 but fails completely on one class, this MUST be discussed. The report MUST include a per-class breakdown for at least one representative run.
 
+**Verification:** `per_class_f1` dict present in `summary.json` for multiclass datasets. Report text contains per-class discussion (search for "per-class" or class names).
+
 ---
 
 ## 11) Budget-Matched Claims Rule
@@ -261,6 +269,8 @@ Claims comparing methods MUST use budget-matched evidence.
 - Include dispersion (median + IQR or mean ± std) — not just point estimates
 - Explain failures (divergence, plateaus, oscillation) and attribute causes
 - DO NOT compare methods run at different budgets in head-to-head tables or claims
+
+**Verification:** Parse `summary.json` across methods within each part; assert `budget_allocated` values are equal. Summary table includes dispersion columns.
 
 ### 11.2 Over-Budget Exclusion
 

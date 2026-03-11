@@ -62,6 +62,8 @@ Issues that, if present at delivery, result in **critical invalidation or non-co
 
 **Rule:** Every critical invalidator MUST have an automated detection test. Manual-only detection is insufficient for critical risks.
 
+**Verification:** For each row in the critical invalidators table, verify the "Detection" column references a script that exits non-zero on failure. Run each detection script and confirm exit 0.
+
 ---
 
 ### Risk Taxonomy

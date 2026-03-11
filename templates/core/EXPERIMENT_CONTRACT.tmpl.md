@@ -103,6 +103,8 @@ Different experiment paradigms use different budget accounting:
 - If validation is computed via mini-batches for memory efficiency, the entire sweep still counts as ONE function evaluation
 - Wall-clock MUST be reported alongside the primary budget type for all experiments (even if wall-clock is not the budget constraint)
 
+**Verification:** Schema-validate every `summary.json` for presence of `budget_allocated`, `budget_used`, and `wall_clock_s` fields.
+
 ### 2.3 Budget Schema
 
 ```yaml
@@ -171,6 +173,8 @@ Test split is accessible ONLY through the final evaluation script. All other scr
 
 For experiments that compare different methods on the same architecture, all methods MUST start from identical initial weights.
 
+**Verification:** Forward-pass equality check at run start. Assert `torch.allclose(output_method_A, output_method_B, atol=1e-6)` for all method pairs within a part/seed.
+
 #### Protocol
 
 1. **Initialize once per seed:** Create the model with the current seed and save the initial `state_dict`:
@@ -222,6 +226,8 @@ All experiments MUST be run across the full seed list to support:
 - Stability analysis across methods
 - Credible dispersion in comparative claims
 
+**Verification:** For each method, assert that `len(completed_seeds) == len(stability_list)`. Multi-seed outputs exist under `outputs/{{PART}}/{{DATASET}}/{{METHOD}}/seed_*/`.
+
 ---
 
 ## 5) Metrics & Evaluation Rules
@@ -236,6 +242,8 @@ During evaluation (validation loss computation, metric calculation):
 - Batch normalization MUST be frozen (running stats, not batch stats)
 - Data augmentation MUST be disabled
 - `torch.no_grad()` MUST wrap the evaluation block
+
+**Verification:** Assert `model.training == False` during evaluation. Verify `config_resolved.yaml` records `eval_mode: True`, `dropout_off: True`, `bn_frozen: True`.
 
 ### 5.2 Required Metrics Per Run
 
@@ -303,6 +311,8 @@ Every run directory MUST contain:
 | `summary.json` | JSON | Run summary with best metrics, budget usage, flags |
 | `config_resolved.yaml` | YAML | Full resolved configuration (CLI + config file + defaults) |
 | `run_manifest.json` | JSON | SHA-256 hashes of all output files |
+
+**Verification:** `python scripts/verify_manifests.py` checks that all four files exist in every run directory and that `run_manifest.json` hashes are correct.
 
 ---
 

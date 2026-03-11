@@ -56,6 +56,8 @@ This contract locks the compute environment for the **{{PROJECT_NAME}}** project
 - **Hardware:** *(e.g., CPU-only, GPU optional for exploration)*
 - **Constraint:** All final deliverables MUST be reproducible on the target platform. GPU may be used for exploration but MUST NOT be required for release artifacts.
 
+**Verification:** `bash scripts/verify_env.sh` exits 0 on target platform. Re-run a representative experiment on CPU and compare output hashes.
+
 ---
 
 ## 3) Locked Language & Runtime
@@ -138,7 +140,9 @@ bash scripts/verify_env.sh
 
 ## 8) Determinism Defaults
 
-The following determinism settings MUST be applied in all experiment scripts:
+The following determinism settings MUST be applied in all experiment scripts.
+
+**Verification:** Grep all experiment scripts for `set_seed` or equivalent call. Run same experiment twice with same seed; compare output hashes for byte-identical results.
 
 ```python
 import random
@@ -181,6 +185,8 @@ ALL report artifacts MUST be reproducible on CPU. This is non-negotiable for ind
 - Environment file MUST include a CPU-only build of the ML framework
 - Scripts MUST NOT fail if GPU is unavailable
 - Final artifacts MUST be generated on CPU
+
+**Verification:** `bash scripts/verify_env.sh` logs `cuda_available` status. All scripts exit 0 when `torch.cuda.is_available() == False`.
 
 ---
 
