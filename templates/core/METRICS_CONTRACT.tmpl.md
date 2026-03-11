@@ -1,6 +1,6 @@
 # METRICS & EVALUATION CONTRACT
 
-<!-- version: 1.0 -->
+<!-- version: 2.0 -->
 <!-- created: 2026-02-20 -->
 <!-- last_validated_against: CS_7641_Machine_Learning_OL_Report -->
 
@@ -91,23 +91,42 @@ All experiments optimize: **{{OPTIMIZATION_OBJECTIVE}}**
 
 ---
 
-## 5) Convergence Threshold
+## 5) Convergence Threshold Governance
 
-*(If your project uses a convergence threshold for time-to-threshold comparisons:)*
+*(If your project uses a convergence threshold for time-to-threshold comparisons. Delete this section if not applicable.)*
 
-### Definition
+### 5.1 Definition
 
 - **Symbol:** ℓ (or equivalent)
 - **Derivation:** {{THRESHOLD_DEFINITION}}
 - **Lock rule:** The threshold MUST be defined once and used consistently across all comparable experiments. Changing it after experiments begin requires a `CONTRACT_CHANGE`.
 
-### Procedure
+### 5.2 Setting Procedure (Test-Safe)
 
-1. Run the baseline method with the default seed
-2. Record the final validation loss
-3. Set ℓ to *(describe: e.g., the final val loss of the baseline, or a percentile)*
-4. Lock ℓ in the budget config file
-5. All compared methods report `steps_to_l`, `reached_l`, and `wall_clock_to_l`
+ℓ MUST be derived without any access to test data:
+
+1. Run the baseline method with the default seed for the full compute budget
+2. Record the best validation loss achieved at a fixed budget percentile (e.g., 50% or 75%)
+3. Choose ℓ such that it provides **discriminative signal**: reachable by the baseline within budget but challenging enough that weaker methods may not reach it
+4. Document the chosen ℓ value and rationale in the report Methods section
+5. Lock ℓ in the budget config file (e.g., `part2.threshold_l` in `{{BUDGET_CONFIG_FILE}}`)
+
+### 5.3 Logging Requirements
+
+For every method × seed run, log in `summary.json`:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `steps_to_l` | int/null | Steps to first reach metric ≤ ℓ; null if not reached |
+| `wall_clock_to_l` | float/null | Wall-clock seconds to first reach ℓ; null if not reached |
+| `reached_l` | bool | Whether ℓ was reached within the budget |
+
+### 5.4 Unreachable ℓ Handling
+
+- If a method does not reach ℓ within budget, log `reached_l: false`
+- In the summary table, report "—" or "not reached" for Time to ℓ
+- DO NOT exclude these runs from the comparison — failure to reach ℓ is informative
+- In the report, discuss WHY certain methods failed to reach ℓ and attribute causes (divergence, plateaus, insufficient capacity, etc.)
 
 ---
 
@@ -127,18 +146,32 @@ gen_gap = train_loss - val_loss  (at budget endpoint)
 
 ---
 
-## 7) Sanity Checks
+## 7) Sanity Check Protocol
 
-Before running main experiments, run sanity checks to establish pipeline credibility.
+Sanity checks MUST be run before main experiments to establish pipeline credibility.
 
-| Check | Expected Behavior | Script |
-|-------|-------------------|--------|
-| Dummy baseline | Accuracy ≈ majority class proportion; F1 ≈ 0 for minority class | `scripts/run_sanity_checks.py` |
-| Shuffled labels | Performance ≈ random chance; model cannot learn from noise | `scripts/run_sanity_checks.py` |
+### 7.1 Required Checks
 
-*(Add project-specific sanity checks as needed.)*
+| Check | Expected Behavior | Failure Implies | Script |
+|-------|-------------------|-----------------|--------|
+| **Dummy baseline** | Accuracy ≈ majority class proportion; F1 ≈ 0 for minority class | Label encoding error or data corruption | `scripts/run_sanity_checks.py` |
+| **Shuffled labels** | Performance collapses to approximately chance level | Data leakage or pipeline bug | `scripts/run_sanity_checks.py` |
+| *(Optional)* Train/test swap | Performance degrades or is comparable | Confirms distribution similarity | `scripts/run_sanity_checks.py` |
+| *(Add project-specific)* | | | |
 
-If sanity checks produce unexpected results, MUST investigate before proceeding.
+### 7.2 Credibility Gate
+
+- Sanity checks MUST be produced and recorded BEFORE main experiments begin
+- If dummy or shuffled-label results are anomalous (e.g., shuffled F1 substantially above chance), MUST investigate and fix before proceeding
+- Experiment results produced without passing sanity checks are not credible
+
+### 7.3 Logging
+
+Sanity check outputs MUST be:
+- Stored at `outputs/sanity_checks/{{CHECK_NAME}}_{{DATASET}}.json`
+- Recorded in the artifact manifest
+- Included in the report text or appendix
+- Command: `python scripts/run_sanity_checks.py --dataset {{DATASET_NAME}} --seed {{DEFAULT_SEED}}`
 
 ---
 
@@ -193,7 +226,80 @@ Every experiment run MUST log metrics in a consistent schema.
 
 ---
 
-## 10) Change Control Triggers
+## 10) Per-Class Behavior Reporting
+
+For multiclass tasks, aggregate metrics (accuracy, macro-F1) can mask severe failures on tail classes. This section prevents that.
+
+### 10.1 When Required
+
+Per-class reporting is REQUIRED when:
+- The task is multiclass (3+ classes)
+- Class imbalance exists (any class < 10% of total samples)
+- The project specification explicitly requires per-class analysis
+
+### 10.2 What to Report
+
+| Artifact | Contents | Format |
+|----------|----------|--------|
+| Per-class F1 | F1 score for each class | `per_class_f1` dict in `summary.json` |
+| Confusion matrix | Full N×N matrix | Figure or table in report |
+| Per-class discussion | Analysis of which classes succeed/fail and why | Report text (human-written) |
+
+### 10.3 Rule
+
+DO NOT silently average away tail-class failures. If a method achieves high macro-F1 but fails completely on one class, this MUST be discussed. The report MUST include a per-class breakdown for at least one representative run.
+
+---
+
+## 11) Budget-Matched Claims Rule
+
+Claims comparing methods MUST use budget-matched evidence.
+
+### 11.1 Requirements
+
+- Make comparative claims ONLY when all compared methods ran with identical budgets
+- Include dispersion (median + IQR or mean ± std) — not just point estimates
+- Explain failures (divergence, plateaus, oscillation) and attribute causes
+- DO NOT compare methods run at different budgets in head-to-head tables or claims
+
+### 11.2 Over-Budget Exclusion
+
+- Over-budget runs MUST set `over_budget: true` in `summary.json`
+- Over-budget runs MUST be marked with a flag in the summary table
+- Over-budget runs MUST be excluded from head-to-head comparison claims
+- Over-budget runs MAY appear in supplementary analysis with clear disclosure
+
+### 11.3 Seed Aggregation
+
+- Single-seed results are not sufficient for comparative claims
+- Report median + IQR across the seed list (preferred) or mean ± std
+- When reporting means, also report the number of seeds and the stability seed list
+
+---
+
+## 12) Delta Reporting
+
+When an experiment part builds on a prior part (e.g., regularization study builds on optimizer selection), report the explicit delta.
+
+### 12.1 Format
+
+```
+Δ(Metric) = Current_Part_value − Baseline_Part_value
+```
+
+- Example: `Δ(Test F1) = Part3_best_combo − Part2_Adam_baseline = +0.023`
+- Include deltas in both the summary table and report text
+- Compute deltas under identical budgets, seeds, and evaluation conditions
+
+### 12.2 Baseline Reference
+
+- Clearly identify which prior part run serves as the baseline
+- The baseline MUST use the same budget and evaluation protocol
+- Lock the baseline run ID in the configuration to prevent drift
+
+---
+
+## 13) Change Control Triggers
 
 The following changes require a `CONTRACT_CHANGE` commit:
 
@@ -207,3 +313,83 @@ The following changes require a `CONTRACT_CHANGE` commit:
 - Evaluation determinism rules
 - Test-split access policy
 - Logging schema fields
+- Per-class reporting requirements
+- Budget-matched claims policy
+
+---
+
+## Appendix B: Unsupervised Evaluation Menu (Optional)
+
+> **Activation:** Include this appendix when your project involves clustering, dimensionality
+> reduction, density estimation, or other unsupervised methods. Delete if not applicable.
+
+### B.1 Clustering Metrics
+
+| Metric | When to Use | Computation | Notes |
+|--------|-------------|-------------|-------|
+| **Silhouette Score** | Always (primary internal metric) | `sklearn.metrics.silhouette_score` | Range [-1, 1]; higher is better |
+| **Adjusted Rand Index** | When ground-truth labels available | `sklearn.metrics.adjusted_rand_score` | Range [-0.5, 1]; corrects for chance |
+| **Normalized Mutual Info** | When ground-truth labels available | `sklearn.metrics.normalized_mutual_info_score` | Range [0, 1]; robust to cluster count |
+| **Davies-Bouldin Index** | Complement to silhouette | `sklearn.metrics.davies_bouldin_score` | Lower is better |
+| **Inertia / SSE** | K-Means family only | Model attribute | Use for elbow analysis only; not for cross-method comparison |
+
+### B.2 Dimensionality Reduction Metrics
+
+| Metric | When to Use | Notes |
+|--------|-------------|-------|
+| **Reconstruction error** | Autoencoders, PCA | MSE between input and reconstruction |
+| **Explained variance ratio** | PCA | Cumulative proportion of variance explained |
+| **Trustworthiness** | Manifold methods (t-SNE, UMAP) | `sklearn.manifold.trustworthiness`; measures neighborhood preservation |
+| **Continuity** | Manifold methods | Complement to trustworthiness |
+
+### B.3 Density Estimation Metrics
+
+| Metric | When to Use | Notes |
+|--------|-------------|-------|
+| **Log-likelihood** | Generative models, GMMs | On held-out validation set |
+| **BIC / AIC** | Model selection | Lower is better; penalizes complexity |
+
+### B.4 Unsupervised Sanity Checks
+
+| Check | Expected Behavior | Failure Implies |
+|-------|-------------------|-----------------|
+| Random assignment baseline | Silhouette ≈ 0, ARI ≈ 0 | If model doesn't beat random, it's not finding structure |
+| Shuffled features | Metrics degrade | If metrics are unchanged, features are not informative |
+| Known-structure synthetic data | Algorithm recovers known clusters | Algorithm implementation error |
+
+---
+
+## Appendix C: RL / Sequential Policy Evaluation (Optional)
+
+> **Activation:** Include this appendix when your project involves reinforcement learning or
+> sequential decision-making. Delete if not applicable.
+
+### C.1 Policy Evaluation Metrics
+
+| Metric | Description | Aggregation |
+|--------|-------------|-------------|
+| **Mean Return** | Average cumulative reward over evaluation episodes | Mean ± std across episodes |
+| **Median Return** | Median cumulative reward | Median + IQR across episodes |
+| **Success Rate** | Fraction of episodes achieving goal (if applicable) | Proportion ± binomial CI |
+| **Mean Episode Length** | Average steps per episode | Mean ± std |
+
+### C.2 Evaluation Protocol
+
+- **Evaluation frequency:** Every {{EVAL_INTERVAL_EPISODES}} training episodes
+- **Evaluation episodes:** {{EVAL_EPISODES}} episodes per evaluation point
+- **Policy mode:** Greedy / deterministic (no exploration noise during evaluation)
+- **Environment seeds:** Fixed evaluation seed set, separate from training seeds
+
+### C.3 Learning Curve Requirements
+
+- Plot mean evaluation return vs training episodes (with shaded ± std band)
+- Include a random-policy baseline for reference
+- If multiple algorithms are compared, use identical evaluation episodes and seeds
+
+### C.4 RL-Specific Sanity Checks
+
+| Check | Expected Behavior | Failure Implies |
+|-------|-------------------|-----------------|
+| Random policy baseline | Return ≈ expected random performance | Environment or reward bug |
+| Known-optimal environment | Algorithm converges to known optimal | Implementation error |
+| Reward shaping verification | Shaped reward doesn't change optimal policy | Reward design error |
