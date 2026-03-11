@@ -31,3 +31,4 @@ These repos contain the battle-tested governance docs that v2.0 upgrades are ext
   - Step 1.2 (U1: authority hierarchy header) — DONE
   - Step 1.3 (U2: cross-contract references) — DONE
   - Step 1.4 (U5: HYPOTHESIS_CONTRACT) — DONE
+  - Step 1.5 (U6: AI_DIVISION_OF_LABOR) — DONE
