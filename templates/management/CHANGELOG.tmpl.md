@@ -1,6 +1,6 @@
 # CHANGELOG
 
-<!-- version: 1.0 -->
+<!-- version: 2.0 -->
 <!-- created: 2026-02-20 -->
 <!-- last_validated_against: CS_7641_Machine_Learning_OL_Report -->
 
@@ -53,16 +53,28 @@ This changelog tracks every material change to the **{{PROJECT_NAME}}** project'
 
 - **Type:** CONTRACT_CHANGE | DOC_CHANGE | CODE_CHANGE | DATA_CHANGE
 - **Scope:** environment | data | experiments | metrics | figures | scripts | report
+- **ADR:** [ADR-XXXX if applicable, or "N/A"]
 - **Files changed:**
   - `path/to/file1`
   - `path/to/file2`
 - **Motivation:** [Cite the requirement, constraint, or risk that drove this change]
 - **Backward compatibility:** compatible | breaking
-- **Artifacts impacted:** [What must be regenerated]
+  - If breaking: [What existing outputs are invalidated]
+- **Artifacts impacted:**
+  | Artifact | Status | Regeneration Command |
+  |----------|--------|---------------------|
+  | [artifact path or category] | needs-regen / not-affected | [command] |
 - **Verification steps:** [Commands to verify correctness]
 - **Commit SHA:** [Fill after commit]
-- **Risk mitigation:** [RISK_REGISTER entry if applicable]
+- **Risk mitigation:** [RISK_REGISTER entry if applicable, e.g., "Mitigates R-A2"]
 ```
+
+### Backward Compatibility Rules
+
+- **compatible:** No existing outputs are invalidated. Additive changes (new files, new fields with defaults, documentation clarifications).
+- **breaking:** Existing outputs may be incorrect or incomplete. ALL downstream artifacts listed in the "Artifacts impacted" table MUST be regenerated before the next phase gate.
+
+**Rule:** After a breaking `CONTRACT_CHANGE`, no phase gate may pass until all `needs-regen` artifacts are regenerated and their manifests re-verified.
 
 ---
 
@@ -74,48 +86,34 @@ This changelog tracks every material change to the **{{PROJECT_NAME}}** project'
 
 ## Common CONTRACT_CHANGE Triggers
 
-The following categories require a `CONTRACT_CHANGE` commit and MUST be logged here.
+The following categories require a `CONTRACT_CHANGE` commit and MUST be logged here. Each trigger cites the governing contract section.
 
-### Environment changes
-- Python version (including patch)
-- Dependencies (add, remove, version change)
-- Determinism or leakage guardrails
-- Seed policy, `n_jobs` settings
-
-### Data changes
-- Dataset filenames or paths
-- Split definitions (indices, ratios, seed)
-- Preprocessing pipeline (scaling, encoding, imputation, step order)
-- Target variable or label mapping
-- Feature handling, missing-value strategy
-- Test-access enforcement rules
-
-### Experiment changes
-- Compute budgets (any value in budget config)
-- Method lists for any part
-- Initialization protocol
-- Output schemas
-
-### Metric changes
-- Metric definitions or computation functions
-- Classification threshold
-- Convergence threshold (after lock)
-- Sanity check definitions
-
-### Script changes
-- Script filenames or paths
-- CLI flag names, types, or defaults
-- Required outputs
-- Exit code semantics
-- Reproduction sequence ordering
-
-### Figure/table changes
-- Figure or table definitions
-- Summary table columns
-- Caption requirements
-- Producer script identity
-
-### Artifact changes
-- Run ID naming scheme
-- Manifest schemas
-- Hashing rules
+| Category | Trigger | Contract Reference |
+|----------|---------|-------------------|
+| **Environment** | Python version (including patch) | ENVIRONMENT_CONTRACT §{{ENV_CHANGE_SECTION}} |
+| | Dependencies (add, remove, version change) | ENVIRONMENT_CONTRACT §{{ENV_CHANGE_SECTION}} |
+| | Determinism or leakage guardrails | ENVIRONMENT_CONTRACT §{{ENV_CHANGE_SECTION}} |
+| | Seed policy, `n_jobs` settings | ENVIRONMENT_CONTRACT §{{ENV_CHANGE_SECTION}} |
+| **Data** | Dataset filenames or paths | DATA_CONTRACT §{{DATA_CHANGE_SECTION}} |
+| | Split definitions (indices, ratios, seed) | DATA_CONTRACT §{{DATA_CHANGE_SECTION}} |
+| | Preprocessing pipeline (scaling, encoding, step order) | DATA_CONTRACT §{{DATA_CHANGE_SECTION}} |
+| | Target variable or label mapping | DATA_CONTRACT §{{DATA_CHANGE_SECTION}} |
+| | Feature handling, missing-value strategy | DATA_CONTRACT §{{DATA_CHANGE_SECTION}} |
+| | Test-access enforcement rules | DATA_CONTRACT §{{DATA_CHANGE_SECTION}} |
+| **Experiments** | Compute budgets (any value in budget config) | EXPERIMENT_CONTRACT §{{EXPERIMENT_CHANGE_SECTION}} |
+| | Method lists for any part | EXPERIMENT_CONTRACT §{{EXPERIMENT_CHANGE_SECTION}} |
+| | Initialization protocol | EXPERIMENT_CONTRACT §{{EXPERIMENT_CHANGE_SECTION}} |
+| | Output schemas | EXPERIMENT_CONTRACT §{{EXPERIMENT_CHANGE_SECTION}} |
+| **Metrics** | Metric definitions or computation functions | METRICS_CONTRACT §{{METRICS_CHANGE_SECTION}} |
+| | Classification threshold | METRICS_CONTRACT §{{METRICS_CHANGE_SECTION}} |
+| | Convergence threshold (after lock) | METRICS_CONTRACT §{{METRICS_CHANGE_SECTION}} |
+| | Sanity check definitions | METRICS_CONTRACT §{{METRICS_CHANGE_SECTION}} |
+| **Scripts** | Script filenames or paths | SCRIPT_ENTRYPOINTS_SPEC §{{SCRIPT_CHANGE_SECTION}} |
+| | CLI flag names, types, or defaults | SCRIPT_ENTRYPOINTS_SPEC §{{SCRIPT_CHANGE_SECTION}} |
+| | Required outputs, exit code semantics | SCRIPT_ENTRYPOINTS_SPEC §{{SCRIPT_CHANGE_SECTION}} |
+| | Reproduction sequence ordering | SCRIPT_ENTRYPOINTS_SPEC §{{SCRIPT_CHANGE_SECTION}} |
+| **Figures/Tables** | Figure or table definitions | FIGURES_TABLES_CONTRACT §{{FIGURES_CHANGE_SECTION}} |
+| | Summary table columns | FIGURES_TABLES_CONTRACT §{{FIGURES_CHANGE_SECTION}} |
+| | Caption requirements, producer script identity | FIGURES_TABLES_CONTRACT §{{FIGURES_CHANGE_SECTION}} |
+| **Artifacts** | Run ID naming scheme | ARTIFACT_MANIFEST_SPEC §{{ARTIFACT_CHANGE_SECTION}} |
+| | Manifest schemas, hashing rules | ARTIFACT_MANIFEST_SPEC §{{ARTIFACT_CHANGE_SECTION}} |
