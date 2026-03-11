@@ -16,6 +16,19 @@
 > **Conflict rule:** When a higher-tier document and this contract disagree, the higher tier wins.
 > Update this contract via `CONTRACT_CHANGE` or align implementation to the higher tier.
 
+### Companion Contracts
+
+**Upstream (this contract depends on):**
+- See [DATA_CONTRACT](../core/DATA_CONTRACT.tmpl.md) §4 for leakage prevention rules (Category A risks)
+- See [EXPERIMENT_CONTRACT](../core/EXPERIMENT_CONTRACT.tmpl.md) §2 for budget-matching rules (Category C risks)
+- See [METRICS_CONTRACT](../core/METRICS_CONTRACT.tmpl.md) §5 for threshold governance (Category B risks)
+- See [ARTIFACT_MANIFEST_SPEC](../core/ARTIFACT_MANIFEST_SPEC.tmpl.md) §5 for integrity rules (Category E risks)
+- See [SCRIPT_ENTRYPOINTS_SPEC](../core/SCRIPT_ENTRYPOINTS_SPEC.tmpl.md) §2 for exit codes used by automation hooks
+
+**Downstream (depends on this contract):**
+- See [IMPLEMENTATION_PLAYBOOK](IMPLEMENTATION_PLAYBOOK.tmpl.md) §5 for stop-ship checks sourced from this register
+- See [CHANGELOG](CHANGELOG.tmpl.md) for risk mitigation cross-references per change entry
+
 ## {{PROJECT_NAME}} — Risk Register
 
 **Status:** Living document; review at every phase gate.

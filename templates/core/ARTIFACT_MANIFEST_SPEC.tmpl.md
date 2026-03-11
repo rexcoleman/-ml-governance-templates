@@ -16,6 +16,15 @@
 > **Conflict rule:** When a higher-tier document and this contract disagree, the higher tier wins.
 > Update this contract via `CONTRACT_CHANGE` or align implementation to the higher tier.
 
+### Companion Contracts
+
+**Upstream (this contract depends on):**
+- See [EXPERIMENT_CONTRACT](EXPERIMENT_CONTRACT.tmpl.md) §5 for per-run output structure and required files
+
+**Downstream (depends on this contract):**
+- See [SCRIPT_ENTRYPOINTS_SPEC](SCRIPT_ENTRYPOINTS_SPEC.tmpl.md) §5 for manifest verification scripts (`verify_manifests.py`)
+- See [FIGURES_TABLES_CONTRACT](FIGURES_TABLES_CONTRACT.tmpl.md) §7 for artifact acceptance criteria
+
 ## Customization Guide
 
 | Placeholder | Description | Example |

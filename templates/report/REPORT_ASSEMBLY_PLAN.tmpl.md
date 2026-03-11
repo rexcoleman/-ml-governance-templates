@@ -16,6 +16,15 @@
 > **Conflict rule:** When a higher-tier document and this contract disagree, the higher tier wins.
 > Update this contract via `CONTRACT_CHANGE` or align implementation to the higher tier.
 
+### Companion Contracts
+
+**Upstream (this contract depends on):**
+- See [FIGURES_TABLES_CONTRACT](../core/FIGURES_TABLES_CONTRACT.tmpl.md) §3-4 for figure/table definitions and acceptance criteria
+- See [METRICS_CONTRACT](../core/METRICS_CONTRACT.tmpl.md) §8 for summary table interface and required columns
+
+**Downstream (depends on this contract):**
+- See [PRE_SUBMISSION_CHECKLIST](PRE_SUBMISSION_CHECKLIST.tmpl.md) §3 for report content audit
+
 {{PROJECT_NAME}} — Report Assembly Plan
 
 ---

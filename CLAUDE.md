@@ -29,3 +29,4 @@ These repos contain the battle-tested governance docs that v2.0 upgrades are ext
 - Phase 1 in progress:
   - Step 1.1 (U4: template versioning) — DONE
   - Step 1.2 (U1: authority hierarchy header) — DONE
+  - Step 1.3 (U2: cross-contract references) — DONE

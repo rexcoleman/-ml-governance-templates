@@ -16,6 +16,18 @@
 > **Conflict rule:** When a higher-tier document and this contract disagree, the higher tier wins.
 > Update this contract via `CONTRACT_CHANGE` or align implementation to the higher tier.
 
+### Companion Contracts
+
+**Upstream (this contract depends on):**
+- None — this is a foundational contract.
+
+**Downstream (depends on this contract):**
+- See [METRICS_CONTRACT](METRICS_CONTRACT.tmpl.md) §2 for dataset/task metric mapping
+- See [EXPERIMENT_CONTRACT](EXPERIMENT_CONTRACT.tmpl.md) §3 for split usage and leakage prevention in experiments
+- See [PRIOR_WORK_REUSE](../management/PRIOR_WORK_REUSE.tmpl.md) §2 for reused data components and split inheritance
+- See [SCRIPT_ENTRYPOINTS_SPEC](SCRIPT_ENTRYPOINTS_SPEC.tmpl.md) §3 for data verification scripts (`check_data_ready.py`, `check_leakage.py`)
+- See [IMPLEMENTATION_PLAYBOOK](../management/IMPLEMENTATION_PLAYBOOK.tmpl.md) §2 for Phase 1 data readiness gate
+
 ## Customization Guide
 
 Fill in all `{{PLACEHOLDER}}` values before use. Delete this section when customization is complete.
@@ -36,7 +48,6 @@ Fill in all `{{PLACEHOLDER}}` values before use. Delete this section when custom
 | `{{TIER1_DOC}}` | Tier 1 authority document | Project requirements spec |
 | `{{TIER2_DOC}}` | Tier 2 authority document | FAQ or clarifications document |
 | `{{TIER3_DOC}}` | Tier 3 authority document | Course TAs' Piazza clarifications |
-| `{{COMPANION_DOCS}}` | List of companion contract filenames | EXPERIMENT_CONTRACT, METRICS_CONTRACT, etc. |
 
 ---
 
@@ -50,12 +61,6 @@ This contract defines the data governance rules for the **{{PROJECT_NAME}}** pro
 - Per-dataset preprocessing protocols
 - Data provenance and audit artifacts
 - Change control triggers
-
-**Companion contracts:**
-
-| Document | Relationship |
-|----------|-------------|
-| `{{COMPANION_DOCS}}` | *(List each companion contract and its relationship to data governance)* |
 
 ---
 

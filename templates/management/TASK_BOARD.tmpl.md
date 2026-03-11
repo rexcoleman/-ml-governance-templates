@@ -16,6 +16,15 @@
 > **Conflict rule:** When a higher-tier document and this contract disagree, the higher tier wins.
 > Update this contract via `CONTRACT_CHANGE` or align implementation to the higher tier.
 
+### Companion Contracts
+
+**Upstream (this contract depends on):**
+- See [IMPLEMENTATION_PLAYBOOK](IMPLEMENTATION_PLAYBOOK.tmpl.md) §2 for phase plan and gate definitions
+- See [RISK_REGISTER](RISK_REGISTER.tmpl.md) for risk IDs referenced in task rows
+
+**Downstream (depends on this contract):**
+- None — this is an operational tracking document.
+
 ## {{PROJECT_NAME}} — Operational Task Board
 
 **Status:** Living document; update task status at every phase gate.

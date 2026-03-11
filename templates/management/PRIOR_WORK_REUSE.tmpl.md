@@ -16,6 +16,16 @@
 > **Conflict rule:** When a higher-tier document and this contract disagree, the higher tier wins.
 > Update this contract via `CONTRACT_CHANGE` or align implementation to the higher tier.
 
+### Companion Contracts
+
+**Upstream (this contract depends on):**
+- See [DATA_CONTRACT](../core/DATA_CONTRACT.tmpl.md) §3 for split inheritance and §6 for EDA compatibility
+- See [ENVIRONMENT_CONTRACT](../core/ENVIRONMENT_CONTRACT.tmpl.md) §4 for dependency compatibility
+
+**Downstream (depends on this contract):**
+- See [DECISION_LOG](DECISION_LOG.tmpl.md) for reuse-related ADR entries
+- See [CHANGELOG](CHANGELOG.tmpl.md) for CONTRACT_CHANGE entries from reuse decisions
+
 {{PROJECT_NAME}} — Reuse Analysis & Implementation Plan
 
 ---

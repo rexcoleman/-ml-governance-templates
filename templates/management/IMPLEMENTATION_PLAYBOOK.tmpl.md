@@ -16,6 +16,21 @@
 > **Conflict rule:** When a higher-tier document and this contract disagree, the higher tier wins.
 > Update this contract via `CONTRACT_CHANGE` or align implementation to the higher tier.
 
+### Companion Contracts
+
+**Upstream (this contract depends on):**
+- See [ENVIRONMENT_CONTRACT](../core/ENVIRONMENT_CONTRACT.tmpl.md) §5 for setup commands (Phase 0)
+- See [DATA_CONTRACT](../core/DATA_CONTRACT.tmpl.md) §8 for data acceptance tests (Phase 1)
+- See [METRICS_CONTRACT](../core/METRICS_CONTRACT.tmpl.md) §7 for sanity check requirements (Phase 3)
+- See [EXPERIMENT_CONTRACT](../core/EXPERIMENT_CONTRACT.tmpl.md) §exit gates for per-part exit criteria
+- See [FIGURES_TABLES_CONTRACT](../core/FIGURES_TABLES_CONTRACT.tmpl.md) §7 for artifact acceptance criteria
+- See [ARTIFACT_MANIFEST_SPEC](../core/ARTIFACT_MANIFEST_SPEC.tmpl.md) §8 for manifest verification gate
+- See [SCRIPT_ENTRYPOINTS_SPEC](../core/SCRIPT_ENTRYPOINTS_SPEC.tmpl.md) §6 for reproduction sequence
+
+**Downstream (depends on this contract):**
+- See [TASK_BOARD](TASK_BOARD.tmpl.md) for operational task tracking derived from phase plan
+- See [RISK_REGISTER](RISK_REGISTER.tmpl.md) for phase-gate risk scanning
+
 {{PROJECT_NAME}} — Execution Playbook
 
 ---

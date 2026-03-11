@@ -16,6 +16,17 @@
 > **Conflict rule:** When a higher-tier document and this contract disagree, the higher tier wins.
 > Update this contract via `CONTRACT_CHANGE` or align implementation to the higher tier.
 
+### Companion Contracts
+
+**Upstream (this contract depends on):**
+- See [DATA_CONTRACT](DATA_CONTRACT.tmpl.md) §2 for canonical dataset paths and §5 for preprocessing
+
+**Downstream (depends on this contract):**
+- See [EXPERIMENT_CONTRACT](EXPERIMENT_CONTRACT.tmpl.md) §5 for evaluation rules and metric logging
+- See [FIGURES_TABLES_CONTRACT](FIGURES_TABLES_CONTRACT.tmpl.md) §4 for summary table column definitions
+- See [REPORT_ASSEMBLY_PLAN](../report/REPORT_ASSEMBLY_PLAN.tmpl.md) §5 for baseline comparison requirements
+- See [SCRIPT_ENTRYPOINTS_SPEC](SCRIPT_ENTRYPOINTS_SPEC.tmpl.md) §4 for sanity check scripts
+
 ## Customization Guide
 
 | Placeholder | Description | Example |

@@ -16,6 +16,19 @@
 > **Conflict rule:** When a higher-tier document and this contract disagree, the higher tier wins.
 > Update this contract via `CONTRACT_CHANGE` or align implementation to the higher tier.
 
+### Companion Contracts
+
+**Upstream (this contract depends on):**
+- See [DATA_CONTRACT](DATA_CONTRACT.tmpl.md) §8 for data acceptance tests (Phase 0 checks)
+- See [ENVIRONMENT_CONTRACT](ENVIRONMENT_CONTRACT.tmpl.md) §5 for environment setup commands
+- See [EXPERIMENT_CONTRACT](EXPERIMENT_CONTRACT.tmpl.md) §6-N for per-part experiment protocols
+- See [METRICS_CONTRACT](METRICS_CONTRACT.tmpl.md) §7 for sanity check requirements
+- See [FIGURES_TABLES_CONTRACT](FIGURES_TABLES_CONTRACT.tmpl.md) §2 for artifact generation rules
+- See [ARTIFACT_MANIFEST_SPEC](ARTIFACT_MANIFEST_SPEC.tmpl.md) §5 for hashing and integrity verification
+
+**Downstream (depends on this contract):**
+- See [IMPLEMENTATION_PLAYBOOK](../management/IMPLEMENTATION_PLAYBOOK.tmpl.md) §2 for phase commands referencing these scripts
+
 ## Customization Guide
 
 | Placeholder | Description | Example |

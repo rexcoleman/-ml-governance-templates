@@ -16,6 +16,15 @@
 > **Conflict rule:** When a higher-tier document and this contract disagree, the higher tier wins.
 > Update this contract via `CONTRACT_CHANGE` or align implementation to the higher tier.
 
+### Companion Contracts
+
+**Upstream (this contract depends on):**
+- See [DECISION_LOG](DECISION_LOG.tmpl.md) for ADR entries that trigger CONTRACT_CHANGE commits
+- See [RISK_REGISTER](RISK_REGISTER.tmpl.md) for risk mitigation entries cross-referenced by changes
+
+**Downstream (depends on this contract):**
+- None — this is a chronological record.
+
 ## Purpose
 
 This changelog tracks every material change to the **{{PROJECT_NAME}}** project's contracts, specifications, code, data, and environment. It is the single chronological record that makes `CONTRACT_CHANGE` commits traceable and auditable.

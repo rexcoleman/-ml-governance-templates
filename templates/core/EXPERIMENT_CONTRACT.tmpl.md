@@ -16,6 +16,18 @@
 > **Conflict rule:** When a higher-tier document and this contract disagree, the higher tier wins.
 > Update this contract via `CONTRACT_CHANGE` or align implementation to the higher tier.
 
+### Companion Contracts
+
+**Upstream (this contract depends on):**
+- See [DATA_CONTRACT](DATA_CONTRACT.tmpl.md) §3 for split definitions and §4 for leakage prevention
+- See [ENVIRONMENT_CONTRACT](ENVIRONMENT_CONTRACT.tmpl.md) §8 for determinism and seeding defaults
+- See [METRICS_CONTRACT](METRICS_CONTRACT.tmpl.md) §2 for required metrics and §5 for convergence threshold
+
+**Downstream (depends on this contract):**
+- See [FIGURES_TABLES_CONTRACT](FIGURES_TABLES_CONTRACT.tmpl.md) §3 for experiment-sourced figures
+- See [ARTIFACT_MANIFEST_SPEC](ARTIFACT_MANIFEST_SPEC.tmpl.md) §3 for per-run provenance files
+- See [SCRIPT_ENTRYPOINTS_SPEC](SCRIPT_ENTRYPOINTS_SPEC.tmpl.md) §4 for experiment script specifications
+
 ## Customization Guide
 
 | Placeholder | Description | Example |

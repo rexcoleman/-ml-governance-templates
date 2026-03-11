@@ -16,6 +16,17 @@
 > **Conflict rule:** When a higher-tier document and this contract disagree, the higher tier wins.
 > Update this contract via `CONTRACT_CHANGE` or align implementation to the higher tier.
 
+### Companion Contracts
+
+**Upstream (this contract depends on):**
+- See [REPORT_ASSEMBLY_PLAN](REPORT_ASSEMBLY_PLAN.tmpl.md) §9 for pre-flight checklist definitions
+- See [ENVIRONMENT_CONTRACT](../core/ENVIRONMENT_CONTRACT.tmpl.md) §5 for environment reproducibility checks
+- See [ARTIFACT_MANIFEST_SPEC](../core/ARTIFACT_MANIFEST_SPEC.tmpl.md) §5 for integrity verification commands
+- See [SCRIPT_ENTRYPOINTS_SPEC](../core/SCRIPT_ENTRYPOINTS_SPEC.tmpl.md) §7 for test suite requirements
+
+**Downstream (depends on this contract):**
+- None — this is the final delivery audit.
+
 {{PROJECT_NAME}} — Attribution, Compliance & Delivery Readiness Audit
 
 ---

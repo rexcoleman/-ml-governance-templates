@@ -16,6 +16,16 @@
 > **Conflict rule:** When a higher-tier document and this contract disagree, the higher tier wins.
 > Update this contract via `CONTRACT_CHANGE` or align implementation to the higher tier.
 
+### Companion Contracts
+
+**Upstream (this contract depends on):**
+- See [EXPERIMENT_CONTRACT](EXPERIMENT_CONTRACT.tmpl.md) §5 for per-run output schemas (data sources for figures)
+- See [METRICS_CONTRACT](METRICS_CONTRACT.tmpl.md) §8 for summary table interface and required columns
+
+**Downstream (depends on this contract):**
+- See [REPORT_ASSEMBLY_PLAN](../report/REPORT_ASSEMBLY_PLAN.tmpl.md) §4 for figure/table placement in report
+- See [SCRIPT_ENTRYPOINTS_SPEC](SCRIPT_ENTRYPOINTS_SPEC.tmpl.md) §5 for artifact generation scripts
+
 ## Customization Guide
 
 | Placeholder | Description | Example |

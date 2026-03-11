@@ -16,6 +16,17 @@
 > **Conflict rule:** When a higher-tier document and this contract disagree, the higher tier wins.
 > Update this contract via `CONTRACT_CHANGE` or align implementation to the higher tier.
 
+### Companion Contracts
+
+**Upstream (this contract depends on):**
+- None — this is a foundational contract.
+
+**Downstream (depends on this contract):**
+- See [EXPERIMENT_CONTRACT](EXPERIMENT_CONTRACT.tmpl.md) §4 for seeding and initialization protocol
+- See [PRIOR_WORK_REUSE](../management/PRIOR_WORK_REUSE.tmpl.md) §3 for environment compatibility assessment
+- See [SCRIPT_ENTRYPOINTS_SPEC](SCRIPT_ENTRYPOINTS_SPEC.tmpl.md) §3 for environment verification scripts (`verify_env.sh`)
+- See [IMPLEMENTATION_PLAYBOOK](../management/IMPLEMENTATION_PLAYBOOK.tmpl.md) §2 for Phase 0 environment lock gate
+
 ## Customization Guide
 
 | Placeholder | Description | Example |
@@ -26,7 +37,6 @@
 | `{{ENV_NAME}}` | Environment name | my-ml-project |
 | `{{ENV_FILE}}` | Environment definition file | environment.yml / requirements.txt |
 | `{{PLATFORM}}` | Target platform | Linux CPU-only |
-| `{{COMPANION_DOCS}}` | Companion contract list | DATA_CONTRACT, EXPERIMENT_CONTRACT, etc. |
 | `{{TIER1_DOC}}` | Tier 1 authority document | Project requirements spec |
 | `{{TIER2_DOC}}` | Tier 2 authority document | FAQ or clarifications document |
 | `{{TIER3_DOC}}` | Tier 3 authority document | Course TAs' Piazza clarifications |
@@ -37,10 +47,6 @@
 ## 1) Purpose
 
 This contract locks the compute environment for the **{{PROJECT_NAME}}** project. It ensures that all artifacts are reproducible on the target platform by any reviewer.
-
-**Companion contracts:**
-
-*(List each companion contract and its relationship.)*
 
 ---
 
