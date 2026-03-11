@@ -2,12 +2,15 @@
 # init_project.sh — Copy governance templates to a new project
 #
 # Usage:
-#   bash ml-governance-templates/scripts/init_project.sh /path/to/project [tier]
+#   bash scripts/init_project.sh /path/to/project --profile <profile>
 #
-# Tiers:
-#   minimal  — Core contracts only (3 files: Environment, Data, Metrics)
-#   standard — Core + key management + report (11 files, recommended)
-#   full     — All 15 templates
+# Profiles:
+#   minimal       — 3 core contracts (Environment, Data, Metrics)
+#   supervised    — 9 templates for classification/regression projects
+#   optimization  — 11 templates for optimizer comparisons and ablation studies
+#   unsupervised  — 10 templates for clustering and dimensionality reduction
+#   rl-agent      — 11 templates for reinforcement learning projects
+#   full          — All 25 templates + IEEE reference
 #
 # Templates are copied to <project>/docs/ with .tmpl.md renamed to .md
 
@@ -16,18 +19,59 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TEMPLATES_DIR="${SCRIPT_DIR}/templates"
 
-if [[ $# -lt 1 ]]; then
-    echo "Usage: bash $0 <project-dir> [minimal|standard|full]"
+usage() {
+    echo "Usage: bash $0 <project-dir> [--profile <profile>]"
     echo ""
-    echo "Tiers:"
-    echo "  minimal  — 3 core contracts (Environment, Data, Metrics)"
-    echo "  standard — 11 templates (core + playbook + risk + report) [default]"
-    echo "  full     — All 15 templates"
+    echo "Profiles:"
+    echo "  minimal       — 3 core contracts (Environment, Data, Metrics)"
+    echo "  supervised    — 9 templates for classification/regression [default]"
+    echo "  optimization  — 11 templates for optimizer comparisons, ablation studies"
+    echo "  unsupervised  — 10 templates for clustering, dimensionality reduction"
+    echo "  rl-agent      — 11 templates for reinforcement learning"
+    echo "  full          — All 25 templates + IEEE reference"
+    echo ""
+    echo "Legacy tiers (backward-compatible):"
+    echo "  minimal       — same as minimal profile"
+    echo "  standard      — maps to supervised profile"
+    echo "  full          — same as full profile"
     exit 1
+}
+
+if [[ $# -lt 1 ]]; then
+    usage
 fi
 
 PROJECT_DIR="$1"
-TIER="${2:-standard}"
+shift
+
+# Parse --profile flag or positional tier argument
+PROFILE="supervised"
+if [[ $# -ge 1 ]]; then
+    case "$1" in
+        --profile)
+            if [[ $# -ge 2 ]]; then
+                PROFILE="$2"
+                shift 2
+            else
+                echo "Error: --profile requires a value"
+                usage
+            fi
+            ;;
+        minimal|standard|supervised|optimization|unsupervised|rl-agent|full)
+            PROFILE="$1"
+            shift
+            ;;
+        *)
+            echo "Error: Unknown argument '$1'"
+            usage
+            ;;
+    esac
+fi
+
+# Map legacy tier names
+case "$PROFILE" in
+    standard) PROFILE="supervised" ;;
+esac
 
 if [[ ! -d "$PROJECT_DIR" ]]; then
     echo "Error: Project directory does not exist: $PROJECT_DIR"
@@ -53,70 +97,142 @@ copy_raw() {
     echo "  + docs/${basename}"
 }
 
+# --- Define file lists per profile ---
+
+CORE="${TEMPLATES_DIR}/core"
+MGMT="${TEMPLATES_DIR}/management"
+REPORT="${TEMPLATES_DIR}/report"
+PUB="${TEMPLATES_DIR}/publishing"
+
+MINIMAL_FILES=(
+    "${CORE}/ENVIRONMENT_CONTRACT.tmpl.md"
+    "${CORE}/DATA_CONTRACT.tmpl.md"
+    "${CORE}/METRICS_CONTRACT.tmpl.md"
+)
+
+SUPERVISED_FILES=(
+    "${CORE}/ENVIRONMENT_CONTRACT.tmpl.md"
+    "${CORE}/DATA_CONTRACT.tmpl.md"
+    "${CORE}/METRICS_CONTRACT.tmpl.md"
+    "${CORE}/EXPERIMENT_CONTRACT.tmpl.md"
+    "${CORE}/FIGURES_TABLES_CONTRACT.tmpl.md"
+    "${CORE}/HYPOTHESIS_CONTRACT.tmpl.md"
+    "${REPORT}/REPORT_ASSEMBLY_PLAN.tmpl.md"
+    "${REPORT}/REPRODUCIBILITY_SPEC.tmpl.md"
+    "${REPORT}/PRE_SUBMISSION_CHECKLIST.tmpl.md"
+)
+
+OPTIMIZATION_FILES=(
+    "${CORE}/ENVIRONMENT_CONTRACT.tmpl.md"
+    "${CORE}/DATA_CONTRACT.tmpl.md"
+    "${CORE}/METRICS_CONTRACT.tmpl.md"
+    "${CORE}/EXPERIMENT_CONTRACT.tmpl.md"
+    "${CORE}/CONFIGURATION_SPEC.tmpl.md"
+    "${CORE}/FIGURES_TABLES_CONTRACT.tmpl.md"
+    "${CORE}/ARTIFACT_MANIFEST_SPEC.tmpl.md"
+    "${CORE}/SCRIPT_ENTRYPOINTS_SPEC.tmpl.md"
+    "${CORE}/HYPOTHESIS_CONTRACT.tmpl.md"
+    "${MGMT}/IMPLEMENTATION_PLAYBOOK.tmpl.md"
+    "${MGMT}/RISK_REGISTER.tmpl.md"
+)
+
+UNSUPERVISED_FILES=(
+    "${CORE}/ENVIRONMENT_CONTRACT.tmpl.md"
+    "${CORE}/DATA_CONTRACT.tmpl.md"
+    "${CORE}/METRICS_CONTRACT.tmpl.md"
+    "${CORE}/EXPERIMENT_CONTRACT.tmpl.md"
+    "${CORE}/FIGURES_TABLES_CONTRACT.tmpl.md"
+    "${CORE}/ARTIFACT_MANIFEST_SPEC.tmpl.md"
+    "${CORE}/HYPOTHESIS_CONTRACT.tmpl.md"
+    "${REPORT}/REPORT_ASSEMBLY_PLAN.tmpl.md"
+    "${REPORT}/REPRODUCIBILITY_SPEC.tmpl.md"
+    "${REPORT}/PRE_SUBMISSION_CHECKLIST.tmpl.md"
+)
+
+RL_AGENT_FILES=(
+    "${CORE}/ENVIRONMENT_CONTRACT.tmpl.md"
+    "${CORE}/DATA_CONTRACT.tmpl.md"
+    "${CORE}/METRICS_CONTRACT.tmpl.md"
+    "${CORE}/EXPERIMENT_CONTRACT.tmpl.md"
+    "${CORE}/ENVIRONMENT_SPEC.tmpl.md"
+    "${CORE}/FIGURES_TABLES_CONTRACT.tmpl.md"
+    "${CORE}/ARTIFACT_MANIFEST_SPEC.tmpl.md"
+    "${CORE}/SCRIPT_ENTRYPOINTS_SPEC.tmpl.md"
+    "${CORE}/HYPOTHESIS_CONTRACT.tmpl.md"
+    "${MGMT}/IMPLEMENTATION_PLAYBOOK.tmpl.md"
+    "${MGMT}/RISK_REGISTER.tmpl.md"
+)
+
+FULL_FILES=(
+    # Core (13)
+    "${CORE}/ENVIRONMENT_CONTRACT.tmpl.md"
+    "${CORE}/DATA_CONTRACT.tmpl.md"
+    "${CORE}/EXPERIMENT_CONTRACT.tmpl.md"
+    "${CORE}/METRICS_CONTRACT.tmpl.md"
+    "${CORE}/FIGURES_TABLES_CONTRACT.tmpl.md"
+    "${CORE}/ARTIFACT_MANIFEST_SPEC.tmpl.md"
+    "${CORE}/SCRIPT_ENTRYPOINTS_SPEC.tmpl.md"
+    "${CORE}/HYPOTHESIS_CONTRACT.tmpl.md"
+    "${CORE}/AI_DIVISION_OF_LABOR.tmpl.md"
+    "${CORE}/CONFIGURATION_SPEC.tmpl.md"
+    "${CORE}/TEST_ARCHITECTURE.tmpl.md"
+    "${CORE}/ADVERSARIAL_EVALUATION.tmpl.md"
+    "${CORE}/ENVIRONMENT_SPEC.tmpl.md"
+    # Management (6)
+    "${MGMT}/IMPLEMENTATION_PLAYBOOK.tmpl.md"
+    "${MGMT}/TASK_BOARD.tmpl.md"
+    "${MGMT}/RISK_REGISTER.tmpl.md"
+    "${MGMT}/DECISION_LOG.tmpl.md"
+    "${MGMT}/CHANGELOG.tmpl.md"
+    "${MGMT}/PRIOR_WORK_REUSE.tmpl.md"
+    # Report (4)
+    "${REPORT}/REPORT_ASSEMBLY_PLAN.tmpl.md"
+    "${REPORT}/REPRODUCIBILITY_SPEC.tmpl.md"
+    "${REPORT}/PRE_SUBMISSION_CHECKLIST.tmpl.md"
+    "${REPORT}/EXECUTION_MANIFEST.tmpl.md"
+    # Publishing (3)
+    "${PUB}/PUBLICATION_BRIEF.tmpl.md"
+    "${PUB}/ACADEMIC_INTEGRITY_FIREWALL.tmpl.md"
+    "${PUB}/LEAN_HYPOTHESIS.tmpl.md"
+)
+
+# --- Copy templates based on profile ---
+
 echo "Initializing project governance in: ${PROJECT_DIR}"
-echo "Tier: ${TIER}"
+echo "Profile: ${PROFILE}"
 echo ""
 
-# --- Minimal: 3 core contracts ---
-MINIMAL_FILES=(
-    "${TEMPLATES_DIR}/core/ENVIRONMENT_CONTRACT.tmpl.md"
-    "${TEMPLATES_DIR}/core/DATA_CONTRACT.tmpl.md"
-    "${TEMPLATES_DIR}/core/METRICS_CONTRACT.tmpl.md"
-)
-
-# --- Standard: 11 files ---
-STANDARD_FILES=(
-    "${TEMPLATES_DIR}/core/ENVIRONMENT_CONTRACT.tmpl.md"
-    "${TEMPLATES_DIR}/core/DATA_CONTRACT.tmpl.md"
-    "${TEMPLATES_DIR}/core/EXPERIMENT_CONTRACT.tmpl.md"
-    "${TEMPLATES_DIR}/core/METRICS_CONTRACT.tmpl.md"
-    "${TEMPLATES_DIR}/core/FIGURES_TABLES_CONTRACT.tmpl.md"
-    "${TEMPLATES_DIR}/core/ARTIFACT_MANIFEST_SPEC.tmpl.md"
-    "${TEMPLATES_DIR}/core/SCRIPT_ENTRYPOINTS_SPEC.tmpl.md"
-    "${TEMPLATES_DIR}/management/IMPLEMENTATION_PLAYBOOK.tmpl.md"
-    "${TEMPLATES_DIR}/management/RISK_REGISTER.tmpl.md"
-    "${TEMPLATES_DIR}/report/REPORT_ASSEMBLY_PLAN.tmpl.md"
-    "${TEMPLATES_DIR}/report/PRE_SUBMISSION_CHECKLIST.tmpl.md"
-)
-
-# --- Full: all 15 templates ---
-FULL_FILES=(
-    "${TEMPLATES_DIR}/core/ENVIRONMENT_CONTRACT.tmpl.md"
-    "${TEMPLATES_DIR}/core/DATA_CONTRACT.tmpl.md"
-    "${TEMPLATES_DIR}/core/EXPERIMENT_CONTRACT.tmpl.md"
-    "${TEMPLATES_DIR}/core/METRICS_CONTRACT.tmpl.md"
-    "${TEMPLATES_DIR}/core/FIGURES_TABLES_CONTRACT.tmpl.md"
-    "${TEMPLATES_DIR}/core/ARTIFACT_MANIFEST_SPEC.tmpl.md"
-    "${TEMPLATES_DIR}/core/SCRIPT_ENTRYPOINTS_SPEC.tmpl.md"
-    "${TEMPLATES_DIR}/management/IMPLEMENTATION_PLAYBOOK.tmpl.md"
-    "${TEMPLATES_DIR}/management/TASK_BOARD.tmpl.md"
-    "${TEMPLATES_DIR}/management/RISK_REGISTER.tmpl.md"
-    "${TEMPLATES_DIR}/management/DECISION_LOG.tmpl.md"
-    "${TEMPLATES_DIR}/management/CHANGELOG.tmpl.md"
-    "${TEMPLATES_DIR}/management/PRIOR_WORK_REUSE.tmpl.md"
-    "${TEMPLATES_DIR}/report/REPORT_ASSEMBLY_PLAN.tmpl.md"
-    "${TEMPLATES_DIR}/report/PRE_SUBMISSION_CHECKLIST.tmpl.md"
-)
-
-case "$TIER" in
+case "$PROFILE" in
     minimal)
         echo "Copying minimal templates (3 files):"
         for f in "${MINIMAL_FILES[@]}"; do copy_template "$f"; done
         ;;
-    standard)
-        echo "Copying standard templates (11 files):"
-        for f in "${STANDARD_FILES[@]}"; do copy_template "$f"; done
+    supervised)
+        echo "Copying supervised ML templates (9 files):"
+        for f in "${SUPERVISED_FILES[@]}"; do copy_template "$f"; done
+        ;;
+    optimization)
+        echo "Copying optimization benchmark templates (11 files):"
+        for f in "${OPTIMIZATION_FILES[@]}"; do copy_template "$f"; done
+        ;;
+    unsupervised)
+        echo "Copying unsupervised analysis templates (10 files):"
+        for f in "${UNSUPERVISED_FILES[@]}"; do copy_template "$f"; done
+        ;;
+    rl-agent)
+        echo "Copying RL / agent study templates (11 files):"
+        for f in "${RL_AGENT_FILES[@]}"; do copy_template "$f"; done
         ;;
     full)
-        echo "Copying full template suite (15 files):"
+        echo "Copying full template suite (25 files + IEEE reference):"
         for f in "${FULL_FILES[@]}"; do copy_template "$f"; done
-        # Also copy IEEE template
-        if [[ -f "${TEMPLATES_DIR}/report/IEEE_Report_Template.tex" ]]; then
-            copy_raw "${TEMPLATES_DIR}/report/IEEE_Report_Template.tex"
+        if [[ -f "${REPORT}/IEEE_Report_Template.tex" ]]; then
+            copy_raw "${REPORT}/IEEE_Report_Template.tex"
         fi
         ;;
     *)
-        echo "Error: Unknown tier '${TIER}'. Use: minimal, standard, or full"
+        echo "Error: Unknown profile '${PROFILE}'."
+        echo "Available: minimal, supervised, optimization, unsupervised, rl-agent, full"
         exit 1
         ;;
 esac
@@ -125,5 +241,7 @@ echo ""
 echo "Done. Next steps:"
 echo "  1. Open each file in docs/ and fill in {{PLACEHOLDER}} values"
 echo "  2. Start with ENVIRONMENT_CONTRACT.md and DATA_CONTRACT.md"
-echo "  3. Delete the Customization Guide section from each file when done"
-echo "  4. Commit: git add docs/ && git commit -m 'Initialize project governance'"
+echo "  3. Use the Prompt Playbook for AI-assisted customization:"
+echo "     https://github.com/<your-org>/ml-governance-templates/blob/main/PROMPT_PLAYBOOK.md"
+echo "  4. Delete the Customization Guide section from each file when done"
+echo "  5. Commit: git add docs/ && git commit -m 'Initialize project governance'"
