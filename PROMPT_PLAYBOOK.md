@@ -11,7 +11,7 @@ This playbook provides a series of copy-paste prompts that walk you from a raw p
 **Designed for:** Claude, ChatGPT, and other LLM assistants. Prompts are optimized for Claude's structured output capabilities but work with any capable model.
 
 **How to use:**
-1. **Initial setup:** Work through Stages 1 → 1b → 2 → 3 → 4a-4e → 5 in order to go from problem statement to filled templates
+1. **Initial setup:** Work through Stages 1 → 1b → 2 → 3 → 4a → 4b → 4c → 4c2 → 4d → 4d2 → 4e → 5 in order to go from problem statement to filled templates
 2. **Specialized templates:** Use Stages 4f-4k as needed for hypothesis pre-registration, unsupervised evaluation, RL environments, adversarial evaluation, publication briefs, and academic integrity
 3. **Source fidelity:** Run Stage 6 (RFP Traceability Audit) after every batch of template work — this is the hallucination firewall
 4. **Ongoing governance:** Use Stage 7 (Governance Audit) periodically and Stage 8 (Patches) when changes occur
@@ -533,6 +533,95 @@ TEMPLATE — SCRIPT_ENTRYPOINTS_SPEC:
 
 ---
 
+### Stage 4c2: Configuration & Test Architecture
+
+#### Goal
+Design the configuration hierarchy and test architecture for the project. These two templates govern how experiment parameters are managed as code and how governance rules are enforced through automated tests.
+
+#### Input
+- Stage 2 output (requirements document)
+- Completed Environment, Data, Experiment, and Metrics contracts
+- Blank `CONFIGURATION_SPEC.tmpl.md`
+- Blank `TEST_ARCHITECTURE.tmpl.md`
+
+#### Prompt
+
+```
+You are an ML infrastructure engineer specializing in configuration management and test design. I will provide a requirements document, completed contracts, and two blank templates to fill.
+
+COMPLETED CONTRACTS (for cross-reference only — do not modify):
+- ENVIRONMENT_CONTRACT (completed)
+- DATA_CONTRACT (completed)
+- EXPERIMENT_CONTRACT (completed)
+- METRICS_CONTRACT (completed)
+
+TEMPLATES TO FILL:
+- CONFIGURATION_SPEC
+- TEST_ARCHITECTURE
+
+For CONFIGURATION_SPEC:
+1. Fill all {{PLACEHOLDER}} values from the requirements document
+2. Design the config hierarchy: base.yaml → dataset/{name}.yaml → component/{name}.yaml → CLI overrides
+3. Define resolution rules: later layers override earlier; CLI overrides are highest priority
+4. Specify config_resolved.yaml requirements: every run MUST write a fully resolved config snapshot before training starts
+5. Define locked keys: budget values, seed lists, metric thresholds — keys that require CONTRACT_CHANGE to modify
+6. If the project uses a scoring metric, fill the scoring metric as config pattern: metric name in config, test assertion verifying config matches code computation
+7. Define config validation rules: required keys, type constraints, range constraints
+
+For TEST_ARCHITECTURE:
+1. Fill all {{PLACEHOLDER}} values from the requirements document
+2. Select test categories from:
+   - Leakage tests: split overlap, fit-on-train enforcement, test set barrier
+   - Determinism tests: same seed → identical output, eval mode verification
+   - Sanity tests: dummy baseline ≈ chance, shuffled labels ≈ chance
+   - Integration tests: end-to-end pipeline on synthetic data
+   - Artifact integrity tests: manifest hashes, figure existence, schema validation
+3. For each test category: define specific test functions with docstrings referencing the contract section they enforce
+4. Define synthetic fixture guidance: how to generate small, fast test fixtures that exercise the full pipeline without real data
+5. Define marker-based skipping: @pytest.mark.slow for tests requiring trained models, @pytest.mark.gpu for GPU-only tests, @pytest.mark.skipif for tests requiring completed outputs
+
+RULES:
+- Config keys MUST trace to EXPERIMENT_CONTRACT budget definitions and METRICS_CONTRACT metric definitions. Do NOT invent config keys not grounded in these contracts.
+- Locked keys MUST match the values in EXPERIMENT_CONTRACT (budgets, seeds) and METRICS_CONTRACT (thresholds). Do NOT allow locked keys to have default values that differ from the contracted values.
+- Test categories MUST map to RISK_REGISTER automation hooks where applicable. If a risk has an automation hook, there MUST be a corresponding test.
+- Do NOT invent test functions for features or rules not specified in the contracts. Every test MUST reference a specific contract section.
+- Synthetic fixtures MUST be deterministic (seeded) and fast (< 5 seconds per test).
+- If a value is not specified in the requirements or completed contracts, mark it as "[TODO: specify]" — do NOT guess.
+
+---
+
+REQUIREMENTS DOCUMENT:
+
+[Paste Stage 2 output here]
+
+COMPLETED CONTRACTS:
+
+[Paste all completed contracts here]
+
+TEMPLATE — CONFIGURATION_SPEC:
+
+[Paste blank CONFIGURATION_SPEC.tmpl.md here]
+
+TEMPLATE — TEST_ARCHITECTURE:
+
+[Paste blank TEST_ARCHITECTURE.tmpl.md here]
+```
+
+#### Expected Output
+Two completed templates: a configuration spec with hierarchy design, resolution rules, and locked keys; and a test architecture with categorized test functions, fixtures, and markers.
+
+#### Checkpoint
+Before proceeding to Stage 4d, verify:
+- [ ] Config hierarchy layers are defined with clear precedence rules
+- [ ] Every locked key traces to a specific EXPERIMENT_CONTRACT or METRICS_CONTRACT value
+- [ ] config_resolved.yaml is required before training starts (not after)
+- [ ] Every test category maps to at least one contract section
+- [ ] Synthetic fixtures are defined with deterministic seeds
+- [ ] Marker-based skipping is defined for slow, GPU, and output-dependent tests
+- [ ] No invented config keys or test functions — everything traces to contracts
+
+---
+
 ### Stage 4d: Management Templates
 
 #### Input
@@ -584,40 +673,172 @@ COMPLETED CONTRACTS:
 
 ---
 
-### Stage 4e: Report Templates
+### Stage 4d2: AI Collaboration Setup
+
+#### Goal
+Define the human-AI collaboration boundaries for the project. This template governs how AI tools are used, what they may produce, and how their contributions are disclosed.
 
 #### Input
 - Stage 2 output (requirements document)
-- All previously completed contracts
+- Any AI usage policy from Tier 1/2 authority documents
+- Completed Data Contract (for data privacy alignment)
+- Blank `AI_DIVISION_OF_LABOR.tmpl.md`
+
+#### Prompt
+
+```
+You are an AI governance specialist for ML projects. I will provide a requirements document, any AI usage policies from the project's authority documents, the completed Data Contract (for privacy alignment), and a blank AI Division of Labor template. Your job is to define the human-AI collaboration boundaries.
+
+COMPLETED CONTRACTS (for cross-reference only — do not modify):
+- DATA_CONTRACT (completed) — needed for data privacy alignment
+
+TEMPLATE TO FILL:
+- AI_DIVISION_OF_LABOR
+
+Fill the template by completing these sections:
+
+1. **Tool Roster (§3):**
+   - List every AI tool that will be used in the project
+   - For each tool: name, primary role, permitted output types, leakage risk level
+   - If the requirements or authority documents restrict AI tool usage, reflect those restrictions here
+
+2. **Per-Tool Governance (§4):**
+   - For each tool, define MUST and MUST NOT rules
+   - Define acceptable output formats (e.g., "checklists and code only," "redlines on existing text only")
+   - MUST rules should include: review all generated code before committing, verify any factual claims against primary sources
+   - MUST NOT rules should include: produce standalone report paragraphs for Results/Discussion/Conclusion
+
+3. **Anti-Ghostwriting Firewall (§2.1):**
+   - Activate with project-specific boundaries
+   - Define which report sections are human-write-only (at minimum: Results, Discussion, Conclusion)
+   - Define permitted AI output formats (checklists, claim templates, code, outlines, redline edits)
+   - Define prohibited AI output formats (paste-ready interpretive paragraphs, unsupported claims)
+
+4. **Citation Chain Rule (§2.2):**
+   - Configure based on the project's citation policy (from requirements or Tier 1/2 docs)
+   - Rule: AI tools are NOT citable sources; citations point to primary publications or experimental artifacts only
+
+5. **Information Flow Controls (§6):**
+   - Fill the "What Each Tool May See" matrix for every tool in the roster
+   - Define cross-tool isolation rules
+   - If the project uses multiple AI tools, define the human integration point explicitly
+
+6. **AI Use Statement Template (§7):**
+   - Customize the disclosure template with project-specific tool names and roles
+   - Ensure the format matches any requirements from Tier 1/2 authority documents
+
+RULES:
+- The data privacy policy (§2.3) MUST match DATA_CONTRACT §4 leakage prevention rules. Do NOT allow uploads that would violate data handling constraints.
+- The test set barrier (§2.4) MUST match the leakage prevention rules in DATA_CONTRACT and EXPERIMENT_CONTRACT. If those contracts prohibit test set access before final evaluation, this template MUST enforce the same barrier for all AI tool interactions.
+- If Tier 1/2 documents specify AI usage restrictions (e.g., "AI may not write report prose," "must disclose all AI usage"), those restrictions take precedence over template defaults.
+- Do NOT invent AI tools the project will not use. Only list tools that are actually planned.
+- Do NOT relax restrictions beyond what Tier 1/2 documents permit. When in doubt, be more restrictive.
+- If the requirements do not mention AI usage at all, apply conservative defaults: code assistance and debugging permitted, report prose prohibited, full disclosure required.
+
+---
+
+REQUIREMENTS DOCUMENT:
+
+[Paste Stage 2 output here]
+
+AI USAGE POLICY (from Tier 1/2 documents, if any):
+
+[Paste any AI usage policy text, or state "No explicit AI policy in authority documents"]
+
+COMPLETED DATA_CONTRACT:
+
+[Paste completed Data Contract here]
+
+TEMPLATE — AI_DIVISION_OF_LABOR:
+
+[Paste blank AI_DIVISION_OF_LABOR.tmpl.md here]
+```
+
+#### Expected Output
+A completed AI Division of Labor contract with tool roster, per-tool governance rules, activated anti-ghostwriting firewall, and AI Use Statement template.
+
+#### Checkpoint
+Before proceeding to Stage 4e, verify:
+- [ ] Every AI tool actually planned for the project is listed (no invented tools)
+- [ ] Per-tool MUST NOT rules include anti-ghostwriting constraints
+- [ ] Data privacy policy aligns with DATA_CONTRACT §4 (no contradictions)
+- [ ] Test set barrier aligns with leakage prevention rules
+- [ ] Citation chain rule matches the project's citation policy
+- [ ] Information flow matrix is filled for every tool
+- [ ] AI Use Statement template is customized with actual tool names
+- [ ] If Tier 1/2 docs restrict AI usage, those restrictions are reflected (not relaxed)
+
+---
+
+### Stage 4e: Report & Delivery Templates
+
+#### Goal
+Fill all four report and delivery templates: the report assembly plan, reproducibility specification, pre-submission checklist, and execution manifest. These templates govern how the project's results are assembled, reproduced, verified, and traced.
+
+#### Input
+- Stage 2 output (requirements document)
+- All previously completed contracts (especially FIGURES_TABLES_CONTRACT, SCRIPT_ENTRYPOINTS_SPEC, ARTIFACT_MANIFEST_SPEC, EXPERIMENT_CONTRACT, METRICS_CONTRACT)
 - Blank `REPORT_ASSEMBLY_PLAN.tmpl.md`
+- Blank `REPRODUCIBILITY_SPEC.tmpl.md`
+- Blank `EXECUTION_MANIFEST.tmpl.md`
 - Blank `PRE_SUBMISSION_CHECKLIST.tmpl.md`
 
 #### Prompt
 
 ```
-You are a technical writing specialist for ML projects. I will provide a requirements document, completed contracts, and two blank report templates.
+You are a technical writing and reproducibility specialist for ML projects. I will provide a requirements document, completed contracts, and four blank report/delivery templates. Your job is to fill all four templates to produce a complete delivery governance suite.
+
+COMPLETED CONTRACTS (for cross-reference only — do not modify):
+- All previously completed contracts
 
 TEMPLATES TO FILL:
-- REPORT_ASSEMBLY_PLAN — Section outline, page budget, hypothesis templates, pre-flight checklist
-- PRE_SUBMISSION_CHECKLIST — Attribution, compliance, and delivery readiness audit
+- REPORT_ASSEMBLY_PLAN
+- REPRODUCIBILITY_SPEC
+- EXECUTION_MANIFEST
+- PRE_SUBMISSION_CHECKLIST
 
 For each template:
+
+## REPORT_ASSEMBLY_PLAN:
 1. Fill all {{PLACEHOLDER}} values
-2. For REPORT_ASSEMBLY_PLAN:
-   - Set page budget per section based on report constraints
-   - Map each figure/table (from FIGURES_TABLES_CONTRACT) to its report section
-   - Customize hypothesis templates with project-specific datasets and metrics
-   - Set reference requirements based on the requirements document
-3. For PRE_SUBMISSION_CHECKLIST:
-   - Customize the repository hygiene section for your project's file structure
-   - Set the delivery platform and repository details
-   - Adapt the attribution section to your organization's policy
+2. Set page budget per section based on report constraints from requirements
+3. Map each figure/table (from FIGURES_TABLES_CONTRACT) to its report section
+4. Customize hypothesis templates with project-specific datasets and metrics
+5. Set reference requirements based on the requirements document
+
+## REPRODUCIBILITY_SPEC:
+1. Fill all {{PLACEHOLDER}} values
+2. Environment setup commands: exact sequence to recreate the environment (clone, create env, install deps, verify)
+3. Data acquisition: commands to download/prepare raw data, verify hashes, generate splits
+4. Per-phase reproduction sequence: for each experiment phase in IMPLEMENTATION_PLAYBOOK, list the exact commands from SCRIPT_ENTRYPOINTS_SPEC in execution order
+5. Verification steps: after each phase, specify the verification command and expected outcome (e.g., "pytest tests/test_data_integrity.py exits 0")
+6. Hardware note: document any hardware-specific considerations (GPU requirements, expected runtime, memory, tolerance for non-determinism across hardware)
+
+## EXECUTION_MANIFEST:
+1. Fill all {{PLACEHOLDER}} values
+2. Methods summary table (§3.1): auto-generated experiment matrix showing what was actually run — parts, datasets, methods, seeds, budget type, budget value, runs completed
+3. Results index (§4): per-run results table with run IDs from ARTIFACT_MANIFEST_SPEC, seed-aggregated results with median + IQR, final evaluation results
+4. Figure registry (§5): every figure from FIGURES_TABLES_CONTRACT with figure ID, source data, producer script, SHA-256 placeholder, and target report section
+5. Table registry (§6): same format for tables
+6. Claim-to-evidence traceability (§7): for each anticipated quantitative claim, map to the specific figure, table, or results index entry that provides the evidence
+7. Baseline reference (§8): define comparison baselines with source and metric values
+
+## PRE_SUBMISSION_CHECKLIST:
+1. Fill all {{PLACEHOLDER}} values
+2. Customize the repository hygiene section for your project's file structure
+3. Set the delivery platform and repository details
+4. Adapt the attribution section to your organization's policy
 
 RULES:
 - Page budgets MUST sum to ≤ the page limit specified in requirements.
 - Figure/table mappings MUST match FIGURES_TABLES_CONTRACT IDs exactly.
 - Hypothesis templates MUST use actual dataset names and metric names.
+- Reproduction commands MUST match SCRIPT_ENTRYPOINTS_SPEC exactly — same script names, same CLI flags, same argument order. Do NOT invent commands not defined in the script spec.
+- Results index run IDs MUST use the run ID format from ARTIFACT_MANIFEST_SPEC. Do NOT invent run ID formats.
+- Claim-to-evidence entries MUST reference specific figure IDs (F1, F2, ...) or table IDs (T1, T2, ...) from FIGURES_TABLES_CONTRACT, or specific results index sections (§4.1, §4.2, §4.3). Do NOT reference evidence sources that don't exist in other contracts.
+- Baseline metric values: if known from prior work or requirements, fill them in. If unknown, mark as "[TODO: fill after baseline runs]" — do NOT invent baseline numbers.
 - Do NOT add checklist items not grounded in requirements.
+- Do NOT invent verification commands, environment setup steps, or hardware specs. Derive everything from completed contracts or mark as "[TODO: specify]".
 
 ---
 
@@ -631,12 +852,34 @@ COMPLETED CONTRACTS:
 
 TEMPLATE — REPORT_ASSEMBLY_PLAN:
 
-[Paste blank template here]
+[Paste blank REPORT_ASSEMBLY_PLAN.tmpl.md here]
+
+TEMPLATE — REPRODUCIBILITY_SPEC:
+
+[Paste blank REPRODUCIBILITY_SPEC.tmpl.md here]
+
+TEMPLATE — EXECUTION_MANIFEST:
+
+[Paste blank EXECUTION_MANIFEST.tmpl.md here]
 
 TEMPLATE — PRE_SUBMISSION_CHECKLIST:
 
-[Paste blank template here]
+[Paste blank PRE_SUBMISSION_CHECKLIST.tmpl.md here]
 ```
+
+#### Expected Output
+Four completed report/delivery templates: a report assembly plan with page budgets and figure mappings, a reproducibility spec with exact commands, an execution manifest with results index and traceability, and a pre-submission checklist.
+
+#### Checkpoint
+Before proceeding to specialized stages (4f-4k), verify:
+- [ ] Page budgets sum to ≤ page limit
+- [ ] Every figure/table ID in REPORT_ASSEMBLY_PLAN matches FIGURES_TABLES_CONTRACT
+- [ ] Reproduction commands match SCRIPT_ENTRYPOINTS_SPEC (script names, flags, arguments)
+- [ ] Environment setup produces the same environment as ENVIRONMENT_CONTRACT
+- [ ] Results index run IDs match ARTIFACT_MANIFEST_SPEC format
+- [ ] Claim-to-evidence table references only existing figure/table IDs or results sections
+- [ ] Baseline values are either sourced from requirements/prior work or marked "[TODO]"
+- [ ] No invented commands, run IDs, or metric values
 
 ---
 
