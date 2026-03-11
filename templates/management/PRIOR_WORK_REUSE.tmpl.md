@@ -1,6 +1,6 @@
 # PRIOR WORK REUSE STRATEGY
 
-<!-- version: 1.0 -->
+<!-- version: 2.0 -->
 <!-- created: 2026-02-20 -->
 <!-- last_validated_against: CS_7641_Machine_Learning_OL_Report -->
 
@@ -97,6 +97,18 @@ Pull prior repo into current repo via git mechanism.
 | Ongoing maintenance | None | Versioning | Bookkeeping |
 | Appropriate for | Frozen upstream, few files | Active upstream, many files | Active upstream, moderate files |
 
+### Decision Guide
+
+```
+Is the prior project frozen (submitted/released)?
+├── YES → Is the file count small (< 10 files)?
+│         ├── YES → Option A: Vendor Snapshot ✓
+│         └── NO  → Option A (selective) or Option C: Git Subtree
+└── NO  → Will you need ongoing upstream updates?
+          ├── YES → Option C: Git Subtree (or Option B if many shared modules)
+          └── NO  → Option A: Vendor Snapshot ✓
+```
+
 ---
 
 ## 4) Chosen Approach
@@ -116,22 +128,29 @@ Pull prior repo into current repo via git mechanism.
 
 ### Files to Extract
 
-| # | Source Path | What to Extract | Destination | Notes |
-|---|-----------|-----------------|-------------|-------|
-| 1 | *(path)* | *(what)* | *(dest)* | *(notes)* |
-| *(add rows)* | | | | |
+Every extracted file MUST have a SHA-256 hash recorded for verification.
+
+| # | Source Path | What to Extract | Destination | SHA-256 | Approx Size |
+|---|-----------|-----------------|-------------|---------|-------------|
+| 1 | *(path)* | *(what — class names, function names, or "full file")* | *(dest)* | *(hash)* | *(lines or KB)* |
+| *(add rows)* | | | | | |
 
 ### Files NOT Copied (and Why)
 
-| Source File | Why Excluded |
-|-------------|-------------|
-| *(file)* | *(reason)* |
+| Source File | Why Excluded | Risk if Accidentally Included |
+|-------------|-------------|-------------------------------|
+| *(file)* | *(reason)* | *(e.g., "Contains SGD-only enforcement; breaks optimizer ablations")* |
 
 ### Data File Verification
 
-| File | SHA-256 | Match Prior? |
-|------|---------|-------------|
-| *(file)* | *(hash)* | *(yes/no)* |
+| File | SHA-256 | Prior Match? | Notes |
+|------|---------|:------------|-------|
+| *(file)* | *(hash)* | *(yes/no)* | *(e.g., "Identical in both projects")* |
+
+**Verification command:**
+```bash
+python -c "import hashlib; print(hashlib.sha256(open('{{FILE}}','rb').read()).hexdigest())"
+```
 
 ---
 
@@ -174,7 +193,67 @@ Pull prior repo into current repo via git mechanism.
 
 ---
 
-## 9) Required Contract Updates
+## 9) Verification Script Pattern
+
+A verification script (`scripts/verify_{{PRIOR_PROJECT}}_snapshot.py`) MUST be implemented to validate the integrity of the vendor snapshot.
+
+### Required Checks
+
+```python
+# scripts/verify_{{PRIOR_PROJECT}}_snapshot.py
+#
+# 1. Load provenance record (config/{{PRIOR_PROJECT}}_provenance.json)
+# 2. Verify SHA-256 of each archived file against recorded hashes
+# 3. Verify SHA-256 of raw data files (if shared between projects)
+# 4. Verify split JSON structural integrity:
+#    - No overlap between train/val/test indices
+#    - len(train) + len(val) + len(test) == n_total
+#    - All indices in range(0, n_total)
+#    - split_hash matches recomputed value
+# 5. Smoke-test extracted code:
+#    - Import key classes/functions → confirms no missing dependencies
+#    - Run a minimal forward pass with dummy data → confirms architecture works
+# 6. Print pass/fail summary; exit 0 on all pass, exit 1 on any failure
+```
+
+**Exit code contract:** The script MUST exit non-zero if ANY check fails. It is a Phase 0 gate requirement.
+
+---
+
+## 10) Frozen Upstream Documentation
+
+When the prior project is frozen (submitted/released), document this explicitly:
+
+| Field | Value |
+|-------|-------|
+| **Prior project status** | *(e.g., "Frozen — submitted 2026-02-15")* |
+| **Will upstream change?** | *(e.g., "No — submitted and graded")* |
+| **Sync strategy** | *(e.g., "None — one-time vendor snapshot")* |
+| **Bug fix policy** | *(e.g., "If a bug is found in extracted code, fix in current project only; do not modify prior repo")* |
+
+This section prevents unnecessary sync machinery for frozen upstreams.
+
+---
+
+## 11) Format Conversion Guidance
+
+When prior project artifacts use a different format than the current project requires, document the conversion:
+
+| Prior Format | Current Format | Conversion Script | Notes |
+|-------------|---------------|-------------------|-------|
+| *(e.g.)* NPZ (train/test only) | JSON (train/val/test) | `scripts/convert_{{PRIOR_PROJECT}}_splits.py` | Val derived via StratifiedShuffleSplit |
+| *(e.g.)* YAML config | Python dataclass | `scripts/convert_config.py` | One-time conversion |
+| *(add rows)* | | | |
+
+**Conversion script requirements:**
+- MUST verify input file hashes before conversion
+- MUST verify output integrity (no overlap, full coverage, etc.)
+- MUST exit non-zero on any failure
+- MUST be idempotent (running twice produces identical output)
+
+---
+
+## 12) Required Contract Updates
 
 | Document | Section | Update Description |
 |----------|---------|-------------------|
