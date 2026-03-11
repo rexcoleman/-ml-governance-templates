@@ -1,9 +1,9 @@
 # Template Index
 
-Complete list of all governance templates with descriptions, dependencies, and when to use each.
+Complete inventory of all 25 governance templates with descriptions, dependencies, quickstart profiles, and dependency graph.
 
-> **v1.5-foundation:** All 21 templates have standardized version metadata (`<!-- version: 1.0 -->`),
-> authority hierarchy headers, and companion contract cross-references (Tier A meta-governance: U1-U4).
+> **v2.0:** All templates have version metadata, authority hierarchy headers, companion contract
+> cross-references, verification annotations on MUST requirements, and enforcement mechanisms.
 
 ---
 
@@ -22,8 +22,10 @@ Complete list of all governance templates with descriptions, dependencies, and w
 | 9 | **AI Division of Labor** | `AI_DIVISION_OF_LABOR.tmpl.md` | Experiment, Data | You're using AI tools and need human-AI collaboration boundaries |
 | 10 | **Configuration Spec** | `CONFIGURATION_SPEC.tmpl.md` | Experiment, Metrics, Data | You have layered config files and need config-as-code governance |
 | 11 | **Test Architecture** | `TEST_ARCHITECTURE.tmpl.md` | Data, Experiment, Metrics, Configuration | You need structured testing with leakage, determinism, and sanity categories |
+| 12 | **Adversarial Evaluation** | `ADVERSARIAL_EVALUATION.tmpl.md` | Experiment, Metrics, Data | *(Optional)* You need adversarial robustness evaluation with threat models |
+| 13 | **Environment Spec (RL)** | `ENVIRONMENT_SPEC.tmpl.md` | Environment Contract | *(Optional)* You have RL/simulation environments requiring MDP specification |
 
-**Recommended setup order:** Environment → Data → Metrics → Hypothesis → Experiment → Configuration → Scripts → Figures/Tables → Artifacts → Test Architecture → AI Division of Labor
+**Recommended setup order:** Environment → Data → Metrics → Hypothesis → Experiment → Configuration → Scripts → Figures/Tables → Artifacts → Test Architecture → AI Division of Labor → *(optional: Adversarial, RL Environment)*
 
 ---
 
@@ -31,23 +33,34 @@ Complete list of all governance templates with descriptions, dependencies, and w
 
 | # | Template | File | Depends On | When to Use |
 |---|----------|------|------------|-------------|
-| 12 | **Implementation Playbook** | `IMPLEMENTATION_PLAYBOOK.tmpl.md` | All core contracts | Multi-phase project; need phase gates and iteration discipline |
-| 13 | **Task Board** | `TASK_BOARD.tmpl.md` | Playbook | Need task tracking with dependencies and critical path |
-| 14 | **Risk Register** | `RISK_REGISTER.tmpl.md` | All core contracts | Project has acceptance criteria or compliance requirements |
-| 15 | **Decision Log** | `DECISION_LOG.tmpl.md` | — | Making architectural decisions that need to be recorded |
-| 16 | **Changelog** | `CHANGELOG.tmpl.md` | Decision Log | Tracking CONTRACT_CHANGE commits |
-| 17 | **Prior Work Reuse** | `PRIOR_WORK_REUSE.tmpl.md` | Data, Environment | Reusing code/data/models from a prior project |
+| 14 | **Implementation Playbook** | `IMPLEMENTATION_PLAYBOOK.tmpl.md` | All core contracts | Multi-phase project; need phase gates and iteration discipline |
+| 15 | **Task Board** | `TASK_BOARD.tmpl.md` | Playbook | Need task tracking with dependencies and critical path |
+| 16 | **Risk Register** | `RISK_REGISTER.tmpl.md` | All core contracts | Project has acceptance criteria or compliance requirements |
+| 17 | **Decision Log** | `DECISION_LOG.tmpl.md` | — | Making architectural decisions that need to be recorded |
+| 18 | **Changelog** | `CHANGELOG.tmpl.md` | Decision Log | Tracking CONTRACT_CHANGE commits |
+| 19 | **Prior Work Reuse** | `PRIOR_WORK_REUSE.tmpl.md` | Data, Environment | Reusing code/data/models from a prior project |
 
 ---
 
-## Report Templates (`templates/report/`)
+## Report & Delivery Templates (`templates/report/`)
 
 | # | Template | File | Depends On | When to Use |
 |---|----------|------|------------|-------------|
-| 18 | **Report Assembly Plan** | `REPORT_ASSEMBLY_PLAN.tmpl.md` | Figures/Tables, Metrics | Writing a structured technical report with figures and hypotheses |
-| 19 | **Reproducibility Spec** | `REPRODUCIBILITY_SPEC.tmpl.md` | Environment, Data, Scripts, Artifacts | You need a single document enabling end-to-end reproduction from a fresh clone |
-| 20 | **Pre-Delivery Checklist** | `PRE_SUBMISSION_CHECKLIST.tmpl.md` | All | Final delivery audit (attribution & compliance, reproducibility, artifacts) |
+| 20 | **Report Assembly Plan** | `REPORT_ASSEMBLY_PLAN.tmpl.md` | Figures/Tables, Metrics | Writing a structured technical report with figures and hypotheses |
+| 21 | **Reproducibility Spec** | `REPRODUCIBILITY_SPEC.tmpl.md` | Environment, Data, Scripts, Artifacts | You need a single document enabling end-to-end reproduction |
+| 22 | **Pre-Delivery Checklist** | `PRE_SUBMISSION_CHECKLIST.tmpl.md` | All | Final delivery audit (attribution, compliance, reproducibility, artifacts) |
+| 23 | **Execution Manifest** | `EXECUTION_MANIFEST.tmpl.md` | Experiment, Metrics, Artifacts, Figures/Tables | Auto-generated methods summary + results index; report numbers trace here |
 | ref | **IEEE Report Template** | `IEEE_Report_Template.tex` | — | Need a LaTeX starting point for IEEE-format papers |
+
+---
+
+## Publishing Templates (`templates/publishing/`)
+
+| # | Template | File | Depends On | When to Use |
+|---|----------|------|------------|-------------|
+| 24 | **Publication Brief** | `PUBLICATION_BRIEF.tmpl.md` | Report Assembly, Hypothesis | You need message governance: target reader, anti-claims, portfolio alignment |
+| 25 | **Academic Integrity Firewall** | `ACADEMIC_INTEGRITY_FIREWALL.tmpl.md` | AI Division of Labor, Prior Work Reuse | You need explicit data/code/content reuse boundaries and verification |
+| 26 | **Lean Hypothesis** | `LEAN_HYPOTHESIS.tmpl.md` | Hypothesis Contract, Publication Brief | You need strategic hypothesis framing with kill criteria and validation plans |
 
 ---
 
@@ -55,34 +68,235 @@ Complete list of all governance templates with descriptions, dependencies, and w
 
 | # | Document | File | Purpose |
 |---|----------|------|---------|
-| — | **Prompt Playbook** | `PROMPT_PLAYBOOK.md` | AI-assisted 9-stage workflow: initial setup (1-5), RFP traceability audit (6), governance audits & patches (7-8), and test code generation (9) |
+| — | **Prompt Playbook** | `PROMPT_PLAYBOOK.md` | AI-assisted workflow: initial setup (1-5), source verification (6), governance audits (7-8), test generation (9), plus specialized stages (1b, 4b-4g) |
 
 ---
 
-## Starter Configurations
+## Quickstart Profiles
 
-### Minimal (Quick Experiment)
-Use when you have a simple, single-part experiment:
-- `ENVIRONMENT_CONTRACT`
-- `DATA_CONTRACT`
-- `METRICS_CONTRACT`
+Choose a profile based on your project type. Each profile lists the templates to include and which optional appendices to activate.
 
-### Standard (Multi-Phase Project)
-Use for a multi-phase project with delivery requirements:
-- All 7 original core contracts (#1-7)
-- `HYPOTHESIS_CONTRACT`
-- `CONFIGURATION_SPEC`
-- `IMPLEMENTATION_PLAYBOOK`
-- `RISK_REGISTER`
-- `REPORT_ASSEMBLY_PLAN`
-- `REPRODUCIBILITY_SPEC`
-- `PRE_SUBMISSION_CHECKLIST`
+### Minimal (3 templates)
 
-### Standard + AI Governance
-Use when the Standard configuration involves AI coding assistants or chat-based tools:
-- Everything in Standard, plus:
-- `AI_DIVISION_OF_LABOR`
+**Use for:** Quick experiments, prototypes, single-part studies with no formal delivery requirements.
 
-### Full (Complex Multi-Phase Project)
-Use for projects with prior work reuse, multiple experimental parts, and strict compliance:
-- All 21 templates
+| Template | Optional Appendices |
+|----------|-------------------|
+| ENVIRONMENT_CONTRACT | — |
+| DATA_CONTRACT | — |
+| METRICS_CONTRACT | — |
+
+```bash
+bash scripts/init_project.sh /path/to/project --profile minimal
+```
+
+---
+
+### Supervised ML (9 templates)
+
+**Use for:** Classification/regression projects with train/val/test splits, formal report, and reproducibility requirements.
+
+| Template | Optional Appendices |
+|----------|-------------------|
+| ENVIRONMENT_CONTRACT | — |
+| DATA_CONTRACT | Activate §3.5 (prior-project split inheritance) if reusing splits |
+| METRICS_CONTRACT | Activate Appendix B (unsupervised) only if also doing clustering |
+| EXPERIMENT_CONTRACT | — |
+| FIGURES_TABLES_CONTRACT | — |
+| HYPOTHESIS_CONTRACT | — |
+| REPORT_ASSEMBLY_PLAN | — |
+| REPRODUCIBILITY_SPEC | — |
+| PRE_SUBMISSION_CHECKLIST | — |
+
+```bash
+bash scripts/init_project.sh /path/to/project --profile supervised
+```
+
+---
+
+### Optimization Benchmark (11 templates)
+
+**Use for:** Comparing optimizers, hyperparameter studies, ablation studies with budget-matched comparisons and multi-seed stability.
+
+| Template | Optional Appendices |
+|----------|-------------------|
+| ENVIRONMENT_CONTRACT | — |
+| DATA_CONTRACT | Activate §3.5 if inheriting splits from prior project |
+| METRICS_CONTRACT | Activate §5 (convergence threshold governance) |
+| EXPERIMENT_CONTRACT | Activate pipeline composition protocol if multi-part |
+| CONFIGURATION_SPEC | — |
+| FIGURES_TABLES_CONTRACT | Activate §8 visualization catalog (convergence, sensitivity, stability) |
+| ARTIFACT_MANIFEST_SPEC | — |
+| SCRIPT_ENTRYPOINTS_SPEC | — |
+| HYPOTHESIS_CONTRACT | — |
+| IMPLEMENTATION_PLAYBOOK | — |
+| RISK_REGISTER | — |
+
+```bash
+bash scripts/init_project.sh /path/to/project --profile optimization
+```
+
+---
+
+### Unsupervised Analysis (10 templates)
+
+**Use for:** Clustering, dimensionality reduction, density estimation projects.
+
+| Template | Optional Appendices |
+|----------|-------------------|
+| ENVIRONMENT_CONTRACT | — |
+| DATA_CONTRACT | — |
+| METRICS_CONTRACT | Activate Appendix B (unsupervised evaluation menu) |
+| EXPERIMENT_CONTRACT | — |
+| FIGURES_TABLES_CONTRACT | Activate §8.5 (unsupervised figures: elbow, silhouette, cluster viz) |
+| ARTIFACT_MANIFEST_SPEC | — |
+| HYPOTHESIS_CONTRACT | — |
+| REPORT_ASSEMBLY_PLAN | — |
+| REPRODUCIBILITY_SPEC | — |
+| PRE_SUBMISSION_CHECKLIST | — |
+
+```bash
+bash scripts/init_project.sh /path/to/project --profile unsupervised
+```
+
+---
+
+### RL / Agent Study (11 templates)
+
+**Use for:** Reinforcement learning, sequential decision-making, simulation-based optimization.
+
+| Template | Optional Appendices |
+|----------|-------------------|
+| ENVIRONMENT_CONTRACT | — |
+| DATA_CONTRACT | — (may be minimal for RL) |
+| METRICS_CONTRACT | Activate Appendix C (RL policy evaluation) |
+| EXPERIMENT_CONTRACT | Activate Appendix A (sequential/RL protocol) |
+| ENVIRONMENT_SPEC | **Full activation** (MDP definition, reward, dynamics) |
+| FIGURES_TABLES_CONTRACT | Activate §8.5 (RL figures: learning curves, reward heatmaps) |
+| ARTIFACT_MANIFEST_SPEC | — |
+| SCRIPT_ENTRYPOINTS_SPEC | — |
+| HYPOTHESIS_CONTRACT | — |
+| IMPLEMENTATION_PLAYBOOK | — |
+| RISK_REGISTER | — |
+
+```bash
+bash scripts/init_project.sh /path/to/project --profile rl-agent
+```
+
+---
+
+### Full + Publishing (all 25 templates)
+
+**Use for:** Complex multi-phase projects with prior work reuse, strict compliance, formal delivery, and publication/portfolio goals.
+
+| Template | Optional Appendices |
+|----------|-------------------|
+| All 13 core templates | Activate appendices based on project type (supervised, unsupervised, RL, adversarial) |
+| All 6 management templates | — |
+| All 4 report templates | — |
+| All 3 publishing templates | — |
+
+```bash
+bash scripts/init_project.sh /path/to/project --profile full
+```
+
+---
+
+## Dependency Graph
+
+```mermaid
+graph TD
+    %% Foundational (no dependencies)
+    ENV[Environment Contract]
+    DATA[Data Contract]
+
+    %% Core layer 1
+    METRICS[Metrics Contract] --> DATA
+    HYPO[Hypothesis Contract] --> DATA
+    HYPO --> METRICS
+
+    %% Core layer 2
+    EXP[Experiment Contract] --> DATA
+    EXP --> ENV
+    EXP --> METRICS
+    CONFIG[Configuration Spec] --> EXP
+    CONFIG --> METRICS
+    CONFIG --> DATA
+
+    %% Core layer 3
+    FIG[Figures & Tables Contract] --> EXP
+    FIG --> METRICS
+    ART[Artifact Manifest Spec] --> EXP
+    SCRIPT[Script Entrypoints Spec] --> EXP
+    SCRIPT --> DATA
+    SCRIPT --> ENV
+    TEST[Test Architecture] --> DATA
+    TEST --> EXP
+    TEST --> METRICS
+    TEST --> CONFIG
+
+    %% Optional core
+    ADV[Adversarial Evaluation] --> EXP
+    ADV --> METRICS
+    ADV --> DATA
+    ENVSPEC[Environment Spec RL] --> ENV
+
+    %% AI governance
+    AI[AI Division of Labor] --> EXP
+    AI --> DATA
+
+    %% Management
+    PLAY[Implementation Playbook] --> EXP
+    PLAY --> DATA
+    PLAY --> METRICS
+    PLAY --> ENV
+    TASK[Task Board] --> PLAY
+    RISK[Risk Register] --> EXP
+    RISK --> DATA
+    RISK --> METRICS
+    DLOG[Decision Log]
+    CLOG[Changelog] --> DLOG
+    PRIOR[Prior Work Reuse] --> DATA
+    PRIOR --> ENV
+
+    %% Report
+    RAP[Report Assembly Plan] --> FIG
+    RAP --> METRICS
+    REPRO[Reproducibility Spec] --> ENV
+    REPRO --> DATA
+    REPRO --> SCRIPT
+    REPRO --> ART
+    CHECK[Pre-Delivery Checklist]
+    MANIFEST[Execution Manifest] --> EXP
+    MANIFEST --> METRICS
+    MANIFEST --> ART
+    MANIFEST --> FIG
+
+    %% Publishing
+    PUB[Publication Brief] --> RAP
+    PUB --> HYPO
+    FIREWALL[Academic Integrity Firewall] --> AI
+    FIREWALL --> PRIOR
+    LEAN[Lean Hypothesis] --> HYPO
+    LEAN --> PUB
+
+    %% Styling
+    classDef core fill:#e1f5fe,stroke:#0277bd
+    classDef mgmt fill:#fff3e0,stroke:#e65100
+    classDef report fill:#e8f5e9,stroke:#2e7d32
+    classDef publish fill:#f3e5f5,stroke:#6a1b9a
+    classDef optional fill:#fce4ec,stroke:#c62828,stroke-dasharray: 5 5
+
+    class ENV,DATA,METRICS,EXP,FIG,ART,SCRIPT,HYPO,AI,CONFIG,TEST core
+    class ADV,ENVSPEC optional
+    class PLAY,TASK,RISK,DLOG,CLOG,PRIOR mgmt
+    class RAP,REPRO,CHECK,MANIFEST report
+    class PUB,FIREWALL,LEAN publish
+```
+
+**Legend:**
+- Blue = Core contracts (always or usually included)
+- Orange = Management templates
+- Green = Report & delivery templates
+- Purple = Publishing templates
+- Dashed border = Optional (activate based on project type)
