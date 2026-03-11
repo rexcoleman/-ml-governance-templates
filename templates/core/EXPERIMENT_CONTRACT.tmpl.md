@@ -1,6 +1,6 @@
 # EXPERIMENT CONTRACT
 
-<!-- version: 1.0 -->
+<!-- version: 2.0 -->
 <!-- created: 2026-02-20 -->
 <!-- last_validated_against: CS_7641_Machine_Learning_OL_Report -->
 
@@ -57,6 +57,28 @@ This contract defines the experimental protocol for **{{PROJECT_NAME}}**.
 | *(e.g.)* Part 3 | *(e.g.)* Regularization Study | *(e.g.)* Adult only | *(e.g.)* 4 techniques + combo | grad_evals |
 | *(add parts)* | | | | |
 
+### 1.2 Cross-Part Constraints
+
+Document hard rules that constrain relationships between parts:
+
+| Constraint | Rule | Enforcement |
+|-----------|------|-------------|
+| *(e.g.)* Dataset lock | Parts 2-3 run on {{DATASET_NAME}} only | Script validates `--dataset` flag |
+| *(e.g.)* Architecture lock | Backbone unchanged across parts | Config diff assertion at phase gate |
+| *(e.g.)* HP inheritance | Part 3 uses locked best HPs from Part 2 | Config loaded from Part 2 best run |
+| *(add rows)* | | |
+
+### 1.3 Cross-Part Dependency Graph
+
+```
+Part 1 ──→ Part 4 (best RO algorithm)
+Part 2 ──→ Part 3 (locked optimizer HPs)
+Part 2 ──→ Part 4 (locked optimizer HPs)
+Part 3 ──→ Part 4 (best regularization combo)
+```
+
+*(Adapt this graph to your project's part dependencies. An arrow means "results from the source part feed into the target part.")*
+
 ---
 
 ## 2) Compute Budgets
@@ -65,7 +87,23 @@ This contract defines the experimental protocol for **{{PROJECT_NAME}}**.
 
 All budgets are defined in `{{BUDGET_CONFIG_FILE}}`. Scripts read values at runtime. No hardcoded budgets in code.
 
-### 2.2 Budget Schema
+### 2.2 Budget Types
+
+Different experiment paradigms use different budget accounting:
+
+| Budget Type | Unit | When to Use | Counting Rule |
+|------------|------|-------------|---------------|
+| `func_evals` | Function evaluations | Black-box optimization, randomized search, evolutionary methods | Each objective function computation (including full validation sweep) counts as ONE evaluation |
+| `grad_evals` | Gradient evaluations | Gradient-based training (SGD, Adam, etc.) | Each backward pass counts as ONE gradient evaluation; multiple batches per step still count as one |
+| `episodes` | Environment episodes | RL / sequential decision-making | Each complete episode (reset → terminal) counts as ONE episode |
+| `wall_clock` | Seconds | Real-time constrained experiments | Cumulative wall-clock time; MUST be reported alongside primary budget |
+
+**Accounting rules:**
+- Every run MUST log both `budget_allocated` and `budget_used` in `summary.json`
+- If validation is computed via mini-batches for memory efficiency, the entire sweep still counts as ONE function evaluation
+- Wall-clock MUST be reported alongside the primary budget type for all experiments (even if wall-clock is not the budget constraint)
+
+### 2.3 Budget Schema
 
 ```yaml
 # {{BUDGET_CONFIG_FILE}}
@@ -82,15 +120,18 @@ seeds:
   stability_list: {{SEED_LIST}}
 ```
 
-### 2.3 Budget-Matching Rule
+### 2.4 Budget-Matching Rule
 
 Within each part, all compared methods MUST use identical compute budgets. This is non-negotiable for fair comparisons.
 
-- Scripts enforce budget caps and hard-stop at the limit
+- Scripts MUST enforce budget caps and hard-stop at the limit (no silent overruns)
 - Over-budget runs MUST set `over_budget: true` in `summary.json`
-- Over-budget runs MUST be excluded from head-to-head claims
+- Over-budget runs MUST be excluded from head-to-head comparison tables and claims
+- Over-budget runs MAY be reported in supplementary analysis with clear disclosure
 
-### 2.4 Cross-Part Budget Consistency
+**Verification:** At each phase gate, assert that all runs within a part have `budget_used <= budget_allocated` and that `budget_allocated` is identical across methods.
+
+### 2.5 Cross-Part Budget Consistency
 
 Where experiments in different parts are compared (e.g., regularization vs baseline), budgets MUST match. Specifically:
 - `part3.grad_evals == part2.grad_evals` (if Part 3 builds on Part 2)
@@ -126,16 +167,53 @@ Test split is accessible ONLY through the final evaluation script. All other scr
 - **Stability list:** {{SEED_LIST}}
 - Seeds are set before every experiment via the deterministic seeding function (see ENVIRONMENT_CONTRACT §8)
 
-### 4.2 Weight Initialization
+### 4.2 Weight Initialization Matching
 
-For experiments that compare different methods on the same architecture:
+For experiments that compare different methods on the same architecture, all methods MUST start from identical initial weights.
 
-1. Initialize the model once per seed
-2. Save the initial `state_dict` to `outputs/init_weights/{{DATASET}}_seed_{{SEED}}.pt`
-3. Load the same `state_dict` before each method's training run
-4. Verify: forward pass on the same input produces identical output within tolerance (1e-6)
+#### Protocol
 
-This ensures all methods start from the same point, isolating the effect of the method itself.
+1. **Initialize once per seed:** Create the model with the current seed and save the initial `state_dict`:
+   ```python
+   torch.manual_seed(seed)
+   model = build_model(config)
+   torch.save(model.state_dict(), f"outputs/init_weights/{{DATASET}}_seed_{seed}.pt")
+   ```
+
+2. **Load before each run:** Before each method's training begins, load the saved `state_dict`:
+   ```python
+   model.load_state_dict(torch.load(f"outputs/init_weights/{{DATASET}}_seed_{seed}.pt"))
+   ```
+
+3. **Verify identical start:** Assert that all methods produce the same first-batch forward-pass output:
+   ```python
+   # After loading init weights, before training:
+   with torch.no_grad():
+       output = model(X_sample)
+   # Compare against reference output from first method — must match within tolerance
+   assert torch.allclose(output, reference_output, atol=1e-6), \
+       f"Init mismatch: method {method} diverges from reference at seed {seed}"
+   ```
+
+#### Storage Convention
+
+```
+outputs/init_weights/
+├── {{DATASET_1_NAME}}_seed_42.pt
+├── {{DATASET_1_NAME}}_seed_123.pt
+└── ...
+```
+
+#### Scope
+
+Init-weight matching applies to:
+- All methods within a single part (e.g., all optimizers in Part 2)
+- All methods across dependent parts (e.g., Part 3 uses the same init as Part 2)
+- Part composition experiments (e.g., Part 4 gradient phase uses the same init)
+
+Init-weight matching does NOT apply to:
+- Methods with fundamentally different architectures (if permitted by the experiment design)
+- Black-box optimization phases where the "initialization" is the pre-trained weights from a prior phase
 
 ### 4.3 Multi-Seed Stability
 
@@ -228,7 +306,44 @@ Every run directory MUST contain:
 
 ---
 
-## {{N+2}}) Exit Gates
+## {{N+2}}) Pipeline Composition Protocol
+
+When an experiment part composes results from prior parts (e.g., "use best optimizer from Part 2 + best regularization from Part 3 + best RO algorithm from Part 1"), the following rules apply.
+
+### Composition Invariants
+
+1. **Locked selections:** Each component MUST use the exact configuration from the prior part's best run. No retuning of previously locked hyperparameters.
+2. **Configuration trace:** The composed run's `config_resolved.yaml` MUST include provenance for each component:
+
+```yaml
+composition:
+  optimizer:
+    source_part: 2
+    source_run_id: "part2_adam_seed42"
+    locked_params: {lr: 0.001, beta1: 0.9, beta2: 0.999}
+  regularization:
+    source_part: 3
+    source_run_id: "part3_best_combo_seed42"
+    locked_params: {dropout: 0.3, l2_lambda: 0.001}
+  fine_tuning:
+    source_part: 1
+    source_method: "sa"
+    locked_params: {init_temp: 1.0, decay: 0.99}
+```
+
+3. **Budget constraints:** Composition parts may have separate budgets for each phase (e.g., gradient training budget + RO fine-tuning budget). Each phase's budget MUST be declared separately.
+4. **Seed consistency:** Seeds, hardware class, data splits, and batch size MUST match earlier parts.
+
+### Composition Exit Gate Additions
+
+- [ ] Each component traces to a specific prior part run ID
+- [ ] No hyperparameter was retuned from its locked value
+- [ ] Phase-specific budgets are within limits
+- [ ] Results are comparable to prior parts (same metrics, same evaluation protocol)
+
+---
+
+## {{N+3}}) Exit Gates
 
 Each experimental part has an exit gate that MUST pass before proceeding.
 
@@ -240,11 +355,12 @@ Each experimental part has an exit gate that MUST pass before proceeding.
 - [ ] Required metrics logged in every `summary.json`
 - [ ] `metrics.csv` has expected columns and row counts
 - [ ] Operator disclosures present in `config_resolved.yaml`
+- [ ] Init-weight verification passed (forward-pass match within tolerance)
 - [ ] *(Part-specific checks)*
 
 ---
 
-## {{N+3}}) Change Control Triggers
+## {{N+4}}) Change Control Triggers
 
 The following changes require a `CONTRACT_CHANGE` commit:
 
@@ -255,3 +371,63 @@ The following changes require a `CONTRACT_CHANGE` commit:
 - Evaluation determinism rules
 - Budget-matching constraints
 - Part composition rules
+- Cross-part constraints or dependency graph
+
+---
+
+## Appendix A: Sequential / RL Experiment Protocol (Optional)
+
+> **Activation:** Include this appendix when your project involves reinforcement learning, sequential
+> decision-making, or episode-based experiments. Delete if not applicable.
+
+### A.1 Episode-Based Budget Accounting
+
+| Budget Type | Unit | Counting Rule |
+|------------|------|---------------|
+| `episodes` | Complete episodes | Each reset → terminal transition counts as ONE episode |
+| `env_steps` | Environment steps | Each `env.step()` call counts as ONE step |
+| `wall_clock` | Seconds | Cumulative wall-clock (always reported alongside primary budget) |
+
+### A.2 Environment Specification
+
+The environment MUST be fully specified in a companion [ENVIRONMENT_SPEC](ENVIRONMENT_SPEC.tmpl.md) document (if available) or in this section:
+
+| Property | Value |
+|----------|-------|
+| **Environment** | {{ENV_NAME}} |
+| **State space** | {{STATE_SPACE_DESCRIPTION}} |
+| **Action space** | {{ACTION_SPACE_DESCRIPTION}} |
+| **Reward function** | {{REWARD_DESCRIPTION}} |
+| **Episode termination** | {{TERMINATION_CONDITION}} |
+| **Max episode length** | {{MAX_EPISODE_STEPS}} |
+
+### A.3 Policy Evaluation Protocol
+
+- **Evaluation frequency:** Every {{EVAL_INTERVAL_EPISODES}} training episodes
+- **Evaluation method:** {{EVAL_EPISODES}} episodes with greedy/deterministic policy (no exploration noise)
+- **Metrics logged per evaluation:** mean return, std return, mean episode length, success rate (if applicable)
+
+### A.4 Reproducibility Requirements
+
+- Environment seed MUST be set via `env.reset(seed=seed)` at the start of each episode
+- For stochastic environments, evaluation MUST use a fixed set of seeds separate from training seeds
+- Random exploration noise MUST be seeded deterministically
+
+### A.5 RL-Specific Logging
+
+Every run's `metrics.csv` MUST include:
+
+```
+episode,env_steps,train_return,eval_mean_return,eval_std_return,eval_mean_length,wall_clock_sec
+```
+
+Every run's `summary.json` MUST include:
+```json
+{
+  "budget_allocated": {"episodes": null, "env_steps": null},
+  "budget_used": {"episodes": null, "env_steps": null},
+  "best_eval_return": null,
+  "best_eval_episode": null,
+  "total_env_steps": null
+}
+```
