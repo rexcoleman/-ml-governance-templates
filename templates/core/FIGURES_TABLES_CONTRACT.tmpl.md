@@ -1,6 +1,6 @@
 # FIGURES & TABLES CONTRACT
 
-<!-- version: 1.0 -->
+<!-- version: 2.0 -->
 <!-- created: 2026-02-20 -->
 <!-- last_validated_against: CS_7641_Machine_Learning_OL_Report -->
 
@@ -85,34 +85,85 @@ The producer script MUST:
 | T2 | Sanity Checks | *(e.g.)* Part 2 | Check, Accuracy, F1, Expected | `sanity_checks/*.json` |
 | *(add rows)* | | | | |
 
+### Summary Table Locked Columns
+
+The summary table MUST include these columns at minimum. Additional columns may be added but these MUST NOT be removed.
+
+| Column | Source | Notes |
+|--------|--------|-------|
+| **Method** | — | Descriptive label (e.g., "P1-RHC-Adult", "P2-Adam", "Baseline") |
+| **Best Val Loss** | `summary.json` → `best_val_loss` | Min val_loss over the budgeted trajectory |
+| **Test Metric** | `final_eval_results.json` ONLY | Primary test metric per dataset; MUST NOT come from per-run summary |
+| **Time to ℓ** | `summary.json` → `steps_to_l` | "—" if `reached_l=false` or not applicable |
+| **Budget Used** | `summary.json` → `budget_used` | grad_evals, func_evals, or episodes as appropriate |
+| **Notes** | — | Over-budget flag, architecture changes, etc. |
+
+**Optional recommended columns:**
+- `Test Accuracy` — required by some projects alongside the primary metric
+- `Δ(Test Metric)` — delta vs baseline for improvement-tracking parts
+- `Train Loss @ Budget` — enables generalization gap analysis
+- `Dispersion` — IQR or ± std for seed-aggregated values
+
+### Seed Aggregation Rule
+
+- Report **median** across seeds (preferred) or mean
+- MUST include a dispersion indicator: median ± IQR or mean ± std
+- **Never report bare means without dispersion** — single-point estimates are not credible for comparative claims
+- Dispersion MUST appear as adjacent columns, parenthetical notation, or footnotes
+
 ### Summary Table Requirements
 
 - [ ] Includes all methods from all experimental parts
 - [ ] Includes baseline/prior-work row(s) for comparison
-- [ ] Over-budget runs marked and excluded from head-to-head claims
+- [ ] Over-budget runs marked with a flag and excluded from head-to-head claims
 - [ ] Dispersion shown (median + IQR) for seed-aggregated results
 - [ ] Test metrics sourced exclusively from `final_eval_results.json`
+- [ ] Delta column present for improvement-tracking parts (if applicable)
 
 ---
 
 ## 5) Caption Requirements
 
-Every figure and table caption MUST include:
+### 5.1 Figure Takeaway Rule
 
-1. **Descriptive title** — What is being shown
-2. **Key parameters** — Budget, seed count, aggregation method, threshold (where applicable)
-3. **Takeaway** — One interpretive sentence explaining what the result means, tied to the experiment's mechanism (not just describing the visual)
+Every figure and table caption MUST include an **interpretive takeaway** — a sentence explaining what the result means, tied to the experiment's mechanism. DO NOT merely restate the legend or describe the data.
+
+| Element | Required | Description |
+|---------|----------|-------------|
+| **Descriptive title** | MUST | What is being shown |
+| **Key parameters** | MUST | Budget, seed count, aggregation method, threshold (where applicable) |
+| **Takeaway** | MUST | One interpretive sentence explaining what the result means |
 
 **Bad caption:** "Validation loss curves for 7 optimizers."
-**Good caption:** "Validation loss vs gradient evaluations for 7 optimizers on Adult (10k grad evals, 5 seeds, median shown). Adam converges 3x faster than SGD, consistent with adaptive scaling compensating for gradient magnitude variation."
+**Good caption:** "Validation loss vs gradient evaluations for 7 optimizers on Adult (10k grad evals, 5 seeds, median shown). Adam converges 3× faster than SGD, consistent with adaptive scaling compensating for gradient magnitude variation."
 
-### Per-Figure Caption Checklist
+### 5.2 Operator & Hyperparameter Disclosure
+
+Method-comparison figures MUST disclose the key hyperparameters that distinguish the compared methods. Without disclosure, the reader cannot assess whether differences are due to the method or its configuration.
+
+| Figure Type | Required Disclosures in Caption |
+|-------------|-------------------------------|
+| **Black-box / RO figures** | Per-algorithm operator settings (e.g., restart policy, temperature schedule, population size, mutation rate, elitism); trainable parameter count; budget (func_evals) |
+| **Gradient optimizer figures** | Budget (grad_evals); learning rate; threshold ℓ value (if applicable); seed count and aggregation |
+| **Regularization figures** | Budget (must match baseline); locked optimizer config from prior part; Δ annotation vs baseline |
+| **Heatmap figures** | Exact grid values; which metric is displayed in cells; budget per cell |
+| **Stability figures** | Seed count; aggregation method (median + IQR or mean ± std) |
+| **Composition figures** | Component provenance (which prior part each component came from); phase-specific budgets |
+
+### 5.3 Budget and Seed Annotation Rule
+
+Every figure and table MUST indicate:
+- The compute budget used (grad_evals, func_evals, episodes, or wall_clock as appropriate)
+- The seed aggregation method and count
+- Whether displayed values are median, mean, or individual-seed lines
+
+### 5.4 Per-Figure Caption Checklist
 
 *(Customize per figure. Example:)*
 
 - **F1 (Loss vs Wall-Clock):** Budget, seed count, methods shown, which is fastest
 - **F2 (RO Progress):** Algorithm settings (operator disclosures), func_eval budget, trainable param count
-- **Summary Table (T1):** Column definitions, what "Test Metric" means per dataset, SL baseline source
+- **Summary Table (T1):** Column definitions, what "Test Metric" means per dataset, baseline source
 
 ---
 
@@ -137,7 +188,52 @@ Every figure and table caption MUST include:
 
 ---
 
-## 8) Change Control Triggers
+## 8) Visualization Catalog by Method Family
+
+Use this catalog to select appropriate figure types for each experiment family. Not all figure types apply to every project — select based on your experimental parts.
+
+### 8.1 Convergence Plots
+
+| Figure Type | When to Use | X-Axis | Y-Axis | Annotation |
+|------------|-------------|--------|--------|------------|
+| Loss vs evaluations | Comparing methods at matched budgets | Budget units (grad_evals, func_evals) | val_loss | Threshold ℓ reference line |
+| Loss vs wall-clock | Comparing wall-clock efficiency | wall_clock_sec | val_loss | — |
+| Best-so-far objective | Black-box / RO methods | func_eval | best_val_loss | Operator settings in caption |
+
+### 8.2 Sensitivity Analysis
+
+| Figure Type | When to Use | Layout | Data Source |
+|------------|-------------|--------|-------------|
+| Hyperparameter heatmap | Sweeping 2 hyperparams on a coarse grid | 2D grid, color = metric | Heatmap CSVs |
+| Learning rate sweep | Comparing LR sensitivity across methods | 1D, x=LR, y=metric | Per-LR run summaries |
+
+### 8.3 Stability Analysis
+
+| Figure Type | When to Use | Display | Key Rule |
+|------------|-------------|---------|----------|
+| Stability bands | Showing variance across seeds | Median line + IQR shading | Must use ≥ 2 seeds; single-seed results are not stability analysis |
+| Box plots | Comparing final metric distributions | Per-method box | Median + quartiles + outliers |
+
+### 8.4 Comparison Panels
+
+| Figure Type | When to Use | Content | Key Rule |
+|------------|-------------|---------|----------|
+| Regularization sweep | Comparing techniques at matched budgets | Bar/point + dispersion per technique | Δ annotation vs baseline required |
+| Composition comparison | Multi-part integration result | Best from each prior part + composed result | Must cite component provenance |
+| Frontier plot | Test metric vs total compute | Points per method/part | Pareto-optimal identification |
+
+### 8.5 Unsupervised / RL Figures (Optional)
+
+| Figure Type | When to Use | Content |
+|------------|-------------|---------|
+| Cluster visualization | 2D embedding of clusters | t-SNE/UMAP scatter colored by cluster label |
+| Elbow / silhouette plot | Choosing cluster count | x=K, y=metric |
+| Learning curve (RL) | Policy improvement over episodes | x=episodes, y=mean return ± std |
+| Reward heatmap (RL) | State-value visualization | 2D state grid, color = value |
+
+---
+
+## 9) Change Control Triggers
 
 The following changes require a `CONTRACT_CHANGE` commit:
 
