@@ -1,6 +1,6 @@
 # DATA CONTRACT
 
-<!-- version: 1.0 -->
+<!-- version: 2.0 -->
 <!-- created: 2026-02-20 -->
 <!-- last_validated_against: CS_7641_Machine_Learning_OL_Report -->
 
@@ -107,6 +107,29 @@ Splits are stored as JSON files at `data/splits/{{DATASET_NAME}}/split_seed{{SEE
 }
 ```
 
+#### Split Hash Algorithm
+
+The `split_hash` field MUST be computed using the following deterministic algorithm:
+
+```python
+import hashlib
+import numpy as np
+
+def compute_split_hash(train_indices, val_indices, test_indices):
+    """Compute SHA-256 of sorted index arrays concatenated as int64 bytes."""
+    parts = []
+    for indices in [train_indices, val_indices, test_indices]:
+        arr = np.array(sorted(indices), dtype=np.int64)
+        parts.append(arr.tobytes())
+    return hashlib.sha256(b"".join(parts)).hexdigest()
+```
+
+**Requirements:**
+- Each index array MUST be sorted ascending before conversion
+- Indices MUST be converted to `numpy.int64` (explicit dtype for cross-platform reproducibility)
+- Concatenation order is always: train, val, test
+- Hash function is SHA-256, output as lowercase hex digest
+
 ### 3.3 Split Invariants
 
 The following MUST hold for every split file:
@@ -120,6 +143,57 @@ The following MUST hold for every split file:
 ### 3.4 Test-Split Access Policy
 
 The held-out test split is accessible exclusively through the final evaluation script. The data-loading utility MUST default to `allow_test=False` and raise a `ValueError` if test indices are requested by any other script.
+
+### 3.5 Prior-Project Split Inheritance
+
+When this project inherits data splits from a prior project (e.g., Phase 1 → Phase 2), the following protocol applies.
+
+#### Inheritance Procedure
+
+1. **Archive original splits:** Copy the prior project's split files into `vendor/{{PRIOR_PROJECT}}_snapshot/splits/` with SHA-256 verification
+2. **Verify hash:** Compute SHA-256 of each archived file and record in this contract or in the conversion script
+3. **Derive missing splits:** If the prior project stored only train/test (no validation split), derive val from the prior train set using a deterministic method:
+
+```python
+from sklearn.model_selection import StratifiedShuffleSplit
+
+# Derive val from prior train indices
+sss = StratifiedShuffleSplit(
+    n_splits=1,
+    test_size={{VAL_FRACTION}},    # e.g., 0.2
+    random_state={{SPLIT_SEED}},
+)
+train_sub_idx, val_sub_idx = next(sss.split(prior_train, y_prior_train))
+
+# Map sub-indices back to original dataset indices
+train_final = prior_train[train_sub_idx]
+val_final = prior_train[val_sub_idx]
+test_final = prior_test  # unchanged from prior project
+```
+
+4. **Integrity checks:** After derivation, verify:
+   - No overlap between train, val, and test
+   - Full coverage: `len(train) + len(val) + len(test) == n_total`
+   - Stratification preserved: class distribution in val approximates train
+5. **Write JSON:** Convert to the standard split JSON format (§3.2) with additional provenance fields:
+
+```json
+{
+  "source": "{{PRIOR_PROJECT}}",
+  "prior_commit_sha": "{{PRIOR_COMMIT_SHA}}",
+  "prior_file_sha256": "{{PRIOR_FILE_HASH}}",
+  "val_derivation": "StratifiedShuffleSplit(test_size={{VAL_FRACTION}}, random_state={{SPLIT_SEED}}) on prior train_indices"
+}
+```
+
+6. **Script:** Implement the conversion in `scripts/convert_{{PRIOR_PROJECT}}_splits.py`. The script MUST exit non-zero if any hash verification or integrity check fails.
+
+| Placeholder | Description | Example |
+|-------------|-------------|---------|
+| `{{PRIOR_PROJECT}}` | Prior project identifier | sl_report |
+| `{{PRIOR_COMMIT_SHA}}` | Git SHA of prior project snapshot | 54ada55c8bd9... |
+| `{{PRIOR_FILE_HASH}}` | SHA-256 of archived split file | 769ce576cb28... |
+| `{{VAL_FRACTION}}` | Fraction of prior train used for validation | 0.2 |
 
 ---
 
@@ -151,7 +225,100 @@ Automated checks to detect leakage. Each tripwire has a unique ID for cross-refe
 
 *(Add project-specific tripwires as needed.)*
 
-### 4.3 When to Run Leakage Checks
+### 4.3 Tripwire Detection Logic
+
+Each tripwire has a precise detection mechanism. Implement these patterns in `scripts/check_leakage.py`.
+
+#### LT-1: Fit Isolation
+
+**Goal:** Prove that `.fit()` uses training data only — not train+val.
+
+```python
+# Fit preprocessor on train only
+pp_train = build_preprocessor(X_train)
+pp_train.fit(X_train)
+mean_train = pp_train.named_steps["scaler"].mean_.copy()
+
+# Fit preprocessor on train + val (simulating leakage)
+X_full = pd.concat([X_train, X_val], ignore_index=True)
+pp_full = build_preprocessor(X_full)
+pp_full.fit(X_full)
+mean_full = pp_full.named_steps["scaler"].mean_.copy()
+
+# Means MUST differ — if identical, val may be leaking into fit
+assert not np.allclose(mean_train, mean_full, atol=1e-10), \
+    "LT-1 FAIL: train-only fit == train+val fit"
+```
+
+**Pass condition:** Scaler statistics fitted on `X_train` alone differ from statistics fitted on `X_train ∪ X_val`.
+
+#### LT-2: Test Index Isolation
+
+**Goal:** Prove that test indices are inaccessible outside the final evaluation script.
+
+```python
+# Default load MUST NOT include test indices
+split_data = load_split(splits_dir, dataset, seed, allow_test=False)
+assert "test_indices" not in split_data, \
+    "LT-2 FAIL: test_indices returned when allow_test=False"
+
+# Requesting test indices MUST raise ValueError
+try:
+    get_test_indices(split_data)
+    assert False, "LT-2 FAIL: get_test_indices() did not raise"
+except ValueError:
+    pass  # expected
+
+# allow_test=True MUST return non-empty test indices
+split_with_test = load_split(splits_dir, dataset, seed, allow_test=True)
+assert len(split_with_test["test_indices"]) > 0, \
+    "LT-2 FAIL: test_indices empty when allow_test=True"
+```
+
+**Pass condition:** `allow_test=False` hides test indices; `get_test_indices()` raises `ValueError` on hidden data; `allow_test=True` returns non-empty indices.
+
+#### LT-3: Transform-Only on Val/Test
+
+**Goal:** Prove that `.transform()` on val/test does not re-fit the preprocessor.
+
+```python
+# Fit on train, then transform val
+preprocessor.fit(X_train)
+preprocessor.transform(X_val)
+
+n_samples = preprocessor.named_steps["scaler"].n_samples_seen_
+assert n_samples == len(X_train), \
+    f"LT-3 FAIL: n_samples_seen_={n_samples}, expected {len(X_train)}"
+
+# Transform val again — n_samples_seen_ MUST NOT change
+preprocessor.transform(X_val)
+n_after = preprocessor.named_steps["scaler"].n_samples_seen_
+assert n_after == n_samples, \
+    f"LT-3 FAIL: n_samples_seen_ changed after transform ({n_samples} -> {n_after})"
+```
+
+**Pass condition:** `n_samples_seen_` equals `len(X_train)` after fitting and remains unchanged after `.transform(X_val)`.
+
+#### LT-4: Prediction Consistency (Optional)
+
+> **Note:** This tripwire is optional and SHOULD be skipped for models with stochastic inference
+> (e.g., MC dropout, variational methods). It is NOT a gate blocker — include only when
+> deterministic inference is expected.
+
+**Goal:** Verify that predictions are deterministic given the same fitted model and input.
+
+```python
+pred_1 = model.predict(X_val)
+pred_2 = model.predict(X_val)
+assert np.array_equal(pred_1, pred_2), \
+    "LT-4 FAIL: predictions differ on identical input"
+```
+
+**Pass condition:** Two sequential predictions on the same input produce identical results.
+
+*(Add project-specific tripwires below this line.)*
+
+### 4.4 When to Run Leakage Checks
 
 - After any change to preprocessing code
 - Before starting any experiment phase
@@ -184,13 +351,33 @@ Automated checks to detect leakage. Each tripwire has a unique ID for cross-refe
 
 ---
 
-## 6) EDA Compatibility
+## 6) EDA & Preprocessing Compatibility
 
-If this project builds on a prior project (e.g., Phase 1 → Phase 2), the EDA MUST be consistent with the prior project unless changes are disclosed and justified.
+If this project builds on a prior project (e.g., Phase 1 → Phase 2), EDA and preprocessing MUST be consistent unless changes are disclosed and justified.
 
-- **Consistent:** Same features, same preprocessing, same target variable
-- **Disclosed change:** Document what changed, why, and how it affects comparability
-- **Audit artifact:** `outputs/eda/{{DATASET_NAME}}_eda_summary.json`
+### 6.1 No-Change Confirmation
+
+If EDA and preprocessing are identical to the prior project, the REPRO document MUST include an explicit confirmation statement:
+
+> *"EDA and preprocessing are identical to {{PRIOR_PROJECT}} for all datasets. No changes were made to feature engineering, scaling, encoding, imputation, or target encoding."*
+
+This statement is required even when nothing changed — silence is not confirmation.
+
+### 6.2 Change Disclosure Template
+
+If any EDA or preprocessing differs from the prior project, each change MUST be documented using this template:
+
+| Field | Value |
+|-------|-------|
+| **Change** | *(What changed — e.g., "Added binary indicator detection to preprocessing pipeline")* |
+| **Rationale** | *(Why — e.g., "Binary columns were being scaled, distorting 0/1 values")* |
+| **Impact on comparison** | *(How this affects cross-project comparability — e.g., "Feature dimensions differ; prior results not directly comparable")* |
+| **Artifacts regenerated** | *(Which outputs were re-run — e.g., "All EDA summaries, all experiment runs")* |
+| **Contract commit** | *(CONTRACT_CHANGE commit SHA)* |
+
+### 6.3 Audit Artifact
+
+EDA summaries MUST be generated and stored at `outputs/eda/{{DATASET_NAME}}_eda_summary.json` for each dataset. These summaries enable automated comparison with prior project summaries.
 
 ---
 
