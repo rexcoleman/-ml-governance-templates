@@ -8,7 +8,7 @@
 #   minimal       — 3 core contracts (Environment, Data, Metrics)
 #   supervised    — 9 templates for classification/regression projects
 #   optimization  — 11 templates for optimizer comparisons and ablation studies
-#   unsupervised  — 10 templates for clustering and dimensionality reduction
+#   unsupervised  — 21 templates for clustering and dimensionality reduction
 #   rl-agent      — 11 templates for reinforcement learning projects
 #   full          — All 25 templates + IEEE reference
 #
@@ -26,7 +26,7 @@ usage() {
     echo "  minimal       — 3 core contracts (Environment, Data, Metrics)"
     echo "  supervised    — 9 templates for classification/regression [default]"
     echo "  optimization  — 11 templates for optimizer comparisons, ablation studies"
-    echo "  unsupervised  — 10 templates for clustering, dimensionality reduction"
+    echo "  unsupervised  — 21 templates for clustering, dimensionality reduction"
     echo "  rl-agent      — 22 templates for reinforcement learning (full delivery)"
     echo "  full          — All 25 templates + IEEE reference"
     echo ""
@@ -137,6 +137,7 @@ OPTIMIZATION_FILES=(
 )
 
 UNSUPERVISED_FILES=(
+    # Core (13)
     "${CORE}/ENVIRONMENT_CONTRACT.tmpl.md"
     "${CORE}/DATA_CONTRACT.tmpl.md"
     "${CORE}/METRICS_CONTRACT.tmpl.md"
@@ -144,9 +145,22 @@ UNSUPERVISED_FILES=(
     "${CORE}/FIGURES_TABLES_CONTRACT.tmpl.md"
     "${CORE}/ARTIFACT_MANIFEST_SPEC.tmpl.md"
     "${CORE}/HYPOTHESIS_CONTRACT.tmpl.md"
+    "${CORE}/AI_DIVISION_OF_LABOR.tmpl.md"
+    "${CORE}/CONFIGURATION_SPEC.tmpl.md"
+    "${CORE}/SCRIPT_ENTRYPOINTS_SPEC.tmpl.md"
+    "${CORE}/TEST_ARCHITECTURE.tmpl.md"
+    # Management (6)
+    "${MGMT}/IMPLEMENTATION_PLAYBOOK.tmpl.md"
+    "${MGMT}/PRIOR_WORK_REUSE.tmpl.md"
+    "${MGMT}/DECISION_LOG.tmpl.md"
+    "${MGMT}/CHANGELOG.tmpl.md"
+    "${MGMT}/RISK_REGISTER.tmpl.md"
+    "${MGMT}/TASK_BOARD.tmpl.md"
+    # Report (4)
     "${REPORT}/REPORT_ASSEMBLY_PLAN.tmpl.md"
     "${REPORT}/REPRODUCIBILITY_SPEC.tmpl.md"
     "${REPORT}/PRE_SUBMISSION_CHECKLIST.tmpl.md"
+    "${REPORT}/EXECUTION_MANIFEST.tmpl.md"
 )
 
 RL_AGENT_FILES=(
@@ -231,7 +245,7 @@ case "$PROFILE" in
         for f in "${OPTIMIZATION_FILES[@]}"; do copy_template "$f"; done
         ;;
     unsupervised)
-        echo "Copying unsupervised analysis templates (10 files):"
+        echo "Copying unsupervised analysis templates (21 files):"
         for f in "${UNSUPERVISED_FILES[@]}"; do copy_template "$f"; done
         ;;
     rl-agent)
