@@ -8,9 +8,9 @@ Reusable governance framework for ML experiment projects. Currently v1.0 (15 tem
 - `TEMPLATE_INDEX.md` — current template inventory and dependency graph
 - `PROMPT_PLAYBOOK.md` — AI-assisted customization workflow
 - `README.md` — project overview
-- `templates/core/` — 7 core contract templates
+- `templates/core/` — 11 core contract templates (7 original + 4 new in v1.5)
 - `templates/management/` — 6 project management templates
-- `templates/report/` — 2 delivery templates + IEEE LaTeX reference
+- `templates/report/` — 3 delivery templates + IEEE LaTeX reference (1 new in v1.5)
 
 ## Source Repos (for reference during upgrades)
 These repos contain the battle-tested governance docs that v2.0 upgrades are extracted from:
@@ -35,3 +35,5 @@ These repos contain the battle-tested governance docs that v2.0 upgrades are ext
   - Step 1.6 (U7: REPRODUCIBILITY_SPEC) — DONE
   - Step 1.7 (U8+U28: CONFIGURATION_SPEC) — DONE
   - Step 1.8 (U9: TEST_ARCHITECTURE) — DONE
+  - Step 1.9 (Update TEMPLATE_INDEX.md) — DONE
+  - Step 1.10 (Tag v1.5-foundation) — DONE
