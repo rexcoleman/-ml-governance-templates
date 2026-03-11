@@ -27,7 +27,7 @@ usage() {
     echo "  supervised    — 9 templates for classification/regression [default]"
     echo "  optimization  — 11 templates for optimizer comparisons, ablation studies"
     echo "  unsupervised  — 10 templates for clustering, dimensionality reduction"
-    echo "  rl-agent      — 11 templates for reinforcement learning"
+    echo "  rl-agent      — 22 templates for reinforcement learning (full delivery)"
     echo "  full          — All 25 templates + IEEE reference"
     echo ""
     echo "Legacy tiers (backward-compatible):"
@@ -150,6 +150,7 @@ UNSUPERVISED_FILES=(
 )
 
 RL_AGENT_FILES=(
+    # Core (11)
     "${CORE}/ENVIRONMENT_CONTRACT.tmpl.md"
     "${CORE}/DATA_CONTRACT.tmpl.md"
     "${CORE}/METRICS_CONTRACT.tmpl.md"
@@ -159,8 +160,22 @@ RL_AGENT_FILES=(
     "${CORE}/ARTIFACT_MANIFEST_SPEC.tmpl.md"
     "${CORE}/SCRIPT_ENTRYPOINTS_SPEC.tmpl.md"
     "${CORE}/HYPOTHESIS_CONTRACT.tmpl.md"
+    "${CORE}/AI_DIVISION_OF_LABOR.tmpl.md"
+    "${CORE}/CONFIGURATION_SPEC.tmpl.md"
+    "${CORE}/TEST_ARCHITECTURE.tmpl.md"
+    # Management (5)
     "${MGMT}/IMPLEMENTATION_PLAYBOOK.tmpl.md"
     "${MGMT}/RISK_REGISTER.tmpl.md"
+    "${MGMT}/DECISION_LOG.tmpl.md"
+    "${MGMT}/CHANGELOG.tmpl.md"
+    "${MGMT}/PRIOR_WORK_REUSE.tmpl.md"
+    # Report (4)
+    "${REPORT}/REPORT_ASSEMBLY_PLAN.tmpl.md"
+    "${REPORT}/REPRODUCIBILITY_SPEC.tmpl.md"
+    "${REPORT}/PRE_SUBMISSION_CHECKLIST.tmpl.md"
+    "${REPORT}/EXECUTION_MANIFEST.tmpl.md"
+    # Publishing (1)
+    "${PUB}/ACADEMIC_INTEGRITY_FIREWALL.tmpl.md"
 )
 
 FULL_FILES=(
@@ -220,7 +235,7 @@ case "$PROFILE" in
         for f in "${UNSUPERVISED_FILES[@]}"; do copy_template "$f"; done
         ;;
     rl-agent)
-        echo "Copying RL / agent study templates (11 files):"
+        echo "Copying RL / agent study templates (22 files):"
         for f in "${RL_AGENT_FILES[@]}"; do copy_template "$f"; done
         ;;
     full)

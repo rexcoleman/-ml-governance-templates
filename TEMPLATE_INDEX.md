@@ -161,9 +161,9 @@ bash scripts/init_project.sh /path/to/project --profile unsupervised
 
 ---
 
-### RL / Agent Study (11 templates)
+### RL / Agent Study (22 templates)
 
-**Use for:** Reinforcement learning, sequential decision-making, simulation-based optimization.
+**Use for:** Reinforcement learning, sequential decision-making, simulation-based optimization — with full delivery, reproducibility, and integrity support.
 
 | Template | Optional Appendices |
 |----------|-------------------|
@@ -176,8 +176,19 @@ bash scripts/init_project.sh /path/to/project --profile unsupervised
 | ARTIFACT_MANIFEST_SPEC | — |
 | SCRIPT_ENTRYPOINTS_SPEC | — |
 | HYPOTHESIS_CONTRACT | — |
+| AI_DIVISION_OF_LABOR | — |
+| CONFIGURATION_SPEC | — |
+| TEST_ARCHITECTURE | — |
 | IMPLEMENTATION_PLAYBOOK | — |
 | RISK_REGISTER | — |
+| DECISION_LOG | — |
+| CHANGELOG | — |
+| PRIOR_WORK_REUSE | Only if reusing prior project artifacts |
+| REPORT_ASSEMBLY_PLAN | — |
+| REPRODUCIBILITY_SPEC | — |
+| PRE_SUBMISSION_CHECKLIST | — |
+| EXECUTION_MANIFEST | — |
+| ACADEMIC_INTEGRITY_FIREWALL | — |
 
 ```bash
 bash scripts/init_project.sh /path/to/project --profile rl-agent
@@ -185,7 +196,7 @@ bash scripts/init_project.sh /path/to/project --profile rl-agent
 
 ---
 
-### Full + Publishing (all 25 templates)
+### Full + Publishing (all 26 templates)
 
 **Use for:** Complex multi-phase projects with prior work reuse, strict compliance, formal delivery, and publication/portfolio goals.
 

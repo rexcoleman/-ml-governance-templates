@@ -104,7 +104,7 @@ Choose a profile based on project type. See [TEMPLATE_INDEX.md](TEMPLATE_INDEX.m
 | **Supervised ML** | 9 | Classification/regression with formal report |
 | **Optimization Benchmark** | 11 | Optimizer comparisons, ablation studies |
 | **Unsupervised Analysis** | 10 | Clustering, dimensionality reduction |
-| **RL / Agent Study** | 11 | Reinforcement learning, simulation |
+| **RL / Agent Study** | 22 | Reinforcement learning, full delivery |
 | **Full + Publishing** | 25 | Complex projects with publication goals |
 
 ---
@@ -225,4 +225,4 @@ The `examples/` directory contains worked examples showing representative placeh
 
 These templates were extracted from a governance framework used in production ML research. The original project used 18 governance documents to manage multi-part experiments comparing optimization algorithms across multiple datasets.
 
-Project-specific content has been replaced with `{{PLACEHOLDER}}` syntax. The reusable patterns — phase gates, leakage prevention, budget matching, CONTRACT_CHANGE protocol, risk tracking, and decision records — are preserved. v2.0 expanded the framework from 15 to 25 templates with publishing, adversarial evaluation, RL environment, and hypothesis governance support.
+Project-specific content has been replaced with `{{PLACEHOLDER}}` syntax. The reusable patterns — phase gates, leakage prevention, budget matching, CONTRACT_CHANGE protocol, risk tracking, and decision records — are preserved. v2.0 expanded the framework from 15 to 26 templates with publishing, adversarial evaluation, RL environment, and hypothesis governance support.
