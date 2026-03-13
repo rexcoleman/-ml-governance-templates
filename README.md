@@ -1,12 +1,19 @@
-# ML Project Governance Templates
+# govML
 
-A reusable framework of 26 governance templates + executable scaffolding generators for machine learning projects — from experiment design through publication.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python 3.8+](https://img.shields.io/badge/Python-3.8+-green.svg)](https://python.org)
+[![Templates](https://img.shields.io/badge/Templates-27-orange.svg)](TEMPLATE_INDEX.md)
+[![Version](https://img.shields.io/badge/Version-2.1-purple.svg)](ROADMAP.md)
+
+**Stop losing experiments to irreproducible pipelines.** govML is a governance framework for ML projects: 27 templates, 6 quickstart profiles, 3 code generators, and an agent orchestrator — from experiment design through publication.
+
+Pick a profile, run the init script, fill in placeholders. Your experiment pipeline gets reproducibility, data integrity, and change control without building it from scratch.
 
 ---
 
-## What This Is
+## Why Use This
 
-A suite of markdown templates organized into four tiers that provide structure, discipline, and traceability for ML projects. The framework enforces:
+ML projects fail silently: data leaks into test splits, hyperparameters drift between runs, "that result from last week" can't be reproduced. govML prevents this with enforceable contracts:
 
 - **Reproducibility** — locked environments, deterministic seeding, artifact hashing
 - **Data integrity** — leakage prevention, fit-on-train discipline, test-split isolation

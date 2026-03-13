@@ -1,4 +1,4 @@
-# ML Governance Templates — Claude Code Context
+# govML — Claude Code Context
 
 ## Project Purpose
 Reusable governance framework for ML experiment projects. **v2.1** — 27 templates across 4 directories, 6 quickstart profiles, AI-assisted prompt playbook, 3 code generators + master runner.

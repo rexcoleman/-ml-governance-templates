@@ -1,4 +1,4 @@
-# Template Index
+# govML — Template Index
 
 Complete inventory of all 27 governance templates + 4 generators with descriptions, dependencies, quickstart profiles, and dependency graph.
 
