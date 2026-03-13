@@ -1,8 +1,8 @@
 # Audit Automation Plan: Zero-Manual-Audit Quality Pipeline
 
-**Version:** 1.0
+**Version:** 1.1
 **Date:** 2026-03-13
-**Status:** PROPOSED
+**Status:** PHASES 1-4 COMPLETE. Systems-benchmark profile shipped (v2.3).
 **Drives:** govML v3.0 — from "templates that define WHAT" to "pipelines that VERIFY automatically"
 
 ---
@@ -440,6 +440,22 @@ Before final submission, run the full audit sweep:
 21. Prompt template for L8 (Academic Integrity) in Stage 10 **DONE**
 22. Prompt template for L10 (Cross-Reference Integrity) in Stage 10 **DONE**
 23. Stage 10 checkpoint with acceptance criteria **DONE**
+
+### Phase 5: Systems Benchmark Profile — COMPLETE
+
+**Deliverables:**
+24. `BUILD_SYSTEM_CONTRACT.tmpl.md` — compiler lock, 3 build profiles, sanitizer governance, reproducible builds **DONE**
+25. `PERFORMANCE_BENCHMARKING_SPEC.tmpl.md` — measurement protocol, statistical reporting, performance budgets, scaling analysis **DONE**
+26. `CONCURRENCY_TESTING_SPEC.tmpl.md` — TSan integration, race condition tripwires, deadlock detection, stress testing **DONE**
+27. `systems-benchmark` profile (12 templates) in `init_project.sh` **DONE**
+28. ENVIRONMENT_CONTRACT Appendix D — C/C++ determinism defaults **DONE**
+29. EXPERIMENT_CONTRACT §4.2 — generalized to "Baseline State Matching" **DONE**
+30. TEST_ARCHITECTURE §3.4 — C/C++ synthetic fixtures + performance regression tests **DONE**
+31. METRICS_CONTRACT Appendix D — systems sanity checks **DONE**
+32. ADVERSARIAL_EVALUATION Appendix B — systems security (sanitizers, fuzzing, static analysis) **DONE**
+33. RUBRIC_TRACEABILITY — Research Question Traceability appendix for self-directed projects **DONE**
+34. project.yaml.example — systems config + security-domain dataset examples **DONE**
+35. TEMPLATE_INDEX, ROADMAP, CLAUDE.md updated for v2.3 **DONE**
 
 **Remaining (future — requires Claude Agent SDK integration):**
 - Automated prompt-audit execution via orchestrate.py agent mode
