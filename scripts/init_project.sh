@@ -20,7 +20,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TEMPLATES_DIR="${SCRIPT_DIR}/templates"
 
 usage() {
-    echo "Usage: bash $0 <project-dir> [--profile <profile>]"
+    echo "Usage: bash $0 <project-dir> [--profile <profile>] [--generate]"
+    echo ""
+    echo "Options:"
+    echo "  --profile <profile>  Choose a template profile (default: supervised)"
+    echo "  --generate           Copy project.yaml.example and run generators"
     echo ""
     echo "Profiles:"
     echo "  minimal       — 3 core contracts (Environment, Data, Metrics)"
@@ -44,9 +48,10 @@ fi
 PROJECT_DIR="$1"
 shift
 
-# Parse --profile flag or positional tier argument
+# Parse flags
 PROFILE="supervised"
-if [[ $# -ge 1 ]]; then
+GENERATE=false
+while [[ $# -gt 0 ]]; do
     case "$1" in
         --profile)
             if [[ $# -ge 2 ]]; then
@@ -57,6 +62,10 @@ if [[ $# -ge 1 ]]; then
                 usage
             fi
             ;;
+        --generate)
+            GENERATE=true
+            shift
+            ;;
         minimal|standard|supervised|optimization|unsupervised|rl-agent|full)
             PROFILE="$1"
             shift
@@ -66,7 +75,7 @@ if [[ $# -ge 1 ]]; then
             usage
             ;;
     esac
-fi
+done
 
 # Map legacy tier names
 case "$PROFILE" in
@@ -266,11 +275,47 @@ case "$PROFILE" in
         ;;
 esac
 
+# --- Copy CLAUDE.md template if it exists ---
+if [[ -f "${MGMT}/CLAUDE_MD.tmpl.md" ]]; then
+    copy_template "${MGMT}/CLAUDE_MD.tmpl.md"
+fi
+
+# --- Generate scaffolding if --generate flag is set ---
+if [[ "$GENERATE" == true ]]; then
+    echo ""
+    echo "--- Scaffolding Generator ---"
+
+    # Copy project.yaml.example if no project.yaml exists
+    if [[ ! -f "${PROJECT_DIR}/project.yaml" ]]; then
+        cp "${SCRIPT_DIR}/project.yaml.example" "${PROJECT_DIR}/project.yaml"
+        echo "  + project.yaml (from example — edit before running generators)"
+    fi
+
+    GENERATORS_DIR="${SCRIPT_DIR}/scripts/generators"
+    if [[ -f "${GENERATORS_DIR}/generate_all.py" ]]; then
+        echo ""
+        echo "Running generators..."
+        python3 "${GENERATORS_DIR}/generate_all.py" "${PROJECT_DIR}/project.yaml" \
+            --output-dir "${PROJECT_DIR}"
+    else
+        echo "  WARNING: Generators not found at ${GENERATORS_DIR}"
+        echo "  Run generators manually after editing project.yaml:"
+        echo "    python scripts/generators/generate_all.py project.yaml"
+    fi
+fi
+
 echo ""
 echo "Done. Next steps:"
 echo "  1. Open each file in docs/ and fill in {{PLACEHOLDER}} values"
 echo "  2. Start with ENVIRONMENT_CONTRACT.md and DATA_CONTRACT.md"
-echo "  3. Use the Prompt Playbook for AI-assisted customization:"
-echo "     https://github.com/<your-org>/ml-governance-templates/blob/main/PROMPT_PLAYBOOK.md"
-echo "  4. Delete the Customization Guide section from each file when done"
-echo "  5. Commit: git add docs/ && git commit -m 'Initialize project governance'"
+if [[ "$GENERATE" == true ]]; then
+    echo "  3. Edit project.yaml with your experiment matrix, phases, and artifacts"
+    echo "  4. Re-run generators: python scripts/generators/generate_all.py project.yaml"
+    echo "  5. Fill in {{PLACEHOLDER}} values in docs/CLAUDE_MD.md"
+else
+    echo "  3. Use the Prompt Playbook for AI-assisted customization:"
+    echo "     https://github.com/<your-org>/ml-governance-templates/blob/main/PROMPT_PLAYBOOK.md"
+    echo "  4. (Optional) Add --generate flag to also set up project.yaml + generators"
+fi
+echo "  Delete the Customization Guide section from each file when done"
+echo "  Commit: git add docs/ && git commit -m 'Initialize project governance'"

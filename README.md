@@ -1,6 +1,6 @@
 # ML Project Governance Templates
 
-A reusable framework of 25 governance templates for machine learning projects — from experiment design through publication.
+A reusable framework of 26 governance templates + executable scaffolding generators for machine learning projects — from experiment design through publication.
 
 ---
 
@@ -24,10 +24,15 @@ A suite of markdown templates organized into four tiers that provide structure, 
 # Choose a quickstart profile matching your project type
 bash scripts/init_project.sh /path/to/your/project --profile supervised
 
+# With executable scaffolding (v2.1): copies templates + project.yaml + runs generators
+bash scripts/init_project.sh /path/to/your/project --profile rl-agent --generate
+
 # Available profiles: minimal, supervised, optimization, unsupervised, rl-agent, full
 ```
 
 Then fill in `{{PLACEHOLDERS}}` in each template — start with ENVIRONMENT_CONTRACT and DATA_CONTRACT.
+
+**With `--generate`:** Also edit `project.yaml` with your experiment matrix, phase gates, and artifact config, then re-run `python scripts/generators/generate_all.py project.yaml` to regenerate scripts.
 
 **Prompt-driven alternative:** Use the [Prompt Playbook](PROMPT_PLAYBOOK.md) to walk through template customization with an AI assistant. Stages 1-5 go from raw problem statement to filled templates; Stage 6 is the hallucination firewall.
 
@@ -69,6 +74,7 @@ Project tracking for multi-phase work with dependencies and change control.
 | `DECISION_LOG` | ADR-format architecture decision records |
 | `CHANGELOG` | CONTRACT_CHANGE tracking with artifact regeneration |
 | `PRIOR_WORK_REUSE` | Vendor snapshot strategy for reusing prior project artifacts |
+| `CLAUDE_MD` | Claude Code project context with authority hierarchy and phase awareness |
 
 ### Report & Delivery (`templates/report/` — 4 templates + 1 reference)
 
@@ -161,10 +167,12 @@ The [Prompt Playbook](PROMPT_PLAYBOOK.md) provides AI-assisted workflows:
 ```
 ml-governance-templates/
 +-- README.md
++-- ROADMAP.md                             # Version history and planned generators
 +-- TEMPLATE_INDEX.md                      # Full inventory, profiles, dependency graph
 +-- PROMPT_PLAYBOOK.md                     # AI-assisted customization prompts
 +-- EXECUTION_PLAN.md                      # v2.0 upgrade plan
 +-- CLAUDE.md                              # AI assistant project context
++-- project.yaml.example                   # Structured config schema for generators
 +-- templates/
 |   +-- core/                              # 13 templates
 |   |   +-- DATA_CONTRACT.tmpl.md
@@ -180,13 +188,14 @@ ml-governance-templates/
 |   |   +-- TEST_ARCHITECTURE.tmpl.md
 |   |   +-- ADVERSARIAL_EVALUATION.tmpl.md
 |   |   +-- ENVIRONMENT_SPEC.tmpl.md
-|   +-- management/                        # 6 templates
+|   +-- management/                        # 7 templates
 |   |   +-- IMPLEMENTATION_PLAYBOOK.tmpl.md
 |   |   +-- TASK_BOARD.tmpl.md
 |   |   +-- RISK_REGISTER.tmpl.md
 |   |   +-- DECISION_LOG.tmpl.md
 |   |   +-- CHANGELOG.tmpl.md
 |   |   +-- PRIOR_WORK_REUSE.tmpl.md
+|   |   +-- CLAUDE_MD.tmpl.md
 |   +-- report/                            # 4 templates + 1 reference
 |   |   +-- REPORT_ASSEMBLY_PLAN.tmpl.md
 |   |   +-- REPRODUCIBILITY_SPEC.tmpl.md
@@ -204,7 +213,13 @@ ml-governance-templates/
 |   +-- rl-agent/
 |   +-- publishing/
 +-- scripts/
-    +-- init_project.sh                    # Copy templates with --profile flag
+    +-- init_project.sh                    # Copy templates with --profile and --generate flags
+    +-- generators/                        # v2.1 code generators
+        +-- generate_all.py                # Master runner — invokes all generators
+        +-- orchestrate.py                 # Agent orchestrator (Claude Agent SDK / standalone)
+        +-- gen_sweep.py                   # G1: experiment sweep script
+        +-- gen_manifest_verifier.py       # G5: artifact integrity verifier
+        +-- gen_phase_gates.py             # G6: phase gate check scripts
 ```
 
 ---

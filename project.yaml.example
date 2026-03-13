@@ -1,0 +1,150 @@
+# project.yaml — Structured project definition for ml-governance-templates generators
+#
+# This file drives the v3.0 code generators. Fill it in after running init_project.sh,
+# then run the generators to produce working scripts, tests, and CI checks.
+#
+# Usage:
+#   1. Copy this file to your project root as project.yaml
+#   2. Fill in the values below
+#   3. Run: python /path/to/ml-governance-templates/scripts/generators/gen_sweep.py project.yaml
+#      Or:  python /path/to/ml-governance-templates/scripts/generators/generate_all.py project.yaml
+
+# ─── Project Metadata ──────────────────────────────────────────────────────────
+project:
+  name: "CS 7643 HW3 Visualization"
+  course: "CS 7643"                    # Optional — for academic projects
+  profile: "supervised"                # Which template profile was used
+  python_version: "3.10"
+  conda_env: "cs7643-hw3"
+
+# ─── Authority Hierarchy ───────────────────────────────────────────────────────
+authority:
+  tier1: "requirements/hw3_spec.md"        # Primary specification (highest authority)
+  tier2: "requirements/hw3_faq.md"         # Clarifications
+  tier3: null                              # Advisory (Piazza, etc.)
+
+# ─── Experiment Matrix ─────────────────────────────────────────────────────────
+# Defines what sweep.sh will iterate over.
+experiments:
+  seeds: [42, 123, 456, 789, 1024]
+  seed_count_ec: 30                        # Extra credit seed count (if applicable)
+
+  parts:
+    - name: "saliency"
+      methods: ["vanilla_grad", "smoothgrad"]
+      datasets: ["imagenet_val"]
+      script: "scripts/run_saliency.py"
+      flags: "--method {method} --dataset {dataset} --seed {seed}"
+      output_dir: "outputs/part1/{dataset}/{method}/seed_{seed}"
+
+    - name: "gradcam"
+      methods: ["gradcam", "guided_gradcam"]
+      datasets: ["imagenet_val"]
+      script: "scripts/run_gradcam.py"
+      flags: "--method {method} --dataset {dataset} --seed {seed}"
+      output_dir: "outputs/part2/{dataset}/{method}/seed_{seed}"
+
+    - name: "fooling"
+      methods: ["fgsm", "pgd"]
+      datasets: ["imagenet_val"]
+      script: "scripts/run_fooling.py"
+      flags: "--method {method} --dataset {dataset} --seed {seed}"
+      output_dir: "outputs/part3/{dataset}/{method}/seed_{seed}"
+
+# ─── Datasets ──────────────────────────────────────────────────────────────────
+datasets:
+  - name: "imagenet_val"
+    url: "https://example.com/imagenet_val_subset.tar.gz"
+    sha256: "abc123..."
+    local_path: "data/imagenet_val"
+    splits:
+      train: 0.8
+      val: 0.1
+      test: 0.1
+
+# ─── Configuration Hierarchy ──────────────────────────────────────────────────
+config:
+  base: "config/base.yaml"
+  layers:
+    - pattern: "config/dataset_{dataset}.yaml"
+    - pattern: "config/method_{method}.yaml"
+  resolved_output: "config_resolved.yaml"       # Written per run
+  locked_keys: ["seeds", "eval_episodes"]        # Cannot be overridden by CLI
+
+# ─── Phase Gates ───────────────────────────────────────────────────────────────
+# Each phase has a name and a list of checks that must pass.
+phases:
+  - name: "Phase 0: Setup"
+    checks:
+      - command: "bash scripts/verify_env.sh"
+        description: "Environment matches environment.yml"
+      - command: "python scripts/check_data_ready.py"
+        description: "All datasets downloaded and checksums match"
+
+  - name: "Phase 1: Data Validation"
+    checks:
+      - command: "python -m pytest tests/test_leakage.py -v"
+        description: "All leakage tripwires pass"
+      - command: "python -m pytest tests/test_determinism.py -v"
+        description: "Same seed produces identical output"
+
+  - name: "Phase 2: Hypotheses"
+    checks:
+      - command: "test -s docs/HYPOTHESIS_CONTRACT.md"
+        description: "Hypotheses file is non-empty"
+      - command: "grep -c '^### H-' docs/HYPOTHESIS_CONTRACT.md | grep -v '^0$'"
+        description: "At least one hypothesis defined"
+
+  - name: "Phase 3: Experiments"
+    checks:
+      - command: "bash scripts/sweep.sh --parts all"
+        description: "All experiment parts complete"
+
+  - name: "Phase 4: Artifacts"
+    checks:
+      - command: "python scripts/make_report_artifacts.py"
+        description: "Figures and tables generated"
+      - command: "python scripts/verify_manifests.py"
+        description: "All artifact hashes verified"
+
+  - name: "Phase 5: Report"
+    checks:
+      - command: "python scripts/pre_submission_check.py"
+        description: "Pre-submission checklist passes"
+
+# ─── Artifact Manifest ─────────────────────────────────────────────────────────
+artifacts:
+  run_id_pattern: "{part}_{method}_{dataset}_seed{seed}"
+  per_run_files:
+    - "summary.json"
+    - "config_resolved.yaml"
+    - "metrics.csv"
+  hash_algorithm: "sha256"
+  manifest_file: "artifact_manifest.json"
+
+# ─── Leakage Prevention ───────────────────────────────────────────────────────
+leakage:
+  rules:
+    - id: "LT-1"
+      description: "Preprocessing fit on train only"
+      test: "test_fit_isolation"
+    - id: "LT-2"
+      description: "Test access forbidden until final_eval"
+      test: "test_no_test_access"
+    - id: "LT-3"
+      description: "No fit_transform on val/test"
+      test: "test_transform_only"
+
+# ─── AI Division of Labor ─────────────────────────────────────────────────────
+ai_governance:
+  tools:
+    - name: "Claude Code"
+      role: "Coding copilot"
+      permitted: ["code generation", "test generation", "script execution", "governance audit"]
+      prohibited: ["report prose", "hypothesis formulation", "figure interpretation"]
+    - name: "GitHub Copilot"
+      role: "Inline completions"
+      permitted: ["autocomplete", "docstrings"]
+      prohibited: ["full function generation without review"]
+  anti_ghostwriting: true
+  test_set_barrier: true

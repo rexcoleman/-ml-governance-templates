@@ -1,7 +1,8 @@
 # Template Index
 
-Complete inventory of all 25 governance templates with descriptions, dependencies, quickstart profiles, and dependency graph.
+Complete inventory of all 27 governance templates + 4 generators with descriptions, dependencies, quickstart profiles, and dependency graph.
 
+> **v2.1:** Added CLAUDE_MD template, `project.yaml` config schema, and 3 code generators (G1, G5, G6) + master runner.
 > **v2.0:** All templates have version metadata, authority hierarchy headers, companion contract
 > cross-references, verification annotations on MUST requirements, and enforcement mechanisms.
 
@@ -39,6 +40,7 @@ Complete inventory of all 25 governance templates with descriptions, dependencie
 | 17 | **Decision Log** | `DECISION_LOG.tmpl.md` | — | Making architectural decisions that need to be recorded |
 | 18 | **Changelog** | `CHANGELOG.tmpl.md` | Decision Log | Tracking CONTRACT_CHANGE commits |
 | 19 | **Prior Work Reuse** | `PRIOR_WORK_REUSE.tmpl.md` | Data, Environment | Reusing code/data/models from a prior project |
+| 27 | **Claude Code Context** | `CLAUDE_MD.tmpl.md` | All core contracts, Phases | You want governed AI collaboration with phase awareness and authority hierarchy |
 
 ---
 
@@ -61,6 +63,39 @@ Complete inventory of all 25 governance templates with descriptions, dependencie
 | 24 | **Publication Brief** | `PUBLICATION_BRIEF.tmpl.md` | Report Assembly, Hypothesis | You need message governance: target reader, anti-claims, portfolio alignment |
 | 25 | **Academic Integrity Firewall** | `ACADEMIC_INTEGRITY_FIREWALL.tmpl.md` | AI Division of Labor, Prior Work Reuse | You need explicit data/code/content reuse boundaries and verification |
 | 26 | **Lean Hypothesis** | `LEAN_HYPOTHESIS.tmpl.md` | Hypothesis Contract, Publication Brief | You need strategic hypothesis framing with kill criteria and validation plans |
+
+---
+
+## Executable Scaffolding (`scripts/generators/`)
+
+| # | Generator | Input (project.yaml) | Output | Purpose |
+|---|-----------|---------------------|--------|---------|
+| G1 | `gen_sweep.py` | `experiments` | `scripts/sweep.sh` | Experiment orchestration with nested method × dataset × seed loops |
+| G5 | `gen_manifest_verifier.py` | `artifacts` | `scripts/verify_manifests.py` | SHA-256 artifact integrity verification |
+| G6 | `gen_phase_gates.py` | `phases` | `scripts/check_phase_*.sh` | Phase gate check scripts + all-gates runner |
+| — | `generate_all.py` | All sections | All of the above | Master runner that invokes G1, G5, G6 in sequence |
+| — | `orchestrate.py` | All sections | All of the above | Agent orchestrator — Claude Agent SDK (agent mode), standalone, dry-run |
+
+**Config file:** `project.yaml` (see `project.yaml.example` for full schema)
+
+```bash
+# Agent mode — Claude Agent SDK reads project.yaml, reasons about what to generate
+python scripts/generators/orchestrate.py project.yaml
+
+# Standalone mode — deterministic, no LLM calls (works in CI)
+python scripts/generators/orchestrate.py project.yaml --standalone
+
+# Dry run — show what would be generated
+python scripts/generators/orchestrate.py project.yaml --dry-run
+
+# Simple mode — run all generators directly (no agent reasoning)
+python scripts/generators/generate_all.py project.yaml --output-dir .
+
+# Or run individually
+python scripts/generators/gen_sweep.py project.yaml --output scripts/sweep.sh
+python scripts/generators/gen_phase_gates.py project.yaml --output-dir scripts/
+python scripts/generators/gen_manifest_verifier.py project.yaml --output scripts/verify_manifests.py
+```
 
 ---
 

@@ -2,6 +2,7 @@
 
 <!-- version: 1.0 -->
 <!-- created: 2026-03-11 -->
+<!-- last_validated_against: none -->
 
 > **Authority Hierarchy**
 >

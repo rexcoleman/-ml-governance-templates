@@ -2,6 +2,7 @@
 
 <!-- version: 1.0 -->
 <!-- created: 2026-03-11 -->
+<!-- last_validated_against: none -->
 
 > **Activation:** This template is OPTIONAL. Include it when your project involves reinforcement
 > learning, simulation-based optimization, or any task where an agent interacts with a dynamic
