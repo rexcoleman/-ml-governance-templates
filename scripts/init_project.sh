@@ -5,12 +5,13 @@
 #   bash scripts/init_project.sh /path/to/project --profile <profile>
 #
 # Profiles:
-#   minimal       — 3 core contracts (Environment, Data, Metrics)
-#   supervised    — 11 templates for classification/regression projects
-#   optimization  — 11 templates for optimizer comparisons and ablation studies
-#   unsupervised  — 23 templates for clustering and dimensionality reduction
-#   rl-agent      — 24 templates for reinforcement learning projects
-#   full          — All 29 templates + IEEE reference
+#   minimal          — 3 core contracts (Environment, Data, Metrics)
+#   supervised       — 11 templates for classification/regression projects
+#   optimization     — 11 templates for optimizer comparisons and ablation studies
+#   unsupervised     — 23 templates for clustering and dimensionality reduction
+#   rl-agent         — 24 templates for reinforcement learning projects
+#   systems-benchmark — 12 templates for C/C++ systems projects with performance benchmarking
+#   full             — All 32 templates + IEEE reference
 #
 # Templates are copied to <project>/docs/ with .tmpl.md renamed to .md
 
@@ -27,12 +28,13 @@ usage() {
     echo "  --generate           Copy project.yaml.example and run generators"
     echo ""
     echo "Profiles:"
-    echo "  minimal       — 3 core contracts (Environment, Data, Metrics)"
-    echo "  supervised    — 11 templates for classification/regression [default]"
-    echo "  optimization  — 11 templates for optimizer comparisons, ablation studies"
-    echo "  unsupervised  — 23 templates for clustering, dimensionality reduction"
-    echo "  rl-agent      — 24 templates for reinforcement learning (full delivery)"
-    echo "  full          — All 29 templates + IEEE reference"
+    echo "  minimal          — 3 core contracts (Environment, Data, Metrics)"
+    echo "  supervised       — 11 templates for classification/regression [default]"
+    echo "  optimization     — 11 templates for optimizer comparisons, ablation studies"
+    echo "  unsupervised     — 23 templates for clustering, dimensionality reduction"
+    echo "  rl-agent         — 24 templates for reinforcement learning (full delivery)"
+    echo "  systems-benchmark — 12 templates for C/C++ systems projects"
+    echo "  full             — All 32 templates + IEEE reference"
     echo ""
     echo "Legacy tiers (backward-compatible):"
     echo "  minimal       — same as minimal profile"
@@ -66,7 +68,7 @@ while [[ $# -gt 0 ]]; do
             GENERATE=true
             shift
             ;;
-        minimal|standard|supervised|optimization|unsupervised|rl-agent|full)
+        minimal|standard|supervised|optimization|unsupervised|rl-agent|systems-benchmark|full)
             PROFILE="$1"
             shift
             ;;
@@ -83,7 +85,7 @@ case "$PROFILE" in
 esac
 
 # Validate profile
-VALID_PROFILES="minimal supervised optimization unsupervised rl-agent full"
+VALID_PROFILES="minimal supervised optimization unsupervised rl-agent systems-benchmark full"
 if ! echo "$VALID_PROFILES" | grep -qw "$PROFILE"; then
     echo "Error: Unknown profile '${PROFILE}'."
     echo "Available: ${VALID_PROFILES}"
@@ -215,8 +217,26 @@ RL_AGENT_FILES=(
     "${PUB}/ACADEMIC_INTEGRITY_FIREWALL.tmpl.md"
 )
 
+SYSTEMS_BENCHMARK_FILES=(
+    # Core (8)
+    "${CORE}/ENVIRONMENT_CONTRACT.tmpl.md"
+    "${CORE}/BUILD_SYSTEM_CONTRACT.tmpl.md"
+    "${CORE}/PERFORMANCE_BENCHMARKING_SPEC.tmpl.md"
+    "${CORE}/CONCURRENCY_TESTING_SPEC.tmpl.md"
+    "${CORE}/EXPERIMENT_CONTRACT.tmpl.md"
+    "${CORE}/METRICS_CONTRACT.tmpl.md"
+    "${CORE}/TEST_ARCHITECTURE.tmpl.md"
+    "${CORE}/FIGURES_TABLES_CONTRACT.tmpl.md"
+    # Management (1)
+    "${MGMT}/DECISION_LOG.tmpl.md"
+    # Report (3)
+    "${REPORT}/REPORT_ASSEMBLY_PLAN.tmpl.md"
+    "${REPORT}/REPORT_CONSISTENCY_SPEC.tmpl.md"
+    "${REPORT}/RUBRIC_TRACEABILITY.tmpl.md"
+)
+
 FULL_FILES=(
-    # Core (13)
+    # Core (16)
     "${CORE}/ENVIRONMENT_CONTRACT.tmpl.md"
     "${CORE}/DATA_CONTRACT.tmpl.md"
     "${CORE}/EXPERIMENT_CONTRACT.tmpl.md"
@@ -230,6 +250,9 @@ FULL_FILES=(
     "${CORE}/TEST_ARCHITECTURE.tmpl.md"
     "${CORE}/ADVERSARIAL_EVALUATION.tmpl.md"
     "${CORE}/ENVIRONMENT_SPEC.tmpl.md"
+    "${CORE}/BUILD_SYSTEM_CONTRACT.tmpl.md"
+    "${CORE}/PERFORMANCE_BENCHMARKING_SPEC.tmpl.md"
+    "${CORE}/CONCURRENCY_TESTING_SPEC.tmpl.md"
     # Management (6)
     "${MGMT}/IMPLEMENTATION_PLAYBOOK.tmpl.md"
     "${MGMT}/TASK_BOARD.tmpl.md"
@@ -277,8 +300,12 @@ case "$PROFILE" in
         echo "Copying RL / agent study templates (24 files):"
         for f in "${RL_AGENT_FILES[@]}"; do copy_template "$f"; done
         ;;
+    systems-benchmark)
+        echo "Copying systems benchmark templates (12 files):"
+        for f in "${SYSTEMS_BENCHMARK_FILES[@]}"; do copy_template "$f"; done
+        ;;
     full)
-        echo "Copying full template suite (29 files + IEEE reference):"
+        echo "Copying full template suite (32 files + IEEE reference):"
         for f in "${FULL_FILES[@]}"; do copy_template "$f"; done
         if [[ -f "${REPORT}/IEEE_Report_Template.tex" ]]; then
             copy_raw "${REPORT}/IEEE_Report_Template.tex"
@@ -286,7 +313,7 @@ case "$PROFILE" in
         ;;
     *)
         echo "Error: Unknown profile '${PROFILE}'."
-        echo "Available: minimal, supervised, optimization, unsupervised, rl-agent, full"
+        echo "Available: minimal, supervised, optimization, unsupervised, rl-agent, systems-benchmark, full"
         exit 1
         ;;
 esac

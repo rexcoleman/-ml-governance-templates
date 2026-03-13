@@ -261,3 +261,53 @@ The following changes require a `CONTRACT_CHANGE` commit:
 - Defense methods or adversarial training protocol
 - Evaluation protocol or baseline list
 - Disclosure requirements
+
+---
+
+## Appendix B: Systems Security Evaluation (Optional)
+
+> **Activation:** Include this appendix when your project involves systems-level security analysis
+> (buffer overflows, memory corruption, race conditions in security-critical code). Delete if
+> not applicable.
+
+### B.1 Sanitizer-Based Vulnerability Detection
+
+| Tool | What It Finds | Build Flag | When Required |
+|------|---------------|-----------|---------------|
+| **AddressSanitizer (ASan)** | Buffer overflows, use-after-free, stack overflow | `-fsanitize=address` | Always |
+| **MemorySanitizer (MSan)** | Uninitialized memory reads | `-fsanitize=memory` | When processing untrusted input |
+| **UndefinedBehaviorSanitizer (UBSan)** | Integer overflow, null deref, type confusion | `-fsanitize=undefined` | Always |
+| **ThreadSanitizer (TSan)** | Data races, lock-order inversions | `-fsanitize=thread` | When project uses concurrency |
+
+**Rule:** All test suites MUST pass under ASan + UBSan with zero findings before any security claims. See [BUILD_SYSTEM_CONTRACT](BUILD_SYSTEM_CONTRACT.tmpl.md) §5 for sanitizer build governance.
+
+### B.2 Fuzzing Protocol
+
+| Property | Value |
+|----------|-------|
+| **Fuzzer** | *(e.g., AFL++, libFuzzer, honggfuzz)* |
+| **Corpus** | *(e.g., seed inputs from test suite + manually crafted edge cases)* |
+| **Duration** | *(e.g., minimum 1 hour per target, or until coverage plateau)* |
+| **Targets** | *(list functions/interfaces to fuzz)* |
+
+**Rule:** Fuzzing MUST target all functions that process external input. Crashes found by fuzzing MUST be triaged, fixed, and added to the regression test suite.
+
+**Verification:** Fuzzing coverage report shows all target functions reached. Zero crashes in final fuzzing pass.
+
+### B.3 Static Analysis
+
+| Tool | Purpose | When Required |
+|------|---------|---------------|
+| **Clang Static Analyzer** | Buffer overflows, null derefs, logic errors | Always |
+| **cppcheck** | Undefined behavior, resource leaks | C/C++ projects |
+| **Coverity** | Deep path analysis | If available |
+
+**Rule:** Static analysis MUST produce zero high-severity findings before release. Medium-severity findings MUST be triaged (fix or document suppression with justification).
+
+### B.4 Security Evaluation Reporting
+
+The report MUST include:
+- Sanitizer findings summary (total found, total fixed, any suppressions)
+- Fuzzing results (duration, corpus size, unique crashes found and resolved)
+- Static analysis summary (findings by severity, resolution status)
+- Residual risk assessment for any unresolved findings

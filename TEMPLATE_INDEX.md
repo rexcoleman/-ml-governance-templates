@@ -1,6 +1,6 @@
 # govML — Template Index
 
-Complete inventory of all 29 governance templates + 4 generators (+ 4 planned) with descriptions, dependencies, quickstart profiles, and dependency graph.
+Complete inventory of all 32 governance templates + 4 generators (+ 4 planned) with descriptions, dependencies, quickstart profiles, and dependency graph.
 
 > **v2.1:** Added CLAUDE_MD template, `project.yaml` config schema, and 3 code generators (G1, G5, G6) + master runner.
 > **v2.0:** All templates have version metadata, authority hierarchy headers, companion contract
@@ -25,8 +25,11 @@ Complete inventory of all 29 governance templates + 4 generators (+ 4 planned) w
 | 11 | **Test Architecture** | `TEST_ARCHITECTURE.tmpl.md` | Data, Experiment, Metrics, Configuration | You need structured testing with leakage, determinism, and sanity categories |
 | 12 | **Adversarial Evaluation** | `ADVERSARIAL_EVALUATION.tmpl.md` | Experiment, Metrics, Data | *(Optional)* You need adversarial robustness evaluation with threat models |
 | 13 | **Environment Spec (RL)** | `ENVIRONMENT_SPEC.tmpl.md` | Environment Contract | *(Optional)* You have RL/simulation environments requiring MDP specification |
+| 30 | **Build System Contract** | `BUILD_SYSTEM_CONTRACT.tmpl.md` | Environment Contract | *(Optional)* You use compiled languages (C/C++/Rust) and need compiler lock, sanitizer governance, reproducible builds |
+| 31 | **Performance Benchmarking Spec** | `PERFORMANCE_BENCHMARKING_SPEC.tmpl.md` | Build System, Environment | *(Optional)* You need governed performance measurement (latency, throughput, memory) with statistical reporting |
+| 32 | **Concurrency Testing Spec** | `CONCURRENCY_TESTING_SPEC.tmpl.md` | Build System, Environment, Performance | *(Optional)* You use threads/concurrency and need race condition, deadlock, and synchronization testing |
 
-**Recommended setup order:** Environment → Data → Metrics → Hypothesis → Experiment → Configuration → Scripts → Figures/Tables → Artifacts → Test Architecture → AI Division of Labor → *(optional: Adversarial, RL Environment)*
+**Recommended setup order:** Environment → Data → Metrics → Hypothesis → Experiment → Configuration → Scripts → Figures/Tables → Artifacts → Test Architecture → AI Division of Labor → *(optional: Adversarial, RL Environment, Build System, Performance, Concurrency)*
 
 ---
 
@@ -254,15 +257,40 @@ bash scripts/init_project.sh /path/to/project --profile rl-agent
 
 ---
 
-### Full + Publishing (all 26 templates)
+### Systems Benchmark (12 templates)
+
+**Use for:** C/C++ systems projects with performance benchmarking, concurrency testing, and build reproducibility requirements.
+
+| Template | Optional Appendices |
+|----------|-------------------|
+| ENVIRONMENT_CONTRACT | Activate Appendix D (C/C++ Determinism Defaults) |
+| BUILD_SYSTEM_CONTRACT | Full activation (compiler lock, sanitizers, reproducibility) |
+| PERFORMANCE_BENCHMARKING_SPEC | Full activation (latency, throughput, memory, scaling) |
+| CONCURRENCY_TESTING_SPEC | Activate sections based on sync primitives used |
+| EXPERIMENT_CONTRACT | Use §4.2 systems baseline state matching protocol |
+| METRICS_CONTRACT | Activate Appendix D (Systems Sanity Checks) |
+| TEST_ARCHITECTURE | Activate §3.4 (C/C++ Synthetic Fixtures + performance regression tests) |
+| FIGURES_TABLES_CONTRACT | — |
+| DECISION_LOG | — |
+| REPORT_ASSEMBLY_PLAN | — |
+| REPORT_CONSISTENCY_SPEC | Fill jargon inventory and terminology lock |
+| RUBRIC_TRACEABILITY | Fill rubric/FAQ items or use Research Question Traceability variant |
+
+```bash
+bash scripts/init_project.sh /path/to/project --profile systems-benchmark
+```
+
+---
+
+### Full + Publishing (all 29 templates)
 
 **Use for:** Complex multi-phase projects with prior work reuse, strict compliance, formal delivery, and publication/portfolio goals.
 
 | Template | Optional Appendices |
 |----------|-------------------|
-| All 13 core templates | Activate appendices based on project type (supervised, unsupervised, RL, adversarial) |
+| All 16 core templates | Activate appendices based on project type (supervised, unsupervised, RL, adversarial, systems) |
 | All 6 management templates | — |
-| All 4 report templates | — |
+| All 6 report templates | — |
 | All 3 publishing templates | — |
 
 ```bash
@@ -309,6 +337,14 @@ graph TD
     ADV --> METRICS
     ADV --> DATA
     ENVSPEC[Environment Spec RL] --> ENV
+
+    %% Systems contracts
+    BUILD[Build System Contract] --> ENV
+    PERF[Performance Benchmarking Spec] --> BUILD
+    PERF --> ENV
+    CONC[Concurrency Testing Spec] --> BUILD
+    CONC --> ENV
+    CONC --> PERF
 
     %% AI governance
     AI[AI Division of Labor] --> EXP
@@ -364,7 +400,7 @@ graph TD
     classDef optional fill:#fce4ec,stroke:#c62828,stroke-dasharray: 5 5
 
     class ENV,DATA,METRICS,EXP,FIG,ART,SCRIPT,HYPO,AI,CONFIG,TEST core
-    class ADV,ENVSPEC optional
+    class ADV,ENVSPEC,BUILD,PERF,CONC optional
     class PLAY,TASK,RISK,DLOG,CLOG,PRIOR mgmt
     class RAP,REPRO,CHECK,MANIFEST,RCS,RUBRIC report
     class PUB,FIREWALL,LEAN publish

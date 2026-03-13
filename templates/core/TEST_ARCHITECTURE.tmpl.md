@@ -226,6 +226,60 @@ def synthetic_split(tmp_path):
 - **Stay small:** Synthetic datasets should be small (100-500 rows) for fast tests
 - **No real data in tests:** Unit and integration tests MUST NOT require real dataset files
 
+### 3.4 C/C++ Synthetic Fixtures (Optional)
+
+> **Activation:** Include when the project uses C/C++ with test frameworks like Check, Google Test,
+> or Catch2. Delete if not applicable.
+
+#### Test Framework Integration
+
+| Framework | Fixture Pattern | Example |
+|-----------|----------------|---------|
+| **Google Test** | `TEST_F` with fixture class | `class BenchFixture : public ::testing::Test` |
+| **Catch2** | `SECTION` blocks with shared setup | `TEST_CASE("barrier") { SECTION("2 threads") { ... } }` |
+| **Check** | `START_TEST` / `END_TEST` with `tcase_add_test` | `START_TEST(test_race) { ... } END_TEST` |
+| **Custom** | `setup()` / `teardown()` functions | Per-test memory allocation and cleanup |
+
+#### Conftest Pattern (C)
+
+```c
+// tests/test_utils.h — Shared test utilities
+#ifndef TEST_UTILS_H
+#define TEST_UTILS_H
+
+#include <stdlib.h>
+#include <string.h>
+
+// Deterministic synthetic input generation
+static inline int* make_synthetic_array(size_t n, unsigned seed) {
+    int* arr = malloc(n * sizeof(int));
+    srand(seed);
+    for (size_t i = 0; i < n; i++) {
+        arr[i] = rand() % 10000;
+    }
+    return arr;
+}
+
+// Fixed test seed
+#define TEST_SEED 42
+#define SMALL_N 100
+#define MEDIUM_N 1000
+
+#endif // TEST_UTILS_H
+```
+
+#### Performance Regression Tests
+
+For systems projects, include performance regression tests that fail if a change degrades performance beyond a threshold:
+
+| Test ID | What It Checks | Threshold | Action on Failure |
+|---------|---------------|-----------|-------------------|
+| PERF-1 | Latency regression | Median > 110% of baseline | Fail CI; investigate |
+| PERF-2 | Memory regression | Peak RSS > 110% of baseline | Fail CI; investigate |
+| PERF-3 | Throughput regression | Ops/sec < 90% of baseline | Warn; review |
+
+**Rule:** Performance baselines MUST be committed to version control (e.g., `tests/baselines/perf_baseline.json`). Baselines are updated only via explicit `BASELINE_UPDATE` commits.
+
 ---
 
 ## 4) Marker-Based Test Skipping

@@ -169,13 +169,19 @@ Test split is accessible ONLY through the final evaluation script. All other scr
 - **Stability list:** {{SEED_LIST}}
 - Seeds are set before every experiment via the deterministic seeding function (see ENVIRONMENT_CONTRACT §8)
 
-### 4.2 Weight Initialization Matching
+### 4.2 Baseline State Matching
 
-For experiments that compare different methods on the same architecture, all methods MUST start from identical initial weights.
+For experiments that compare different methods on the same system, all methods MUST start from an identical baseline state. The exact form of the baseline depends on the project domain:
 
-**Verification:** Forward-pass equality check at run start. Assert `torch.allclose(output_method_A, output_method_B, atol=1e-6)` for all method pairs within a part/seed.
+| Domain | Baseline State | Verification Method |
+|--------|---------------|-------------------|
+| **Neural networks** | Initial weight `state_dict` | Forward-pass equality within tolerance (1e-6) |
+| **Systems / C/C++** | Compiled binary + input data + initial memory state | Binary hash equality + input hash equality |
+| **RL agents** | Initial policy weights + environment seed | First-episode trajectory equality |
 
-#### Protocol
+**Verification:** All methods within a part share an identical baseline. The verification method above confirms equality at run start.
+
+#### Protocol (Neural Network Projects)
 
 1. **Initialize once per seed:** Create the model with the current seed and save the initial `state_dict`:
    ```python
@@ -199,23 +205,34 @@ For experiments that compare different methods on the same architecture, all met
        f"Init mismatch: method {method} diverges from reference at seed {seed}"
    ```
 
+#### Protocol (Systems / C/C++ Projects)
+
+1. **Build once per configuration:** Compile the binary with locked build profile (see BUILD_SYSTEM_CONTRACT §3). Record binary hash.
+2. **Share input data:** All compared methods receive identical input files. Record input hashes.
+3. **Verify identical start:** Assert binary hash and input hash match across all method runs.
+
 #### Storage Convention
 
 ```
-outputs/init_weights/
+outputs/init_weights/          # Neural network projects
 ├── {{DATASET_1_NAME}}_seed_42.pt
 ├── {{DATASET_1_NAME}}_seed_123.pt
+└── ...
+
+outputs/baseline_state/        # Systems projects
+├── binary_hash.json
+├── input_hashes.json
 └── ...
 ```
 
 #### Scope
 
-Init-weight matching applies to:
+Baseline state matching applies to:
 - All methods within a single part (e.g., all optimizers in Part 2)
 - All methods across dependent parts (e.g., Part 3 uses the same init as Part 2)
 - Part composition experiments (e.g., Part 4 gradient phase uses the same init)
 
-Init-weight matching does NOT apply to:
+Baseline state matching does NOT apply to:
 - Methods with fundamentally different architectures (if permitted by the experiment design)
 - Black-box optimization phases where the "initialization" is the pre-trained weights from a prior phase
 

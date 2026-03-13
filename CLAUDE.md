@@ -1,19 +1,20 @@
 # govML — Claude Code Context
 
 ## Project Purpose
-Reusable governance framework for ML experiment projects. **v2.2** — 29 templates across 4 directories, 6 quickstart profiles, AI-assisted prompt playbook (stages 1-10), 7 code generators + master runner + audit pipeline.
+Reusable governance framework for ML and systems experiment projects. **v2.3** — 32 templates across 4 directories, 7 quickstart profiles, AI-assisted prompt playbook (stages 1-10), 7 code generators + master runner + audit pipeline.
 
 ## Key Files
-- `TEMPLATE_INDEX.md` — full inventory (29 templates), 6 quickstart profiles, Mermaid dependency graph
+- `TEMPLATE_INDEX.md` — full inventory (32 templates), 7 quickstart profiles, Mermaid dependency graph
 - `ROADMAP.md` — version history, planned generators, orchestration maturity model
 - `PROMPT_PLAYBOOK.md` — AI-assisted customization workflow (stages 1-10 + 1b, 4f-4k)
 - `AUDIT_AUTOMATION_PLAN.md` — 10-lens audit pipeline architecture and implementation roadmap
 - `README.md` — project overview with template tiers and profiles
 - `EXECUTION_PLAN.md` — v2.0 upgrade plan (31 upgrades, all complete)
 - `project.yaml.example` — structured config schema for generators (incl. audit section)
-- `templates/core/` — 13 core contract templates
+- `templates/core/` — 16 core contract templates (incl. BUILD_SYSTEM_CONTRACT, PERFORMANCE_BENCHMARKING_SPEC, CONCURRENCY_TESTING_SPEC)
 - `templates/management/` — 7 project management templates (including CLAUDE_MD)
 - `templates/report/` — 6 delivery templates + IEEE LaTeX reference (incl. REPORT_CONSISTENCY_SPEC, RUBRIC_TRACEABILITY)
+- `scripts/init_project.sh` supports `--profile systems-benchmark` for C/C++ projects
 - `templates/publishing/` — 3 publishing templates
 - `docs/references/` — canonical references (Ten_Simple_Rules_Kording_Mensh.md)
 - `examples/` — worked examples per quickstart profile
@@ -52,6 +53,7 @@ After completing each phase, run the phase-appropriate audit:
 - `v2.0` — Phase 3: New templates + final polish (U10, U11, U22-U27, U29-U31, README, init script)
 - `v2.1` — Layer 2: Executable scaffolding (project.yaml, generators G1/G5/G6, CLAUDE_MD template, --generate flag)
 - `v2.2` — Audit automation: REPORT_CONSISTENCY_SPEC + RUBRIC_TRACEABILITY templates, generators G13-G16, Stage 10 prompt playbook, audit schema in project.yaml
+- `v2.3` — Systems benchmark: BUILD_SYSTEM_CONTRACT + PERFORMANCE_BENCHMARKING_SPEC + CONCURRENCY_TESTING_SPEC, systems-benchmark profile, C/C++ appendices in 5 existing templates
 
 ## All 31 Upgrades — COMPLETE
 - Phase 1 (U1-U9, U28): Version headers, authority hierarchy, companion contracts, customization guides, enforcement pass, new core templates, config scoring appendix

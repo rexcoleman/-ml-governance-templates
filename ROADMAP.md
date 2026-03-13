@@ -9,13 +9,28 @@
 
 ### v2.0 (2026-02)
 - 26 templates across 4 directories (core, management, report, publishing)
-- 6 quickstart profiles: minimal, supervised, optimization, unsupervised, rl-agent, full
+- 6 quickstart profiles: minimal, supervised, optimization, unsupervised, rl-agent, full (systems-benchmark added v2.3)
 - `init_project.sh` with `--profile` flag
 - Prompt Playbook (stages 1-9) for AI-assisted customization
 - Worked examples per profile
 - Authority hierarchy, verification annotations, CONTRACT_CHANGE protocol
 
-### v2.2 (2026-03) — Current
+### v2.3 (2026-03) — Current
+- **Systems benchmark profile** — C/C++ project governance
+- 3 new templates (32 total):
+  - `BUILD_SYSTEM_CONTRACT.tmpl.md` — compiler lock, build profiles (debug/release/benchmark), sanitizer governance, warning governance, reproducible builds
+  - `PERFORMANCE_BENCHMARKING_SPEC.tmpl.md` — measurement protocol (warmup, iterations, timing), statistical reporting (median/P95/P99), performance budgets, scaling analysis, memory profiling
+  - `CONCURRENCY_TESTING_SPEC.tmpl.md` — ThreadSanitizer integration, race condition tripwires, deadlock detection, stress testing protocol, synchronization correctness
+- New `systems-benchmark` profile (12 templates) in `init_project.sh`
+- Template adaptations for C/C++ projects:
+  - ENVIRONMENT_CONTRACT: Appendix D (C/C++ Determinism — PRNG seeding, thread pool lock, compiler optimization, ASLR, FP determinism)
+  - EXPERIMENT_CONTRACT: §4.2 generalized from "Weight Initialization Matching" to "Baseline State Matching" (supports both neural networks and compiled binaries)
+  - TEST_ARCHITECTURE: §3.4 C/C++ Synthetic Fixtures (Google Test, Catch2, Check) + performance regression tests
+  - METRICS_CONTRACT: Appendix D (Systems Sanity Checks — null baseline, zero-overhead test, sequential consistency, memory sanity)
+  - ADVERSARIAL_EVALUATION: Appendix B (Systems Security — ASan/MSan/UBSan/TSan, fuzzing protocol, static analysis)
+- Full profile updated to 32 templates (16 core + 6 management + 6 report + 3 publishing + 1 reference)
+
+### v2.2 (2026-03)
 - **Audit automation layer** — automated multi-lens quality verification
 - 2 new templates (29 total):
   - `REPORT_CONSISTENCY_SPEC.tmpl.md` — Ten Simple Rules (Kording & Mensh) + numeric consistency + cross-ref integrity

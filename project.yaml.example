@@ -220,3 +220,62 @@ audit:
     overfull_threshold: 10             # Flag overfull hbox > Npt
     deliverable_pattern: "{{REPORT_TYPE}}_Report_{{AUTHOR_ID}}"
     author_format: "{{AUTHOR_NAME}} ({{AUTHOR_ID}})"
+
+# ─── Systems / Benchmark Configuration (Optional) ───────────────────────────
+# Include when using the systems-benchmark profile for C/C++ projects.
+systems:
+  compiler: "gcc-12"
+  compiler_version: "12.3.0"
+  language_standard: "C11"                # or C++17, C++20
+  build_system: "make"                    # make, cmake, cargo, meson
+  build_file: "Makefile"
+  profiles:
+    debug: "-O0 -g -fno-omit-frame-pointer"
+    release: "-O2 -march=native"
+    benchmark: "-O2 -DNDEBUG"
+  sanitizers:
+    asan: true                            # AddressSanitizer — always
+    ubsan: true                           # UndefinedBehaviorSanitizer — always
+    tsan: true                            # ThreadSanitizer — if using threads
+    msan: false                           # MemorySanitizer — clang only
+  benchmark:
+    warmup_iterations: 5
+    measurement_iterations: 30
+    latency_budget_us: 100                # Microsecond latency cap
+    memory_budget_kb: 10240               # Peak RSS cap
+    input_sizes: [100, 1000, 10000, 100000, 1000000]
+    thread_counts: [1, 2, 4, 8, 16]
+  concurrency:
+    max_threads: 16
+    stress_iterations: 10000
+    deadlock_timeout_sec: 10
+
+# ─── Security-Domain Dataset Examples (Optional) ────────────────────────────
+# Include when parallel projects target security datasets (S-cluster elevation).
+# datasets:
+#   - name: "cicids2017"
+#     description: "Canadian Institute for Cybersecurity IDS 2017"
+#     url: "https://www.unb.ca/cic/datasets/ids-2017.html"
+#     local_path: "data/cicids2017"
+#     task: "multiclass classification (attack type)"
+#     splits: { train: 0.7, val: 0.15, test: 0.15 }
+#
+#   - name: "nsl_kdd"
+#     description: "NSL-KDD — improved KDD Cup 1999 intrusion detection"
+#     url: "https://www.unb.ca/cic/datasets/nsl.html"
+#     local_path: "data/nsl_kdd"
+#     task: "binary classification (normal vs attack)"
+#     splits: { train: 0.7, val: 0.15, test: 0.15 }
+#
+#   - name: "ember"
+#     description: "Endgame Malware BEnchmark for Research (PE features)"
+#     url: "https://github.com/elastic/ember"
+#     local_path: "data/ember"
+#     task: "binary classification (benign vs malicious)"
+#     splits: { train: 0.7, val: 0.15, test: 0.15 }
+#
+#   - name: "cve_exploitdb"
+#     description: "CVE + ExploitDB merged vulnerability data"
+#     local_path: "data/cve_exploitdb"
+#     task: "exploitability prediction"
+#     splits: { train: 0.7, val: 0.15, test: 0.15 }

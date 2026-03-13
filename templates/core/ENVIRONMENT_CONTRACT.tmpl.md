@@ -202,3 +202,73 @@ The following changes require a `CONTRACT_CHANGE` commit:
 - Script filenames, CLI parameters, or entrypoint paths
 - Data paths
 - Budget values
+
+---
+
+## Appendix D: C/C++ Determinism Defaults (Optional)
+
+> **Activation:** Include this appendix when your project uses compiled languages (C, C++, Rust).
+> Delete if not applicable. When activated, §8 Determinism Defaults should be replaced or
+> supplemented with these C/C++ equivalents.
+
+### D.1 PRNG Seeding
+
+```cpp
+#include <random>
+#include <cstdlib>
+
+void set_seed(unsigned seed) {
+    // C++ Mersenne Twister — deterministic across platforms with same seed
+    std::mt19937 rng(seed);
+
+    // C stdlib (if used)
+    srand(seed);
+}
+```
+
+**Rule:** All randomness MUST flow through `std::mt19937` (or `std::mt19937_64`) seeded from the command-line seed argument. `rand()` is acceptable only in legacy code with documented justification.
+
+### D.2 Thread Pool Determinism
+
+For multithreaded experiments:
+
+| Requirement | Rule |
+|-------------|------|
+| **Thread pool size** | Fixed at runtime, specified via CLI flag (`--threads N`) |
+| **Work distribution** | Deterministic assignment (round-robin or static partitioning, NOT work-stealing) |
+| **Reduction order** | Fixed reduction order for floating-point accumulation (e.g., always left-to-right) |
+
+**Rule:** Thread pool size MUST be locked per experiment configuration. Dynamic thread pools (e.g., OpenMP `schedule(dynamic)`) are PROHIBITED for reproducibility-critical paths unless results are order-independent.
+
+**Verification:** `config_resolved.yaml` records `thread_count`. Same experiment with same thread count and seed produces identical output.
+
+### D.3 Compiler Optimization Governance
+
+| Optimization Level | Determinism Impact | Rule |
+|-------------------|-------------------|------|
+| `-O0` | Deterministic | Debug profile only |
+| `-O1` | Deterministic | Acceptable |
+| `-O2` | Generally deterministic | Default for benchmarks |
+| `-O3` | May reorder operations | MUST verify determinism if used |
+| `-Ofast` / `-ffast-math` | Non-deterministic FP | PROHIBITED for reproducibility-critical code |
+
+**Rule:** `-ffast-math` and `-Ofast` are PROHIBITED in any build profile where numeric reproducibility is required. See [BUILD_SYSTEM_CONTRACT](BUILD_SYSTEM_CONTRACT.tmpl.md) §3 for locked profiles.
+
+### D.4 ASLR Control
+
+Address Space Layout Randomization can affect pointer-dependent hash maps and certain allocator behaviors:
+
+```bash
+# Disable ASLR for the benchmark process
+setarch $(uname -m) -R ./benchmark --seed {{DEFAULT_SEED}}
+```
+
+**Rule:** ASLR MUST be disabled for all benchmark runs. ASLR state MUST be logged in `benchmark_env.json`.
+
+### D.5 Floating-Point Determinism
+
+| Requirement | Rule |
+|-------------|------|
+| **FP contraction** | `-ffp-contract=off` to prevent FMA fusion variance |
+| **FP rounding** | Default rounding mode (`FE_TONEAREST`) — do not modify |
+| **Cross-platform** | Do NOT assume bitwise FP equality across compilers; use tolerance-based comparison |

@@ -403,3 +403,48 @@ The following changes require a `CONTRACT_CHANGE` commit:
 | Random policy baseline | Return ≈ expected random performance | Environment or reward bug |
 | Known-optimal environment | Algorithm converges to known optimal | Implementation error |
 | Reward shaping verification | Shaped reward doesn't change optimal policy | Reward design error |
+
+---
+
+## Appendix D: Systems Sanity Checks (Optional)
+
+> **Activation:** Include this appendix when your project involves systems programming (C/C++),
+> performance benchmarking, or concurrent implementations. Delete if not applicable.
+
+### D.1 Null Baseline
+
+| Check | What It Measures | Expected Behavior | Failure Implies |
+|-------|-----------------|-------------------|-----------------|
+| **Empty loop** | Timing overhead | Latency ≈ timer resolution (< 1μs) | Timing infrastructure is broken |
+| **No-op function call** | Call overhead | Latency ≈ function call overhead | Measurement code has side effects |
+| **Identity copy** | Memory bandwidth baseline | Throughput ≈ STREAM benchmark for platform | Memory subsystem issue |
+
+**Rule:** Null baseline MUST be measured before any implementation benchmark. If null baseline is anomalous (> 10× expected), investigate before proceeding.
+
+### D.2 Zero-Overhead Test
+
+Verify that instrumentation does not distort measurements:
+
+| Check | Protocol | Expected | Failure Implies |
+|-------|----------|----------|-----------------|
+| **Timer overhead** | Measure `clock_gettime` call latency | < 100ns | Use a coarser timer or amortize |
+| **Sanitizer overhead** | Compare ASan vs release build latency | ASan 2-3× slower is normal | If > 5× slower, benchmark with release profile only |
+| **Assertion overhead** | Compare NDEBUG vs debug build | Assertions should be < 5% overhead | Assertions in hot path — guard with `#ifndef NDEBUG` |
+
+### D.3 Sequential Consistency Check
+
+For concurrent implementations, verify correctness with a single thread before measuring with multiple threads:
+
+| Check | Expected Behavior | Failure Implies |
+|-------|-------------------|-----------------|
+| **Single-thread correctness** | Matches reference implementation output | Algorithm bug (not concurrency bug) |
+| **Deterministic with 1 thread** | Two runs produce identical output | Non-determinism in single-threaded path |
+| **Monotonic scaling** | 2 threads ≥ 1 thread throughput | Synchronization overhead exceeds parallelism benefit |
+
+### D.4 Memory Sanity
+
+| Check | Expected Behavior | Failure Implies |
+|-------|-------------------|-----------------|
+| **Zero allocations in hot path** | `malloc` call count = 0 during measured region | Unexpected heap allocation |
+| **No memory leaks** | Valgrind `--leak-check=full` reports zero leaks | Resource management bug |
+| **Stack usage** | Stack depth < system limit | Potential stack overflow in recursion |

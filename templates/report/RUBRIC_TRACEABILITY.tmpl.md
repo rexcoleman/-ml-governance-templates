@@ -101,3 +101,33 @@ These are the rubric/FAQ categories most frequently found as gaps in prior proje
 | Date | Auditor | Rubric Coverage | FAQ Coverage | GAPs Found | GAPs Resolved |
 |------|---------|----------------|-------------|------------|---------------|
 | {{DATE}} | {{AUDITOR}} | {{PERCENT}} | {{PERCENT}} | {{COUNT}} | {{COUNT}} |
+
+---
+
+## Appendix: Research Question Traceability (Optional)
+
+> **Activation:** Include this appendix for self-directed projects (parallel projects, portfolio
+> pieces, independent research) that have no external rubric or FAQ. Replace the Rubric Items
+> and FAQ Items sections above with this section. Delete if using the standard rubric tables.
+
+For self-directed projects, traceability maps research questions (not rubric items) to report sections.
+
+### Research Questions
+
+| # | Research Question | Report Section | Paragraph/Location | Status | Evidence |
+|---|-------------------|---------------|-------------------|--------|----------|
+| RQ-01 | {{RESEARCH_QUESTION}} | {{SECTION}} | {{PARA_OR_LINE}} | {{ADDRESSED/GAP/PARTIAL}} | {{QUOTE_OR_REF}} |
+
+### Claims Traceability
+
+Every claim in the report MUST trace to specific evidence:
+
+| # | Claim | Evidence Type | Evidence Location | Verified |
+|---|-------|--------------|-------------------|----------|
+| CL-01 | {{CLAIM_TEXT}} | {{figure/table/metric/log}} | {{PATH_OR_REF}} | {{YES/NO}} |
+
+### Self-Directed Gate Criteria
+
+- **Draft gate:** Every RQ has at least one ADDRESSED section; every claim has evidence
+- **Publication gate:** 100% RQ coverage; zero unsupported claims; TRADEOFF_LOG.md complete
+- **Fail action:** Do not publish until all GAPs resolved and all claims verified
