@@ -159,7 +159,7 @@ def generate_sweep(project: dict, output_path: str) -> str:
     return content
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Generate sweep.sh from project.yaml")
     parser.add_argument("project_yaml", help="Path to project.yaml")
     parser.add_argument("--output", default="scripts/sweep.sh", help="Output path for sweep.sh")

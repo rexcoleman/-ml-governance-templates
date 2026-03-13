@@ -233,7 +233,7 @@ TOOL_REGISTRY = {
 # Standalone mode — runs without Agent SDK (fallback / CI)
 # ---------------------------------------------------------------------------
 
-def run_standalone(project_yaml: str, output_dir: str, dry_run: bool = False):
+def run_standalone(project_yaml: str, output_dir: str, dry_run: bool = False) -> None:
     """Run generators without the Agent SDK — deterministic, no LLM calls.
 
     This is the fallback for CI environments or when you don't want agent
@@ -317,7 +317,7 @@ def run_standalone(project_yaml: str, output_dir: str, dry_run: bool = False):
 # Agent mode — uses Claude Agent SDK for intelligent orchestration
 # ---------------------------------------------------------------------------
 
-async def run_agent_mode(project_yaml: str, output_dir: str):
+async def run_agent_mode(project_yaml: str, output_dir: str) -> None:
     """Run generators via Claude Agent SDK — agent decides sequencing.
 
     The agent reads project.yaml, reasons about which generators are needed,
@@ -403,7 +403,7 @@ Be concise. Report results, not reasoning."""
 # CLI entry point
 # ---------------------------------------------------------------------------
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Orchestrate ml-governance-templates generators",
         formatter_class=argparse.RawDescriptionHelpFormatter,

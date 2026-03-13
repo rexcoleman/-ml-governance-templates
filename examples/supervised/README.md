@@ -99,6 +99,12 @@ No additional placeholders — use as-is with project-specific checks.
 
 ---
 
+## Filled Template Example
+
+See [`FILLED_DATA_CONTRACT.md`](FILLED_DATA_CONTRACT.md) for a complete example of what the Data Contract looks like after filling in all placeholders for this project. Compare it against the [template](../../templates/core/DATA_CONTRACT.tmpl.md) to see the before/after.
+
+---
+
 ## Profile Command
 
 ```bash

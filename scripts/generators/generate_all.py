@@ -22,7 +22,7 @@ def load_project(path: str) -> dict:
         return yaml.safe_load(f)
 
 
-def run_generator(script: str, project_yaml: str, extra_args: list[str] | None = None):
+def run_generator(script: str, project_yaml: str, extra_args: list[str] | None = None) -> int:
     """Run a single generator script."""
     cmd = [sys.executable, str(GENERATORS_DIR / script), project_yaml]
     if extra_args:
@@ -37,7 +37,7 @@ def run_generator(script: str, project_yaml: str, extra_args: list[str] | None =
     return result.returncode
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Run all generators from project.yaml")
     parser.add_argument("project_yaml", help="Path to project.yaml")
     parser.add_argument("--output-dir", default=".", help="Project root for output files")

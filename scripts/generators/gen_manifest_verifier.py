@@ -181,7 +181,7 @@ if __name__ == "__main__":
     return content
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Generate verify_manifests.py from project.yaml")
     parser.add_argument("project_yaml", help="Path to project.yaml")
     parser.add_argument("--output", default="scripts/verify_manifests.py", help="Output path")

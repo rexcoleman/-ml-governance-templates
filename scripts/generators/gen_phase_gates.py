@@ -80,7 +80,7 @@ def generate_phase_script(phase_num: int, phase: dict) -> str:
     return "\n".join(lines)
 
 
-def generate_all_gates(phases: list, output_dir: str) -> str:
+def generate_all_gates(phases: list[dict], output_dir: str) -> str:
     """Generate check_all_gates.sh that runs all phase gates in sequence."""
     lines = [
         "#!/usr/bin/env bash",
@@ -119,7 +119,7 @@ def generate_all_gates(phases: list, output_dir: str) -> str:
     return "\n".join(lines)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Generate phase gate scripts from project.yaml")
     parser.add_argument("project_yaml", help="Path to project.yaml")
     parser.add_argument("--output-dir", default="scripts", help="Output directory for gate scripts")

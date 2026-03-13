@@ -82,6 +82,14 @@ case "$PROFILE" in
     standard) PROFILE="supervised" ;;
 esac
 
+# Validate profile
+VALID_PROFILES="minimal supervised optimization unsupervised rl-agent full"
+if ! echo "$VALID_PROFILES" | grep -qw "$PROFILE"; then
+    echo "Error: Unknown profile '${PROFILE}'."
+    echo "Available: ${VALID_PROFILES}"
+    exit 1
+fi
+
 if [[ ! -d "$PROJECT_DIR" ]]; then
     echo "Error: Project directory does not exist: $PROJECT_DIR"
     exit 1
