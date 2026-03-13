@@ -148,3 +148,75 @@ ai_governance:
       prohibited: ["full function generation without review"]
   anti_ghostwriting: true
   test_set_barrier: true
+
+# ─── Audit Configuration ─────────────────────────────────────────────────────
+# Drives G13 (report auditor), G14 (data-report checker), G15 (rubric checker),
+# G16 (integrity checker). All fields optional — generators use sensible defaults.
+audit:
+  # Ten Simple Rules (Kording & Mensh) — drives G13
+  ten_simple_rules:
+    abstract_word_limit: 250
+    max_paragraph_sentences: 8
+    jargon_terms:
+      - term: "PCA"
+        definition: "Principal Component Analysis"
+      - term: "GMM"
+        definition: "Gaussian Mixture Model"
+      - term: "k-NN"
+        definition: "k-Nearest Neighbors"
+      - term: "F1"
+        definition: "harmonic mean of precision and recall"
+      - term: "ARI"
+        definition: "Adjusted Rand Index"
+    terminology_lock:
+      - canonical: "cluster-derived features"
+        reject: ["cluster features", "clustering features"]
+      - canonical: "dimensionality reduction"
+        reject: ["dimension reduction", "dim reduction"]
+
+  # Numeric consistency — drives G14
+  tolerances:
+    default: 0.005       # Absolute tolerance for most metrics
+    percent: 0.1         # Tolerance for percentage values (0.1 = 0.1%)
+    count: 0             # Integer counts must be exact
+    float: 0.001         # Floating point comparison tolerance
+  metric_keywords:        # Keywords that indicate a nearby number is a metric
+    - "accuracy"
+    - "F1"
+    - "silhouette"
+    - "ARI"
+    - "BIC"
+    - "explained variance"
+    - "reconstruction error"
+    - "reward"
+    - "return"
+    - "convergence"
+    - "wall-clock"
+    - "runtime"
+  magnitude_plausibility_factor: 2.0   # Flag if report/data differ by more than Nx
+
+  # Rubric/FAQ compliance — drives G15
+  rubric:
+    coverage_threshold: 0.80           # Phase 4 gate: >=80% addressed
+    submission_threshold: 1.0          # Phase 5 gate: 100% addressed
+    critical_categories:               # Gap in these = automatic CRITICAL
+      - "methodology"
+      - "results interpretation"
+      - "reproducibility"
+    gap_patterns:                      # Common gaps from UL/RL experience
+      - "distance metric justification"
+      - "hyperparameter search ranges"
+      - "initialization choices"
+      - "convergence criteria"
+      - "reward function details"
+      - "ablation analysis"
+      - "noise sensitivity"
+      - "suggested improvements"
+
+  # Build verification — drives G13
+  build:
+    engine: "pdflatex"
+    page_limit: 12
+    overfull_threshold: 10             # Flag overfull hbox > Npt
+    deliverable_pattern: "{{REPORT_TYPE}}_Report_{{AUTHOR_ID}}"
+    author_format: "{{AUTHOR_NAME}} ({{AUTHOR_ID}})"

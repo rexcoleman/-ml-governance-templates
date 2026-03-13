@@ -6,11 +6,11 @@
 #
 # Profiles:
 #   minimal       — 3 core contracts (Environment, Data, Metrics)
-#   supervised    — 9 templates for classification/regression projects
+#   supervised    — 11 templates for classification/regression projects
 #   optimization  — 11 templates for optimizer comparisons and ablation studies
-#   unsupervised  — 21 templates for clustering and dimensionality reduction
-#   rl-agent      — 11 templates for reinforcement learning projects
-#   full          — All 25 templates + IEEE reference
+#   unsupervised  — 23 templates for clustering and dimensionality reduction
+#   rl-agent      — 24 templates for reinforcement learning projects
+#   full          — All 29 templates + IEEE reference
 #
 # Templates are copied to <project>/docs/ with .tmpl.md renamed to .md
 
@@ -28,11 +28,11 @@ usage() {
     echo ""
     echo "Profiles:"
     echo "  minimal       — 3 core contracts (Environment, Data, Metrics)"
-    echo "  supervised    — 9 templates for classification/regression [default]"
+    echo "  supervised    — 11 templates for classification/regression [default]"
     echo "  optimization  — 11 templates for optimizer comparisons, ablation studies"
-    echo "  unsupervised  — 21 templates for clustering, dimensionality reduction"
-    echo "  rl-agent      — 22 templates for reinforcement learning (full delivery)"
-    echo "  full          — All 25 templates + IEEE reference"
+    echo "  unsupervised  — 23 templates for clustering, dimensionality reduction"
+    echo "  rl-agent      — 24 templates for reinforcement learning (full delivery)"
+    echo "  full          — All 29 templates + IEEE reference"
     echo ""
     echo "Legacy tiers (backward-compatible):"
     echo "  minimal       — same as minimal profile"
@@ -137,6 +137,8 @@ SUPERVISED_FILES=(
     "${REPORT}/REPORT_ASSEMBLY_PLAN.tmpl.md"
     "${REPORT}/REPRODUCIBILITY_SPEC.tmpl.md"
     "${REPORT}/PRE_SUBMISSION_CHECKLIST.tmpl.md"
+    "${REPORT}/REPORT_CONSISTENCY_SPEC.tmpl.md"
+    "${REPORT}/RUBRIC_TRACEABILITY.tmpl.md"
 )
 
 OPTIMIZATION_FILES=(
@@ -173,11 +175,13 @@ UNSUPERVISED_FILES=(
     "${MGMT}/CHANGELOG.tmpl.md"
     "${MGMT}/RISK_REGISTER.tmpl.md"
     "${MGMT}/TASK_BOARD.tmpl.md"
-    # Report (4)
+    # Report (6)
     "${REPORT}/REPORT_ASSEMBLY_PLAN.tmpl.md"
     "${REPORT}/REPRODUCIBILITY_SPEC.tmpl.md"
     "${REPORT}/PRE_SUBMISSION_CHECKLIST.tmpl.md"
     "${REPORT}/EXECUTION_MANIFEST.tmpl.md"
+    "${REPORT}/REPORT_CONSISTENCY_SPEC.tmpl.md"
+    "${REPORT}/RUBRIC_TRACEABILITY.tmpl.md"
 )
 
 RL_AGENT_FILES=(
@@ -200,11 +204,13 @@ RL_AGENT_FILES=(
     "${MGMT}/DECISION_LOG.tmpl.md"
     "${MGMT}/CHANGELOG.tmpl.md"
     "${MGMT}/PRIOR_WORK_REUSE.tmpl.md"
-    # Report (4)
+    # Report (6)
     "${REPORT}/REPORT_ASSEMBLY_PLAN.tmpl.md"
     "${REPORT}/REPRODUCIBILITY_SPEC.tmpl.md"
     "${REPORT}/PRE_SUBMISSION_CHECKLIST.tmpl.md"
     "${REPORT}/EXECUTION_MANIFEST.tmpl.md"
+    "${REPORT}/REPORT_CONSISTENCY_SPEC.tmpl.md"
+    "${REPORT}/RUBRIC_TRACEABILITY.tmpl.md"
     # Publishing (1)
     "${PUB}/ACADEMIC_INTEGRITY_FIREWALL.tmpl.md"
 )
@@ -231,11 +237,13 @@ FULL_FILES=(
     "${MGMT}/DECISION_LOG.tmpl.md"
     "${MGMT}/CHANGELOG.tmpl.md"
     "${MGMT}/PRIOR_WORK_REUSE.tmpl.md"
-    # Report (4)
+    # Report (6)
     "${REPORT}/REPORT_ASSEMBLY_PLAN.tmpl.md"
     "${REPORT}/REPRODUCIBILITY_SPEC.tmpl.md"
     "${REPORT}/PRE_SUBMISSION_CHECKLIST.tmpl.md"
     "${REPORT}/EXECUTION_MANIFEST.tmpl.md"
+    "${REPORT}/REPORT_CONSISTENCY_SPEC.tmpl.md"
+    "${REPORT}/RUBRIC_TRACEABILITY.tmpl.md"
     # Publishing (3)
     "${PUB}/PUBLICATION_BRIEF.tmpl.md"
     "${PUB}/ACADEMIC_INTEGRITY_FIREWALL.tmpl.md"
@@ -254,7 +262,7 @@ case "$PROFILE" in
         for f in "${MINIMAL_FILES[@]}"; do copy_template "$f"; done
         ;;
     supervised)
-        echo "Copying supervised ML templates (9 files):"
+        echo "Copying supervised ML templates (11 files):"
         for f in "${SUPERVISED_FILES[@]}"; do copy_template "$f"; done
         ;;
     optimization)
@@ -262,15 +270,15 @@ case "$PROFILE" in
         for f in "${OPTIMIZATION_FILES[@]}"; do copy_template "$f"; done
         ;;
     unsupervised)
-        echo "Copying unsupervised analysis templates (21 files):"
+        echo "Copying unsupervised analysis templates (23 files):"
         for f in "${UNSUPERVISED_FILES[@]}"; do copy_template "$f"; done
         ;;
     rl-agent)
-        echo "Copying RL / agent study templates (22 files):"
+        echo "Copying RL / agent study templates (24 files):"
         for f in "${RL_AGENT_FILES[@]}"; do copy_template "$f"; done
         ;;
     full)
-        echo "Copying full template suite (25 files + IEEE reference):"
+        echo "Copying full template suite (29 files + IEEE reference):"
         for f in "${FULL_FILES[@]}"; do copy_template "$f"; done
         if [[ -f "${REPORT}/IEEE_Report_Template.tex" ]]; then
             copy_raw "${REPORT}/IEEE_Report_Template.tex"

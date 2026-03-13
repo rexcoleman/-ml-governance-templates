@@ -16,7 +16,8 @@ This playbook provides a series of copy-paste prompts that walk you from a raw p
 3. **Source fidelity:** Run Stage 6 (RFP Traceability Audit) after every batch of template work — this is the hallucination firewall
 4. **Ongoing governance:** Use Stage 7 (Governance Audit) periodically and Stage 8 (Patches) when changes occur
 5. **Automation:** Use Stage 9 (Test Code) to generate executable compliance tests
-6. Copy each prompt, paste it into your AI assistant, and attach the required inputs
+6. **Quality assurance:** Use Stage 10 (Multi-Lens Audit) after report draft and before submission — this catches the issues that 7-14 manual audit cycles found in UL/RL projects
+7. Copy each prompt, paste it into your AI assistant, and attach the required inputs
 7. Review the output at each checkpoint before proceeding
 8. Each stage is self-contained — you can restart any stage without losing prior work
 
@@ -1972,6 +1973,222 @@ After generating all test modules:
 - [ ] Test docstrings trace to specific contract sections
 - [ ] `pytest tests/ --collect-only` shows all expected test functions
 - [ ] Tests that require completed outputs are properly marked with `@pytest.mark.skipif` or `@pytest.mark.slow`
+
+---
+
+## Stage 10: Multi-Lens Audit Protocol
+
+### Goal
+Run a comprehensive, structured audit of the completed report through all 10 verification lenses. This stage replaces the ad-hoc "ask for an audit" pattern that led to 7-14 manual audit cycles in UL/RL projects.
+
+### When to Run
+- **Phase 4 (after report draft):** Lenses L5, L6, L7, L10
+- **Phase 5 (pre-submission):** All lenses L1-L10
+- **Any time you suspect inconsistencies:** Run individual lens prompts below
+
+### Prerequisites
+- Filled governance templates (from Stages 1-9)
+- Report draft (.tex or .md)
+- Experiment outputs in outputs/ directory
+- Filled RUBRIC_TRACEABILITY.md (from Stage 4)
+- If generators were run: scripts/audit_report.py, check_data_report.py, check_rubric.py, check_integrity.py
+
+### Automated Checks (Run First)
+
+If you generated audit scripts via `project.yaml`, run them before the prompt-based audits:
+
+```bash
+# Machine-verifiable checks (G13-G16)
+python scripts/audit_report.py --report-path report.tex --phase full
+python scripts/check_data_report.py --report-path report.tex --outputs-dir outputs/
+python scripts/check_rubric.py --report-path report.tex
+python scripts/check_integrity.py --report-path report.tex
+```
+
+Review FINDINGS.md output. Fix all CRITICAL and HIGH items before proceeding to prompt-based audits.
+
+---
+
+### Lens L5: Data-vs-Report Consistency (Prompt)
+
+```
+You are an audit agent verifying numeric consistency between a report and its source data.
+
+I will provide:
+1. The report text
+2. The EXECUTION_MANIFEST mapping artifacts to report sections
+3. Selected output artifacts (CSVs, JSONs)
+
+For each artifact→section mapping in the EXECUTION_MANIFEST:
+1. Extract every numeric claim from the report section (percentages, counts, ratios, metrics)
+2. Find the corresponding value in the source artifact
+3. Compare them. Report:
+   - MATCH: values agree within rounding tolerance
+   - ROUNDING: values differ only by rounding (state both values)
+   - MISMATCH: values disagree (state both values, flag as CRITICAL)
+   - NOT_FOUND: claimed value not found in artifact (flag as HIGH)
+
+Also check:
+- "improvement" language matches positive deltas
+- "degradation" language matches negative deltas
+- Multiplier claims (e.g., "3.8x faster") are arithmetically correct
+- Percentage bases are correct (percent of what?)
+
+Output a table: | Section | Claim | Report Value | Artifact Value | Verdict |
+
+Do NOT invent or assume artifact values. If you cannot verify a claim, mark it UNVERIFIABLE.
+```
+
+**Attach:** Report text, EXECUTION_MANIFEST, relevant output CSVs/JSONs
+
+---
+
+### Lens L6: Rubric/FAQ Compliance (Prompt)
+
+```
+You are an audit agent verifying rubric and FAQ compliance.
+
+I will provide:
+1. The assignment specification (rubric)
+2. The FAQ document
+3. The report text
+4. The RUBRIC_TRACEABILITY matrix (if filled)
+
+For each rubric item:
+1. Find the specific report paragraph that addresses it
+2. Rate coverage: ADDRESSED (explicitly covered), PARTIAL (mentioned but incomplete), GAP (not found)
+3. For GAP items: suggest which section should address it and what content is needed
+
+For each FAQ question:
+1. Find where the answer appears in the report
+2. Rate: ADDRESSED or GAP
+3. For GAP items: provide the answer based on the report's methodology and suggest where to add it
+
+Pay special attention to these commonly-missed categories:
+- Distance/similarity metric justification
+- Hyperparameter search ranges and sensitivity
+- Initialization choices (Q_0, random seeds)
+- Convergence criteria
+- Ablation analysis
+- Noise sensitivity discussion
+- Suggested improvements
+
+Output:
+1. Coverage matrix table
+2. Overall coverage percentage
+3. Prioritized list of GAP items with suggested fixes
+
+Do NOT fabricate rubric items. Use only the provided specification.
+```
+
+**Attach:** Assignment spec, FAQ, report text, RUBRIC_TRACEABILITY.md
+
+---
+
+### Lens L7: Ten Simple Rules Audit (Prompt)
+
+```
+You are an audit agent checking report quality against Kording & Mensh's "Ten Simple Rules for Structuring Papers" and the project's REPORT_CONSISTENCY_SPEC.
+
+I will provide:
+1. The report text
+2. The REPORT_CONSISTENCY_SPEC (filled checklist)
+3. The Ten Simple Rules reference
+
+Evaluate each rule:
+
+**Rule 1 (One Contribution):** Is the title a declarative claim? Can you state the paper's contribution in one sentence?
+
+**Rule 2 (Naive Reader):** Are all jargon terms defined on first use? Check the jargon inventory.
+
+**Rule 3 (CCC):** For EVERY paragraph:
+- Does it open with context/topic?
+- Does it close with conclusion/takeaway?
+- Flag any paragraph where a reader would ask "why was I told that?" or "so what?"
+For the abstract: Map sentences to broad context → specific gap → approach → results → conclusion → significance.
+
+**Rule 4 (No Zig-Zag):** Is each concept introduced in exactly one location? Any A-B-A topic bouncing? Check the terminology lock for synonym drift.
+
+**Rule 5 (Abstract):** Is the abstract self-contained? Does it cover gap, method, results, conclusion?
+
+**Rule 6 (Introduction):** Do paragraphs progress from broad field → subfield → specific gap? Is the gap statement explicit? Does the final paragraph preview results?
+
+**Rule 7 (Results):** Are section headers declarative statements (findings, not methods)? Does each paragraph follow question → evidence → answer?
+
+**Rule 8 (Discussion):** Does the first paragraph summarize findings? Are limitations acknowledged? Any new results introduced (this is a violation)?
+
+Output per-rule: PASS or FAIL with specific violations (quote the problematic text). Group findings by severity: CRITICAL (data integrity), HIGH (structural), MEDIUM (writing quality), LOW (style).
+```
+
+**Attach:** Report text, REPORT_CONSISTENCY_SPEC, Ten_Simple_Rules_Kording_Mensh.md
+
+---
+
+### Lens L8: Academic Integrity (Prompt)
+
+```
+You are an audit agent checking academic integrity and AI disclosure compliance.
+
+I will provide:
+1. The report text (specifically the AI Use Statement)
+2. The AI_DIVISION_OF_LABOR template
+3. The ACADEMIC_INTEGRITY_FIREWALL template
+4. The institutional AI policy (if available)
+
+Check:
+1. AI Use Statement exists and is non-empty
+2. Written in first-person voice ("I used..." not "The author used...")
+3. Names specific tools (e.g., "Claude Code CLI" not just "AI")
+4. Describes what each tool was used for (role specificity)
+5. Explicitly claims ownership of design, hypotheses, and conclusions
+6. Includes a verification statement (how AI output was checked)
+7. All permitted uses from AI_DIVISION_OF_LABOR are disclosed
+8. No prohibited uses are evident in the report
+
+Output: Per-check PASS/FAIL with specific quotes. For FAIL items, provide corrected language.
+```
+
+**Attach:** Report text, AI_DIVISION_OF_LABOR, ACADEMIC_INTEGRITY_FIREWALL
+
+---
+
+### Lens L10: Cross-Reference Integrity (Prompt)
+
+```
+You are an audit agent checking cross-reference integrity in a technical report.
+
+I will provide the report text (.tex or .md).
+
+Check:
+1. Every figure referenced in text (no orphan figures — defined but never referenced)
+2. Every table referenced in text (no orphan tables)
+3. Figure/table numbers are sequential and consistent
+4. All citation keys in text appear in bibliography
+5. All bibliography entries are cited in text (no orphan references)
+6. Internal section references resolve correctly
+7. Terminology is consistent throughout (check the terminology lock if provided)
+8. No broken LaTeX references (?? in output)
+
+Output: Per-category PASS/FAIL with specific items flagged.
+```
+
+**Attach:** Report text (.tex or .md)
+
+---
+
+### Stage 10 Checkpoint
+
+After running all audit lenses:
+- [ ] All machine-verifiable checks pass (G13-G16 scripts)
+- [ ] 0 CRITICAL findings across all lenses
+- [ ] 0 HIGH findings across all lenses (or documented as accepted risk)
+- [ ] All MEDIUM findings reviewed (fix or accept with rationale)
+- [ ] FINDINGS.md updated with resolution status
+- [ ] Rubric coverage = 100% (all items ADDRESSED or N/A)
+- [ ] All numeric claims verified against source artifacts
+- [ ] Report compiles cleanly with no build errors
+
+If any CRITICAL or HIGH findings remain, fix and re-run the affected lenses before submission.
 
 ---
 

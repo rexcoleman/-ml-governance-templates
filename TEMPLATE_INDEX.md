@@ -1,6 +1,6 @@
 # govML — Template Index
 
-Complete inventory of all 27 governance templates + 4 generators with descriptions, dependencies, quickstart profiles, and dependency graph.
+Complete inventory of all 29 governance templates + 4 generators (+ 4 planned) with descriptions, dependencies, quickstart profiles, and dependency graph.
 
 > **v2.1:** Added CLAUDE_MD template, `project.yaml` config schema, and 3 code generators (G1, G5, G6) + master runner.
 > **v2.0:** All templates have version metadata, authority hierarchy headers, companion contract
@@ -52,6 +52,8 @@ Complete inventory of all 27 governance templates + 4 generators with descriptio
 | 21 | **Reproducibility Spec** | `REPRODUCIBILITY_SPEC.tmpl.md` | Environment, Data, Scripts, Artifacts | You need a single document enabling end-to-end reproduction |
 | 22 | **Pre-Delivery Checklist** | `PRE_SUBMISSION_CHECKLIST.tmpl.md` | All | Final delivery audit (attribution, compliance, reproducibility, artifacts) |
 | 23 | **Execution Manifest** | `EXECUTION_MANIFEST.tmpl.md` | Experiment, Metrics, Artifacts, Figures/Tables | Auto-generated methods summary + results index; report numbers trace here |
+| 28 | **Report Consistency Spec** | `REPORT_CONSISTENCY_SPEC.tmpl.md` | Report Assembly, Figures/Tables, Execution Manifest | You need writing quality governance based on Ten Simple Rules (Kording & Mensh) + numeric consistency + cross-reference integrity |
+| 29 | **Rubric Traceability** | `RUBRIC_TRACEABILITY.tmpl.md` | Report Assembly, Report Consistency | You need 100% rubric/FAQ coverage verification before submission |
 | ref | **IEEE Report Template** | `IEEE_Report_Template.tex` | — | Need a LaTeX starting point for IEEE-format papers |
 
 ---
@@ -75,6 +77,10 @@ Complete inventory of all 27 governance templates + 4 generators with descriptio
 | G6 | `gen_phase_gates.py` | `phases` | `scripts/check_phase_*.sh` | Phase gate check scripts + all-gates runner |
 | — | `generate_all.py` | All sections | All of the above | Master runner that invokes G1, G5, G6 in sequence |
 | — | `orchestrate.py` | All sections | All of the above | Agent orchestrator — Claude Agent SDK (agent mode), standalone, dry-run |
+| G13 | `gen_report_auditor.py` | `audit` + report file | `scripts/audit_report.py` | Report consistency checker: Ten Simple Rules, cross-refs, terminology, compilation *(planned v3.0)* |
+| G14 | `gen_data_report_checker.py` | `artifacts` + report file | `scripts/check_data_report.py` | Data-vs-report numeric consistency — catches transcription errors *(planned v3.0)* |
+| G15 | `gen_rubric_checker.py` | `audit.rubric` + report file | `scripts/check_rubric.py` | Rubric/FAQ coverage verification against assignment spec *(planned v3.0)* |
+| G16 | `gen_integrity_checker.py` | `ai_governance` + report file | `scripts/check_integrity.py` | Academic integrity and AI Use Statement compliance *(planned v3.0)* |
 
 **Config file:** `project.yaml` (see `project.yaml.example` for full schema)
 
@@ -142,6 +148,8 @@ bash scripts/init_project.sh /path/to/project --profile minimal
 | REPORT_ASSEMBLY_PLAN | — |
 | REPRODUCIBILITY_SPEC | — |
 | PRE_SUBMISSION_CHECKLIST | — |
+| REPORT_CONSISTENCY_SPEC | Fill jargon inventory and terminology lock |
+| RUBRIC_TRACEABILITY | Fill rubric/FAQ items from assignment spec |
 
 ```bash
 bash scripts/init_project.sh /path/to/project --profile supervised
@@ -200,6 +208,8 @@ bash scripts/init_project.sh /path/to/project --profile optimization
 | REPRODUCIBILITY_SPEC | — |
 | PRE_SUBMISSION_CHECKLIST | — |
 | EXECUTION_MANIFEST | — |
+| REPORT_CONSISTENCY_SPEC | Fill jargon inventory and terminology lock |
+| RUBRIC_TRACEABILITY | Fill rubric/FAQ items from assignment spec |
 
 ```bash
 bash scripts/init_project.sh /path/to/project --profile unsupervised
@@ -235,6 +245,8 @@ bash scripts/init_project.sh /path/to/project --profile unsupervised
 | PRE_SUBMISSION_CHECKLIST | — |
 | EXECUTION_MANIFEST | — |
 | ACADEMIC_INTEGRITY_FIREWALL | — |
+| REPORT_CONSISTENCY_SPEC | Fill jargon inventory and terminology lock |
+| RUBRIC_TRACEABILITY | Fill rubric/FAQ items from assignment spec |
 
 ```bash
 bash scripts/init_project.sh /path/to/project --profile rl-agent
@@ -329,6 +341,13 @@ graph TD
     MANIFEST --> ART
     MANIFEST --> FIG
 
+    %% Report quality (new v2.2)
+    RCS[Report Consistency Spec] --> RAP
+    RCS --> FIG
+    RCS --> MANIFEST
+    RUBRIC[Rubric Traceability] --> RAP
+    RUBRIC --> RCS
+
     %% Publishing
     PUB[Publication Brief] --> RAP
     PUB --> HYPO
@@ -347,7 +366,7 @@ graph TD
     class ENV,DATA,METRICS,EXP,FIG,ART,SCRIPT,HYPO,AI,CONFIG,TEST core
     class ADV,ENVSPEC optional
     class PLAY,TASK,RISK,DLOG,CLOG,PRIOR mgmt
-    class RAP,REPRO,CHECK,MANIFEST report
+    class RAP,REPRO,CHECK,MANIFEST,RCS,RUBRIC report
     class PUB,FIREWALL,LEAN publish
 ```
 

@@ -93,6 +93,54 @@ def main() -> None:
         print("--- G6: Skipped (no phases defined) ---")
 
     print()
+
+    # G13: Report auditor
+    if project.get("audit"):
+        print("--- G13: Generating audit_report.py ---")
+        results["audit_report"] = run_generator(
+            "gen_report_auditor.py", project_yaml,
+            ["--output", str(scripts_dir / "audit_report.py")]
+        )
+    else:
+        print("--- G13: Skipped (no audit config) ---")
+
+    print()
+
+    # G14: Data-vs-report checker
+    if project.get("audit"):
+        print("--- G14: Generating check_data_report.py ---")
+        results["data_report"] = run_generator(
+            "gen_data_report_checker.py", project_yaml,
+            ["--output", str(scripts_dir / "check_data_report.py")]
+        )
+    else:
+        print("--- G14: Skipped (no audit config) ---")
+
+    print()
+
+    # G15: Rubric checker
+    if project.get("authority"):
+        print("--- G15: Generating check_rubric.py ---")
+        results["rubric"] = run_generator(
+            "gen_rubric_checker.py", project_yaml,
+            ["--output", str(scripts_dir / "check_rubric.py")]
+        )
+    else:
+        print("--- G15: Skipped (no authority config) ---")
+
+    print()
+
+    # G16: Integrity checker
+    if project.get("ai_governance"):
+        print("--- G16: Generating check_integrity.py ---")
+        results["integrity"] = run_generator(
+            "gen_integrity_checker.py", project_yaml,
+            ["--output", str(scripts_dir / "check_integrity.py")]
+        )
+    else:
+        print("--- G16: Skipped (no ai_governance config) ---")
+
+    print()
     print("=" * 60)
     total = len(results)
     passed = sum(1 for r in results.values() if r == 0)
@@ -105,7 +153,8 @@ def main() -> None:
     print("  1. Review generated scripts in scripts/")
     print("  2. Fill remaining {{PLACEHOLDER}} values in docs/")
     print("  3. Run: bash scripts/check_phase_0.sh")
-    print("  4. Commit: git add scripts/ && git commit -m 'Add generated scaffolding'")
+    print("  4. After report draft: python scripts/audit_report.py --report-path <report>")
+    print("  5. Commit: git add scripts/ && git commit -m 'Add generated scaffolding'")
 
 
 if __name__ == "__main__":

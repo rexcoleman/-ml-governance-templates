@@ -17,6 +17,10 @@ Usage:
     # Dry run — agent plans but doesn't execute
     python scripts/generators/orchestrate.py project.yaml --dry-run
 
+    # Audit mode — generate audit scripts for a specific phase
+    python scripts/generators/orchestrate.py project.yaml --audit full
+    python scripts/generators/orchestrate.py project.yaml --audit 4
+
 Requirements:
     pip install claude-agent-sdk pyyaml
 """
@@ -149,6 +153,130 @@ def tool_validate_generated_file(file_path: str) -> dict[str, Any]:
     }
 
 
+def tool_run_report_auditor(project_yaml: str, output_path: str) -> dict[str, Any]:
+    """Run G13: report auditor generator.
+
+    Reads the audit section of project.yaml and generates an audit_report.py
+    script that checks Ten Simple Rules compliance, cross-refs, and build.
+    """
+    result = subprocess.run(
+        [sys.executable, str(GENERATORS_DIR / "gen_report_auditor.py"),
+         project_yaml, "--output", output_path],
+        capture_output=True, text=True,
+    )
+    return {
+        "success": result.returncode == 0,
+        "output": result.stdout.strip(),
+        "error": result.stderr.strip() if result.returncode != 0 else None,
+        "file": output_path,
+    }
+
+
+def tool_run_data_report_checker(project_yaml: str, output_path: str) -> dict[str, Any]:
+    """Run G14: data-vs-report consistency checker generator.
+
+    Generates a check_data_report.py script that cross-references numeric
+    claims in the report against source data artifacts.
+    """
+    result = subprocess.run(
+        [sys.executable, str(GENERATORS_DIR / "gen_data_report_checker.py"),
+         project_yaml, "--output", output_path],
+        capture_output=True, text=True,
+    )
+    return {
+        "success": result.returncode == 0,
+        "output": result.stdout.strip(),
+        "error": result.stderr.strip() if result.returncode != 0 else None,
+        "file": output_path,
+    }
+
+
+def tool_run_rubric_checker(project_yaml: str, output_path: str) -> dict[str, Any]:
+    """Run G15: rubric/FAQ compliance checker generator.
+
+    Generates a check_rubric.py script that verifies all rubric items and
+    FAQ questions are addressed in the report.
+    """
+    result = subprocess.run(
+        [sys.executable, str(GENERATORS_DIR / "gen_rubric_checker.py"),
+         project_yaml, "--output", output_path],
+        capture_output=True, text=True,
+    )
+    return {
+        "success": result.returncode == 0,
+        "output": result.stdout.strip(),
+        "error": result.stderr.strip() if result.returncode != 0 else None,
+        "file": output_path,
+    }
+
+
+def tool_run_integrity_checker(project_yaml: str, output_path: str) -> dict[str, Any]:
+    """Run G16: academic integrity checker generator.
+
+    Generates a check_integrity.py script that verifies AI Use Statement
+    quality and academic integrity compliance.
+    """
+    result = subprocess.run(
+        [sys.executable, str(GENERATORS_DIR / "gen_integrity_checker.py"),
+         project_yaml, "--output", output_path],
+        capture_output=True, text=True,
+    )
+    return {
+        "success": result.returncode == 0,
+        "output": result.stdout.strip(),
+        "error": result.stderr.strip() if result.returncode != 0 else None,
+        "file": output_path,
+    }
+
+
+# Phase-lens mapping for audit orchestration
+PHASE_LENS_MAP = {
+    0: ["report_auditor"],                                    # Template compliance
+    1: [],                                                     # Data readiness (handled by phase gates)
+    2: [],                                                     # Hypothesis lock (handled by phase gates)
+    3: [],                                                     # Experiments (handled by phase gates)
+    4: ["report_auditor", "data_report_checker", "rubric_checker"],  # Report draft
+    5: ["integrity_checker", "report_auditor", "data_report_checker", "rubric_checker"],  # Submission
+    "full": ["report_auditor", "data_report_checker", "rubric_checker", "integrity_checker"],
+}
+
+
+def tool_run_audit(project_yaml: str, output_dir: str, phase: str = "full") -> dict[str, Any]:
+    """Run all audit generators appropriate for the given phase.
+
+    Phase 4 (report): G13 + G14 + G15
+    Phase 5 (submission): G13 + G14 + G15 + G16
+    full: all audit generators
+    """
+    phase_key = int(phase) if phase.isdigit() else phase
+    lenses = PHASE_LENS_MAP.get(phase_key, PHASE_LENS_MAP["full"])
+
+    scripts_dir = str(Path(output_dir) / "scripts")
+    results = {}
+
+    generator_map = {
+        "report_auditor": ("G13", tool_run_report_auditor, f"{scripts_dir}/audit_report.py"),
+        "data_report_checker": ("G14", tool_run_data_report_checker, f"{scripts_dir}/check_data_report.py"),
+        "rubric_checker": ("G15", tool_run_rubric_checker, f"{scripts_dir}/check_rubric.py"),
+        "integrity_checker": ("G16", tool_run_integrity_checker, f"{scripts_dir}/check_integrity.py"),
+    }
+
+    for lens in lenses:
+        if lens in generator_map:
+            gid, fn, out_path = generator_map[lens]
+            r = fn(project_yaml, out_path)
+            results[lens] = {"generator": gid, **r}
+
+    passed = sum(1 for r in results.values() if r.get("success"))
+    return {
+        "success": passed == len(results),
+        "phase": str(phase_key),
+        "lenses_run": len(results),
+        "lenses_passed": passed,
+        "results": results,
+    }
+
+
 def tool_read_project_yaml(project_yaml: str) -> dict[str, Any]:
     """Read and summarize project.yaml for the agent to reason about."""
     try:
@@ -226,6 +354,47 @@ TOOL_REGISTRY = {
             "file_path": {"type": "string", "description": "Path to the generated file"},
         },
     },
+    "run_report_auditor": {
+        "function": tool_run_report_auditor,
+        "description": "Generate audit_report.py — Ten Simple Rules compliance, cross-refs, terminology, build checks",
+        "parameters": {
+            "project_yaml": {"type": "string", "description": "Path to project.yaml"},
+            "output_path": {"type": "string", "description": "Output path for audit_report.py"},
+        },
+    },
+    "run_data_report_checker": {
+        "function": tool_run_data_report_checker,
+        "description": "Generate check_data_report.py — numeric consistency between report claims and source artifacts",
+        "parameters": {
+            "project_yaml": {"type": "string", "description": "Path to project.yaml"},
+            "output_path": {"type": "string", "description": "Output path for check_data_report.py"},
+        },
+    },
+    "run_rubric_checker": {
+        "function": tool_run_rubric_checker,
+        "description": "Generate check_rubric.py — rubric and FAQ coverage verification",
+        "parameters": {
+            "project_yaml": {"type": "string", "description": "Path to project.yaml"},
+            "output_path": {"type": "string", "description": "Output path for check_rubric.py"},
+        },
+    },
+    "run_integrity_checker": {
+        "function": tool_run_integrity_checker,
+        "description": "Generate check_integrity.py — academic integrity and AI Use Statement compliance",
+        "parameters": {
+            "project_yaml": {"type": "string", "description": "Path to project.yaml"},
+            "output_path": {"type": "string", "description": "Output path for check_integrity.py"},
+        },
+    },
+    "run_audit": {
+        "function": tool_run_audit,
+        "description": "Run all audit generators appropriate for a given phase (0-5 or 'full')",
+        "parameters": {
+            "project_yaml": {"type": "string", "description": "Path to project.yaml"},
+            "output_dir": {"type": "string", "description": "Project root directory"},
+            "phase": {"type": "string", "description": "Phase number (0-5) or 'full' for all lenses"},
+        },
+    },
 }
 
 
@@ -255,6 +424,8 @@ def run_standalone(project_yaml: str, output_dir: str, dry_run: bool = False) ->
     print(f"Profile: {summary['profile']}")
     print()
 
+    has_audit = bool(result["raw"].get("audit"))
+
     if dry_run:
         print("DRY RUN — would generate:")
         if summary["has_experiments"]:
@@ -263,6 +434,11 @@ def run_standalone(project_yaml: str, output_dir: str, dry_run: bool = False) ->
             print("  - verify_manifests.py")
         if summary["has_phases"]:
             print(f"  - {summary['phase_count']} phase gate scripts + all-gates runner")
+        if has_audit:
+            print("  - audit_report.py (G13: Ten Simple Rules + cross-refs)")
+            print("  - check_data_report.py (G14: data-vs-report consistency)")
+            print("  - check_rubric.py (G15: rubric/FAQ coverage)")
+            print("  - check_integrity.py (G16: academic integrity)")
         return
 
     scripts_dir = str(Path(output_dir) / "scripts")
@@ -292,6 +468,30 @@ def run_standalone(project_yaml: str, output_dir: str, dry_run: bool = False) ->
         results["gates"] = r
     else:
         print("--- G6: Skipped (no phases defined) ---")
+
+    # Step 2b: Run audit generators if audit config present
+    if has_audit:
+        print("--- G13: Generating audit_report.py ---")
+        r = tool_run_report_auditor(project_yaml, f"{scripts_dir}/audit_report.py")
+        print(f"  {'OK' if r['success'] else 'FAIL'}: {r.get('output', r.get('error', ''))}")
+        results["audit_report"] = r
+
+        print("--- G14: Generating check_data_report.py ---")
+        r = tool_run_data_report_checker(project_yaml, f"{scripts_dir}/check_data_report.py")
+        print(f"  {'OK' if r['success'] else 'FAIL'}: {r.get('output', r.get('error', ''))}")
+        results["data_report"] = r
+
+        print("--- G15: Generating check_rubric.py ---")
+        r = tool_run_rubric_checker(project_yaml, f"{scripts_dir}/check_rubric.py")
+        print(f"  {'OK' if r['success'] else 'FAIL'}: {r.get('output', r.get('error', ''))}")
+        results["rubric"] = r
+
+        print("--- G16: Generating check_integrity.py ---")
+        r = tool_run_integrity_checker(project_yaml, f"{scripts_dir}/check_integrity.py")
+        print(f"  {'OK' if r['success'] else 'FAIL'}: {r.get('output', r.get('error', ''))}")
+        results["integrity"] = r
+    else:
+        print("--- G13-G16: Skipped (no audit config) ---")
 
     # Step 3: Validate
     print()
@@ -420,9 +620,23 @@ Modes:
                         help="Run without Agent SDK (deterministic, no LLM calls)")
     parser.add_argument("--dry-run", action="store_true",
                         help="Show what would be generated without executing")
+    parser.add_argument("--audit", metavar="PHASE",
+                        help="Run audit generators only for given phase (0-5 or 'full')")
     args = parser.parse_args()
 
-    if args.dry_run or args.standalone:
+    if args.audit is not None:
+        # Audit-only mode: generate and report
+        print("=" * 60)
+        print(f"ml-governance-templates — Audit Generator (phase: {args.audit})")
+        print("=" * 60)
+        result = tool_run_audit(args.project_yaml, args.output_dir, args.audit)
+        print(f"\nLenses run: {result['lenses_run']}")
+        print(f"Lenses passed: {result['lenses_passed']}")
+        for name, r in result.get("results", {}).items():
+            status = "OK" if r.get("success") else "FAIL"
+            print(f"  [{status}] {r.get('generator', '?')}: {name} → {r.get('file', '?')}")
+        sys.exit(0 if result["success"] else 1)
+    elif args.dry_run or args.standalone:
         run_standalone(args.project_yaml, args.output_dir, dry_run=args.dry_run)
     else:
         asyncio.run(run_agent_mode(args.project_yaml, args.output_dir))

@@ -15,7 +15,25 @@
 - Worked examples per profile
 - Authority hierarchy, verification annotations, CONTRACT_CHANGE protocol
 
-### v2.1 (2026-03) — Current
+### v2.2 (2026-03) — Current
+- **Audit automation layer** — automated multi-lens quality verification
+- 2 new templates (29 total):
+  - `REPORT_CONSISTENCY_SPEC.tmpl.md` — Ten Simple Rules (Kording & Mensh) + numeric consistency + cross-ref integrity
+  - `RUBRIC_TRACEABILITY.tmpl.md` — rubric/FAQ coverage matrix for 100% compliance verification
+- 4 new audit generators (G13-G16):
+  - `gen_report_auditor.py` — G13: Ten Simple Rules machine-checkable audit (title, abstract, CCC, jargon, terminology, cross-refs, captions, build)
+  - `gen_data_report_checker.py` — G14: data-vs-report numeric consistency (catches transcription errors like 8.6x eigenvalue)
+  - `gen_rubric_checker.py` — G15: rubric/FAQ coverage verification with gap detection
+  - `gen_integrity_checker.py` — G16: academic integrity and AI Use Statement compliance
+- `docs/references/Ten_Simple_Rules_Kording_Mensh.md` — canonical reference
+- `AUDIT_AUTOMATION_PLAN.md` — architecture for 10-lens phase-aware audit pipeline
+- Orchestrator extended with audit tool functions (`tool_run_audit`, `tool_run_full_audit`)
+- Prompt Playbook Stage 10: Multi-Lens Audit Protocol
+- `project.yaml` audit schema extension (tolerances, jargon, terminology lock, build config)
+- Profile updates: supervised, unsupervised, rl-agent, full now include REPORT_CONSISTENCY_SPEC + RUBRIC_TRACEABILITY
+- **Motivation:** UL report had 7 manual audit cycles (49+ findings); RL report had 14 cycles (30+ findings). This release automates the dominant workflow bottleneck.
+
+### v2.1 (2026-03)
 - **Layer 2: Executable scaffolding** via code generators
 - `project.yaml` structured config that drives all generators
 - 3 generators (G1, G5, G6) + master runner:
@@ -53,6 +71,10 @@
 | G10 | `gen_report_artifacts.py` | `artifacts`, `experiments` | `scripts/make_report_artifacts.py` | Planned |
 | G11 | `gen_env_setup.py` | `project` | `scripts/verify_env.sh` | Planned |
 | G12 | `gen_data_loader.py` | `datasets` | `scripts/check_data_ready.py` | Planned |
+| G13 | `gen_report_auditor.py` | `audit` | `scripts/audit_report.py` | **Done (v2.2)** |
+| G14 | `gen_data_report_checker.py` | `audit`, `artifacts` | `scripts/check_data_report.py` | **Done (v2.2)** |
+| G15 | `gen_rubric_checker.py` | `authority`, `audit` | `scripts/check_rubric.py` | **Done (v2.2)** |
+| G16 | `gen_integrity_checker.py` | `ai_governance`, `audit` | `scripts/check_integrity.py` | **Done (v2.2)** |
 
 ### Layer 3: Agent Orchestration
 
