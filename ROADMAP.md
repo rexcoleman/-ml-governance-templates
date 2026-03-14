@@ -70,6 +70,28 @@
 
 ## Planned: v3.0
 
+### New Templates: Distributed Systems Governance
+
+Extracted from CS 6200 OS parallel project experience. Extends govML from "ML + single-machine systems" to "ML + systems + distributed systems."
+
+| # | Template | Source | Covers |
+|---|----------|--------|--------|
+| 33 | `IPC_PROTOCOL_SPEC.tmpl.md` | P3 IPC benchmark | Resource lifecycle (who creates/destroys SHM, semaphores, sockets), naming conventions, cleanup verification, transport selection criteria, ownership model |
+| 34 | `RPC_SERVICE_CONTRACT.tmpl.md` | P4 consistency benchmark | Proto definition governance, streaming patterns (client/server/bidi), deadline/timeout policy, status code semantics, backward compatibility, retry policy |
+| 35 | `DISTRIBUTED_CONSISTENCY_SPEC.tmpl.md` | P4 consistency benchmark | Consistency model selection (strong/weak/eventual), conflict resolution rules, divergence detection (CRC, vector clocks), partition behavior, multi-client test scenarios |
+
+**Addendum:** PERFORMANCE_BENCHMARKING_SPEC network latency measurement (RPC round-trip, jitter handling, clock skew).
+
+**New generator:**
+
+| ID | Generator | Input Section | Output | Status |
+|----|-----------|---------------|--------|--------|
+| G17 | `gen_benchmark_runner.py` | `systems.benchmark` | `scripts/run_benchmark.sh` | Planned |
+
+**New profile update:** `systems-benchmark` profile expands from 12 → 15 templates when IPC/RPC/distributed templates ship.
+
+---
+
 ### Layer 2 Expansion: Remaining Generators
 
 | ID | Generator | Input Section | Output | Status |

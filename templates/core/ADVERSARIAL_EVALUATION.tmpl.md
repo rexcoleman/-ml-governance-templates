@@ -90,6 +90,36 @@ Additive perturbations to test-time inputs within an Lp-norm ball.
 
 **Budget rule:** Attack iterations (PGD steps, query count) MUST be logged in `summary.json`. Total adversarial compute budget MUST be reported alongside standard evaluation budget.
 
+#### Attack Selection by Model Type
+
+Not all attacks work with all model types. Select attacks based on model differentiability:
+
+| Model Type | Gradient Access? | Recommended Attacks | Avoid |
+|-----------|-----------------|--------------------| ------|
+| **Neural networks** (PyTorch, TF) | Yes | FGSM, PGD, AutoAttack, C&W | — |
+| **sklearn tree ensembles** (RF, XGBoost, GBM) | No | ZOO, HopSkipJump, noise baseline | FGSM, PGD (will fail — `EstimatorError`) |
+| **sklearn linear models** (SVM, LogReg) | Partial (via decision function) | ZOO, HopSkipJump | PGD (may work via ART wrapper but unreliable) |
+| **Black-box API** | No | Square Attack, HopSkipJump, ZOO | All white-box attacks |
+
+**Rule:** If your model is not differentiable, do NOT attempt gradient-based attacks. Use zeroth-order optimization (ZOO) as primary and decision-based (HopSkipJump) as validation. Random noise is acceptable as a sanity check baseline but is NOT a substitute for optimization-based attacks.
+
+### 3.1b Feature Controllability Matrix (Security ML)
+
+> **Activation:** Include when your adversarial evaluation targets a domain where not all features
+> are equally perturbable (e.g., network IDS, malware detection, fraud detection).
+
+For security ML projects, features divide into categories by who controls them:
+
+| Category | Features | Rationale |
+|----------|----------|-----------|
+| **Attacker-controllable** | *(list features the attacker can modify)* | *(why: e.g., attacker controls packet timing, payload content)* |
+| **Defender-observable only** | *(list features set by OS/network/environment)* | *(why: e.g., TCP flags set by receiver OS stack)* |
+| **Environment-determined** | *(list features neither party controls)* | *(why: e.g., time-of-day, network load)* |
+
+**Constraint enforcement:** Constrained attacks MUST multiply perturbation vectors by a binary feature mask (1=controllable, 0=not controllable). Both constrained and unconstrained results MUST be reported.
+
+**Domain expertise source:** *(Cite the domain knowledge used to classify features — protocol specs, system documentation, threat models.)*
+
 ### 3.2 Data Poisoning
 
 Corruption of training data to degrade model performance or implant backdoors.
