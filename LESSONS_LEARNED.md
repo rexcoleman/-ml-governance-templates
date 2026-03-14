@@ -406,6 +406,35 @@ Places where Claude Code agents can run in parallel for maximum throughput:
 - **Evidence:** Test set (2024+ CVEs) has only 0.3% exploit rate vs 10.5% in train. ExploitDB labels for recent CVEs are incomplete — exploits exist but haven't been catalogued yet. This depresses F1 for all models. Rather than treating this as a methodological flaw, it's a finding: temporal splits expose ground truth lag, which is a real problem for production vuln prioritization systems.
 - **Lesson:** Negative or unexpected results are findings if you can explain the mechanism. The blog post angle shifts from "we beat EPSS" to "here's what happens when you apply temporal discipline to vuln prediction" — more honest, more interesting, more consistent with builder-showing-work voice.
 
+### WIN-025: Post-pipeline audit found scaler bug that improved results
+- **Source:** FP-05 comprehensive audit (2026-03-14)
+- **Evidence:** LogReg model was trained on scaled features but evaluated on unscaled data. Fixing the scaler persistence + application changed SHAP rankings: kw_sql_injection jumped from #16 to #8, kw_remote_code_execution from #18 to #12. The corrected results tell a BETTER story for the blog — practitioner keywords are more important than the broken version showed.
+- **Lesson:** The audit caught a bug that made results WORSE for the narrative. Auditing after pipeline completion is not just quality assurance — it can improve the story. Add "post-pipeline audit" as a Phase gate before publication.
+
+### ISS-032: StandardScaler not persisted with LogReg model
+- **Source:** FP-05 audit (2026-03-14)
+- **Problem:** train_models.py saved the model pickle but not the scaler. Downstream scripts (SHAP, adversarial) loaded the model and predicted on unscaled data. Results were "valid" (AUC unchanged) but SHAP attributions were wrong.
+- **Impact:** SHAP feature importance was suppressed for all features — especially binary keyword features whose relative importance changes dramatically when other features are standardized. Bug made practitioner keywords look less important than they are.
+- **Proposed fix:** RESOLVED — scaler now saved in pickle bundle. All consumers load and apply it.
+- **Status:** RESOLVED
+
+### ISS-033: Governance templates left partially filled after rapid pipeline execution
+- **Source:** FP-05 audit (2026-03-14)
+- **Problem:** HYPOTHESIS_CONTRACT, EXPERIMENT_CONTRACT, METRICS_CONTRACT, DATA_CONTRACT all still have raw placeholders. Pipeline executed correctly without filling these docs because the scripts don't read from governance docs — they read from project.yaml and hardcoded values.
+- **Impact:** Governance docs are decoration, not functional. The "governance lock" step in IMPLEMENTATION_PLAYBOOK was skipped.
+- **Root cause:** The rapid single-session pipeline prioritized execution velocity over governance compliance. When the CLAUDE_MD and PROJECT_BRIEF are filled, Claude Code has enough context to run experiments without the intermediate contracts.
+- **Lesson:** There's a tension between govML's governance depth and single-session research velocity. For blog-track projects, consider a "lite governance" profile that requires only PROJECT_BRIEF + DECISION_LOG + PUBLICATION_PIPELINE + FINDINGS — skip the full contract suite. The full suite is for multi-week academic projects where governance prevents drift.
+- **Status:** IDENTIFIED — consider "blog-track" profile for v2.5
+
+### ISS-034: HYPOTHESIS_CONTRACT not filled before experiments (Phase 2 gate violation)
+- **Source:** FP-05 audit (2026-03-14)
+- **Problem:** IMPLEMENTATION_PLAYBOOK requires hypotheses committed before experiments run (Phase 2 gate). FP-05 had research questions in PROJECT_BRIEF but never translated them into formal hypotheses in HYPOTHESIS_CONTRACT.
+- **Impact:** RQs were answered, but the hypothesis-first methodology (predict → experiment → resolve) was not followed. Results are valid but the process is out of compliance.
+- **Proposed fix:** For blog-track projects, either (a) treat RQs in PROJECT_BRIEF as sufficient (they serve the same purpose), or (b) add a quick "hypothesis lock" step to the blog-track profile.
+- **Status:** IDENTIFIED — design decision for v2.5
+
+---
+
 ### ISS-031: pyarrow missing from environment.yml
 - **Source:** FP-05 build_features.py (2026-03-14)
 - **Problem:** `to_parquet()` failed because pyarrow wasn't in the conda env. Had to `pip install pyarrow` ad-hoc.
@@ -495,3 +524,4 @@ v2.4 resolved **9 issues** in a single session:
 | 2026-03-14 | v2.4 shipped: 9 issues resolved (ISS-001,006,007,009,012,015,017,024 + security-ml). Added WIN-016–020, ISS-025–027. Backlog updated with resolved status. | v2.4 development + FP-05 scaffolding + brand strategy synthesis |
 | 2026-03-14 | Added ISS-028–030, WIN-021–022: API ingestion pattern, feature controllability reuse, multi-source join pattern, data ingestion as generator candidate, NVD API key as Phase 0 decision | FP-05 Phase 0 execution |
 | 2026-03-14 | Added WIN-023–024, ISS-031: full pipeline in single session, ground truth lag as finding, pyarrow missing from env | FP-05 full pipeline completion |
+| 2026-03-14 | Added ISS-032–034, WIN-025: scaler persistence bug, SHAP correction reveals keyword importance, audit-driven quality improvement | FP-05 comprehensive audit |
