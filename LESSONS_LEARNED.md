@@ -435,6 +435,20 @@ Places where Claude Code agents can run in parallel for maximum throughput:
 
 ---
 
+### WIN-026: govML v2.4 flywheel confirmed — FP-05 faster than FP-01
+- **Source:** FP-05 completion assessment (2026-03-14)
+- **Evidence:** FP-01 took multiple sessions over 2 days. FP-05 went from `mkdir` to complete FINDINGS.md with all 4 RQs answered, SHAP plots, adversarial eval, 11 ADRs, and 4 distribution formats — in a single session. The velocity improvement came from: (1) --fill eliminating placeholder tedium, (2) PROJECT_BRIEF forcing thesis-first thinking, (3) patterns transferring (smoke testing, feature controllability), (4) CLAUDE_MD giving Claude Code full context from first command.
+- **Lesson:** The govML flywheel is real. Each project is faster than the last because governance patterns compound. v2.4 was the inflection point — PROJECT_BRIEF + PUBLICATION_PIPELINE changed how projects start and end. The next inflection will be v3.0 (CI/CD + agent orchestration) for P3/L4 gates.
+
+### ISS-035: govML needs a "blog-track" lite profile
+- **Source:** FP-05 governance audit + ISS-033/034 (2026-03-14)
+- **Problem:** FP-05 used security-ml profile (21 templates) but only ~8 were meaningfully filled. HYPOTHESIS_CONTRACT, EXPERIMENT_CONTRACT, METRICS_CONTRACT, DATA_CONTRACT remained mostly template placeholders. The PROJECT_BRIEF + DECISION_LOG + PUBLICATION_PIPELINE + FINDINGS.md carried the project.
+- **Impact:** 13 unfilled governance docs create noise in the repo. For blog-track projects (3-4 week scope, single researcher, publication as primary output), the full contract suite is overhead.
+- **Proposed fix:** Create a `blog-track` profile with: PROJECT_BRIEF, DECISION_LOG, IMPLEMENTATION_PLAYBOOK (simplified), ADVERSARIAL_EVALUATION (if security), PUBLICATION_PIPELINE, CLAUDE_MD. ~8 templates instead of 21. Full profiles reserved for academic and multi-week projects.
+- **Status:** IDENTIFIED — v2.5
+
+---
+
 ### ISS-031: pyarrow missing from environment.yml
 - **Source:** FP-05 build_features.py (2026-03-14)
 - **Problem:** `to_parquet()` failed because pyarrow wasn't in the conda env. Had to `pip install pyarrow` ad-hoc.
@@ -525,3 +539,4 @@ v2.4 resolved **9 issues** in a single session:
 | 2026-03-14 | Added ISS-028–030, WIN-021–022: API ingestion pattern, feature controllability reuse, multi-source join pattern, data ingestion as generator candidate, NVD API key as Phase 0 decision | FP-05 Phase 0 execution |
 | 2026-03-14 | Added WIN-023–024, ISS-031: full pipeline in single session, ground truth lag as finding, pyarrow missing from env | FP-05 full pipeline completion |
 | 2026-03-14 | Added ISS-032–034, WIN-025: scaler persistence bug, SHAP correction reveals keyword importance, audit-driven quality improvement | FP-05 comprehensive audit |
+| 2026-03-14 | Added WIN-026, ISS-035: govML ceiling analysis, blog-track profile need confirmed across 2 projects | FP-05 completion assessment + govML roadmap |
