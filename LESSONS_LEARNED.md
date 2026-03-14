@@ -14,6 +14,7 @@
 | CS 7641 OL Report | — | optimization | Complete |
 | CS 7641 UL Report | — | unsupervised | Complete |
 | CS 7641 RL Report | — | rl-agent | Complete |
+| Vuln Prioritization Engine | FP-05 / PUB-043 | security-ml (v2.4) | Phase 0 in progress |
 | CS 6200 P3 IPC (parallel) | PUB-006/007 | systems-benchmark (planned) | Not started |
 | CS 6200 P4 DFS (parallel) | PUB-008/009 | systems-benchmark (planned) | Not started |
 
@@ -383,6 +384,40 @@ Places where Claude Code agents can run in parallel for maximum throughput:
 
 ## Issues Found (continued — v2.4 session)
 
+### WIN-021: Feature controllability transfers across projects (FP-01 → FP-05)
+- **Source:** FP-05 adversarial evaluation design (2026-03-14)
+- **Evidence:** The attacker-controllable vs defender-observable feature split from FP-01 (network features: 57/14) transferred directly to FP-05 (CVE features: 13/11). Same conceptual framework, different domain. The adversarial_eval.py was written in ~30 minutes because the pattern was already understood.
+- **Lesson:** Feature controllability is a general adversarial ML methodology, not a dataset-specific trick. Two projects demonstrating cross-domain transfer = publishable methodology.
+
+### WIN-022: Writing all experiment scripts before data arrives maximizes parallelism
+- **Source:** FP-05 Phase 0 (2026-03-14)
+- **Evidence:** While NVD API download ran (~3 hours), wrote: train_baselines.py, train_models.py, run_explainability.py, adversarial_eval.py, check_data_ready.py, verify_env.sh, .gitignore — 7 scripts before any data available. When NVD finishes, entire pipeline is ready.
+- **Lesson:** Script writing doesn't depend on data. Feature engineering does. Optimal Phase 0: (data download ‖ script writing ‖ governance filling). Document in IMPLEMENTATION_PLAYBOOK.
+
+---
+
+### ISS-028: No govML template for multi-source data ingestion
+- **Source:** FP-05 Phase 0 (2026-03-14)
+- **Problem:** FP-05 requires 4 data sources (NVD API, ExploitDB CSV, EPSS API, GitHub Advisory API), each with different download methods (REST API, git clone, CSV dump). No govML template captures the ingestion pattern: source → download method → rate limits → known issues → local path → metadata.json → checksum.
+- **Impact:** Had to write 3 custom ingestion scripts from scratch. The pattern (paginated API → save batches → metadata.json) is reusable across projects.
+- **Proposed fix:** Either (a) add an "Ingestion Sources" section to DATA_CONTRACT with fields: source name, download method, rate limits, known issues, checksum, or (b) create a `DATA_INGESTION_SPEC.tmpl.md` template for multi-source projects.
+- **Status:** IDENTIFIED
+
+### ISS-029: Feature controllability from FP-01 is a reusable cross-project pattern
+- **Source:** FP-05 adversarial evaluation (2026-03-14)
+- **Problem:** FP-05 reuses the feature controllability matrix from FP-01 (ATTACKER_CONTROLLABLE vs DEFENDER_OBSERVABLE_ONLY). This pattern is now in two projects but still hand-coded in each adversarial_eval.py. It should be a first-class concept in ADVERSARIAL_EVALUATION template.
+- **Impact:** Code duplication across projects. New adversarial projects must rediscover the pattern.
+- **Proposed fix:** The Feature Controllability Matrix section added to ADVERSARIAL_EVALUATION in v2.4 covers the documentation side. But the code-side pattern (splitting features into controllable/observable lists, evaluating defender-only models) should be a generator or utility function.
+- **Status:** IDENTIFIED — extract utility after FP-05 completes
+
+### ISS-030: project.yaml should support multiple datasets with different download methods
+- **Source:** FP-05 project.yaml (2026-03-14)
+- **Problem:** project.yaml.research-example has a `datasets` array but the `download_method` field was added ad-hoc. The schema isn't formalized — generators don't read it, init_project.sh doesn't use it.
+- **Proposed fix:** Formalize the dataset schema in project.yaml with: name, source, download_method (enum: direct_url, api, git_clone, kaggle_cli, manual), known_issues (list), local_path, sha256. Create a `gen_data_ingestion.py` generator that reads this and produces download scripts.
+- **Status:** IDENTIFIED — v3.0 candidate (G9 enhancement)
+
+---
+
 ### ISS-025: SSH key / git push not verified in Phase 0
 - **Source:** FP-05 Phase 0 (2026-03-14)
 - **Problem:** Same issue as ISS-017 — `git push` failed due to SSH key not loaded in agent. Phase 0 gate in IMPLEMENTATION_PLAYBOOK now includes "Git remote configured" but doesn't verify the push actually succeeds.
@@ -439,3 +474,4 @@ v2.4 resolved **9 issues** in a single session:
 | 2026-03-14 | Added ISS-020–022, WIN-012–013: ART gradient attacks on sklearn, attack selection guide, code duplication, full pipeline velocity, feature controllability pattern | FP-01 Phase 2b-2d |
 | 2026-03-14 | Added ISS-023–024, WIN-014–015: stratified split threshold, publication pipeline, right-sized governance, feature controllability as govML IP | FP-01 Phase 2d completion |
 | 2026-03-14 | v2.4 shipped: 9 issues resolved (ISS-001,006,007,009,012,015,017,024 + security-ml). Added WIN-016–020, ISS-025–027. Backlog updated with resolved status. | v2.4 development + FP-05 scaffolding + brand strategy synthesis |
+| 2026-03-14 | Added ISS-028–030, WIN-021–022: API ingestion pattern, feature controllability reuse, multi-source join pattern, data ingestion as generator candidate, NVD API key as Phase 0 decision | FP-05 Phase 0 execution |
