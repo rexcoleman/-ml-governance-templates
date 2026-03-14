@@ -15,7 +15,20 @@
 - Worked examples per profile
 - Authority hierarchy, verification annotations, CONTRACT_CHANGE protocol
 
-### v2.3 (2026-03) — Current
+### v2.4 (2026-03-14) — Current
+
+- **PROJECT_BRIEF.tmpl.md** — forces thesis, research questions, scope, skill cluster targets, and publication target BEFORE code. Addresses ISS-001.
+- **PUBLICATION_PIPELINE.tmpl.md** — governs blog/conference publication workflow from draft structure through distribution checklist. Addresses ISS-024 (reprioritized LOW→CRITICAL).
+- **`init_project.sh --fill`** — reads project.yaml and bulk-substitutes common placeholders (PROJECT_NAME, PYTHON_VERSION, ENV_NAME, ENV_FILE, TIER docs, ENV_MANAGER) across all copied templates. Addresses ISS-012, ISS-009.
+- **`project.yaml.research-example`** — non-academic self-directed research project config with download_method field, known_issues, min_class_members, skill_clusters, publication target. Addresses ISS-006, ISS-007.
+- **Decision logging mandatory** at every phase gate in IMPLEMENTATION_PLAYBOOK. Addresses ISS-015.
+- **Git remote check** added to Phase 0 gate. Addresses ISS-017.
+- **security-ml profile** updated: 19 → 21 templates (added PROJECT_BRIEF, PUBLICATION_PIPELINE).
+- **Full profile** updated: 32 → 34 templates (added PROJECT_BRIEF, PUBLICATION_PIPELINE).
+- **9 issues resolved** in a single session (ISS-001, 006, 007, 009, 012, 015, 017, 024 + security-ml update).
+- **Validated on FP-05** (Vulnerability Prioritization Engine) — first project through full v2.4 flywheel.
+
+### v2.3 (2026-03)
 - **Systems benchmark profile** — C/C++ project governance
 - 3 new templates (32 total):
   - `BUILD_SYSTEM_CONTRACT.tmpl.md` — compiler lock, build profiles (debug/release/benchmark), sanitizer governance, warning governance, reproducible builds

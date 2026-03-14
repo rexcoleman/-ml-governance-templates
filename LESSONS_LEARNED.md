@@ -141,25 +141,28 @@ Places where Claude Code agents can run in parallel for maximum throughput:
 | Priority | Issue | Effort | Impact | Target |
 |----------|-------|--------|--------|--------|
 | ~~HIGH~~ | ~~ISS-004: `security-ml` profile~~ | ~~Small~~ | ~~Removes friction for security ML projects~~ | ~~RESOLVED 2026-03-14~~ |
-| HIGH | ISS-006: Non-academic project.yaml example | Small | Removes "blank page" problem for research projects | v2.4 |
-| MEDIUM | ISS-001: PROJECT_BRIEF template | Small | Forces project definition before code | v2.4 |
-| MEDIUM | ISS-005: Separate RQ traceability template | Small | Better UX for self-directed projects | v2.4 |
+| ~~HIGH~~ | ~~ISS-006: Non-academic project.yaml example~~ | ~~Small~~ | ~~Removes "blank page" problem for research projects~~ | ~~RESOLVED v2.4 (2026-03-14) — `project.yaml.research-example` shipped~~ |
+| ~~MEDIUM~~ | ~~ISS-001: PROJECT_BRIEF template~~ | ~~Small~~ | ~~Forces project definition before code~~ | ~~RESOLVED v2.4 (2026-03-14) — `PROJECT_BRIEF.tmpl.md` shipped~~ |
+| MEDIUM | ISS-005: Separate RQ traceability template | Small | Better UX for self-directed projects | v2.5 (extract from FP-05) |
 | MEDIUM | ISS-002: IPC/RPC/distributed templates | Large | Extends govML to distributed systems | v3.0 |
-| LOW | ISS-003: Network latency addendum | Small | Completes PERFORMANCE_BENCHMARKING_SPEC | v2.4 |
-| HIGH | ISS-007: Download script assumes direct URLs | Small | Data acquisition blocked on first real project | v2.4 |
-| MEDIUM | ISS-008: No disk/resource pre-flight check | Small | Env creation fails silently when disk full | v2.4 |
-| LOW | ISS-009: init_project.sh doesn't create project.yaml | Small | Key Layer 2 artifact missing from scaffolding | v2.4 |
+| LOW | ISS-003: Network latency addendum | Small | Completes PERFORMANCE_BENCHMARKING_SPEC | v3.0 |
+| ~~HIGH~~ | ~~ISS-007: Download script assumes direct URLs~~ | ~~Small~~ | ~~Data acquisition blocked on first real project~~ | ~~RESOLVED v2.4 (2026-03-14) — `download_method` field added to project.yaml.research-example~~ |
+| MEDIUM | ISS-008: No disk/resource pre-flight check | Small | Env creation fails silently when disk full | v2.5 |
+| ~~LOW~~ | ~~ISS-009: init_project.sh doesn't create project.yaml~~ | ~~Small~~ | ~~Key Layer 2 artifact missing from scaffolding~~ | ~~RESOLVED v2.4 (2026-03-14) — `--fill` flag copies + pre-fills project.yaml~~ |
 | ~~MEDIUM~~ | ~~ISS-010: Feature Controllability Matrix~~ | ~~Medium~~ | ~~Security ML projects need this~~ | ~~RESOLVED 2026-03-14~~ |
-| LOW | ISS-011: CICIDS2017 column names have leading spaces | Tiny | Known issue, should be in DATA_CONTRACT common pitfalls | v2.4 |
-| **HIGH** | **ISS-012: Bulk placeholder fill missing from init_project.sh** | **Medium** | **20+ min wasted per project on mechanical replacement** | **v2.4** |
+| LOW | ISS-011: CICIDS2017 column names have leading spaces | Tiny | Known issue, should be in DATA_CONTRACT common pitfalls | v2.5 |
+| ~~**HIGH**~~ | ~~**ISS-012: Bulk placeholder fill missing from init_project.sh**~~ | ~~**Medium**~~ | ~~**20+ min wasted per project on mechanical replacement**~~ | ~~**RESOLVED v2.4 (2026-03-14) — `--fill` reads project.yaml, substitutes across all templates**~~ |
 | ~~**HIGH**~~ | ~~**ISS-020: ART gradient attacks fail on sklearn**~~ | ~~**Small**~~ | ~~**30 min wasted; redesigned attack pipeline**~~ | ~~**RESOLVED 2026-03-14**~~ |
 | ~~**HIGH**~~ | ~~**ISS-021: No attack selection guide by model type**~~ | ~~**Small**~~ | ~~**Users pick wrong attack, waste time on errors**~~ | ~~**RESOLVED 2026-03-14**~~ |
-| MEDIUM | ISS-013: setuptools ≥72 breaks ART (pkg_resources) | Tiny | Pin in env template known-issues section | v2.4 |
-| MEDIUM | ISS-014: PyTorch default install pulls CUDA on CPU VMs | Small | Add GPU checkbox + CPU-only pattern to ENV_CONTRACT | v2.4 |
-| MEDIUM | ISS-015: No decision-logging reminder at phase gates | Small | Add DECISION_LOG checklist item to each phase | v2.4 |
-| MEDIUM | ISS-022: Attack code duplicated between attack + defense scripts | Small | Factor shared attack generation into utility module | v2.4 |
-| MEDIUM | ISS-023: Stratified split min-class formula in DATA_CONTRACT | Tiny | Prevents multi-seed crash on rare classes | v2.4 |
-| LOW | ISS-024: Publication pipeline template | Small | Governance for the highest-leverage brand activity | v3.0 |
+| MEDIUM | ISS-013: setuptools ≥72 breaks ART (pkg_resources) | Tiny | Pin in env template known-issues section | v2.5 |
+| MEDIUM | ISS-014: PyTorch default install pulls CUDA on CPU VMs | Small | Add GPU checkbox + CPU-only pattern to ENV_CONTRACT | v2.5 |
+| ~~MEDIUM~~ | ~~ISS-015: No decision-logging reminder at phase gates~~ | ~~Small~~ | ~~Add DECISION_LOG checklist item to each phase~~ | ~~RESOLVED v2.4 (2026-03-14) — mandatory at every phase gate~~ |
+| MEDIUM | ISS-022: Attack code duplicated between attack + defense scripts | Small | Factor shared attack generation into utility module | v2.5 |
+| LOW | ISS-023: Stratified split min-class formula in DATA_CONTRACT | Tiny | Prevents multi-seed crash on rare classes | v2.5 |
+| ~~**CRITICAL**~~ | ~~**ISS-024: Publication pipeline template**~~ | ~~**Small**~~ | ~~**Governance for the highest-leverage brand activity**~~ | ~~**RESOLVED v2.4 (2026-03-14) — `PUBLICATION_PIPELINE.tmpl.md` shipped, reprioritized LOW→CRITICAL**~~ |
+| MEDIUM | ISS-025: SSH key / git push not checked in Phase 0 preflight | Tiny | Blocks push at end of project (ISS-017 recurrence) | v2.5 |
+| MEDIUM | ISS-026: No CLAUDE.md auto-fill from project.yaml | Small | CLAUDE_MD.md still has raw placeholders after --fill | v2.5 |
+| LOW | ISS-027: No `--sample-frac` convention in SCRIPT_ENTRYPOINTS_SPEC | Tiny | Smoke testing pattern (WIN-011) not codified in templates | v2.5 |
 
 ---
 
@@ -349,6 +352,80 @@ Places where Claude Code agents can run in parallel for maximum throughput:
 
 ---
 
+## What's Working Well (continued — v2.4 session)
+
+### WIN-016: --fill bulk substitution works on first test — 20 files filled in <1 second
+- **Source:** govML v2.4 development (2026-03-14)
+- **Evidence:** `init_project.sh --profile security-ml --fill` on FP-05: 21 templates copied, 20 files had common placeholders filled, 158 unique content placeholders remain for phase-specific filling. Total wall time: <1 second for substitution.
+- **Lesson:** The project.yaml → template substitution design was correct. Reading YAML with grep/sed (no Python dependency) keeps init_project.sh portable.
+
+### WIN-017: PROJECT_BRIEF forces thesis-first thinking — changes how projects start
+- **Source:** FP-05 scaffolding (2026-03-14)
+- **Evidence:** FP-05 PROJECT_BRIEF was filled with thesis, 4 RQs, scope, 4 data sources, cluster targets, architecture diagram, and pre-project technical decisions BEFORE any code was written. Contrast with FP-01 where we jumped to code and wrote the thesis retroactively.
+- **Lesson:** The template doesn't just document — it changes behavior. "What am I proving and who is it for?" before "what code do I write?" is the difference between building artifacts and building a brand. PROJECT_BRIEF should be the FIRST document filled in every project, before ENVIRONMENT_CONTRACT.
+
+### WIN-018: PUBLICATION_PIPELINE governs the entire distribution workflow
+- **Source:** govML v2.4 design (2026-03-14)
+- **Evidence:** PUBLICATION_PIPELINE includes: voice check (builder not pundit), architecture diagram requirement, distribution checklist (Hugo → Substack → dev.to → Hashnode → LinkedIn → Mastodon → HN), post-publication engagement checklist. This is the template that was most conspicuously missing from FP-01.
+- **Lesson:** ISS-024 was rated LOW in the original backlog because it was classified as "publishing" not "governance." Reprioritizing to CRITICAL was the right call — publication is the highest-leverage brand activity and had ZERO governance. The irony of a governance framework that doesn't govern its own distribution was the key insight.
+
+### WIN-019: Brand strategy analysis revealed 3 critical govML gaps simultaneously
+- **Source:** Brand strategy v2.0 development (2026-03-14)
+- **Evidence:** Reviewing the brand strategy through a skills lens simultaneously revealed: (1) ISS-024 as CRITICAL (no publication governance), (2) ISS-001 as HIGH (no thesis-first project definition), (3) ISS-012 as HIGH (placeholder tedium blocks rapid project iteration). All three were resolved in v2.4 in a single session.
+- **Lesson:** Cross-referencing govML gaps against external frameworks (brand strategy, skills guide) surfaces priorities that pure internal usage doesn't reveal. The "does govML govern the thing that matters most?" question is more powerful than "what friction did I feel during experiments?"
+
+### WIN-020: FP-05 scaffolded in <5 minutes — first full v2.4 flywheel test
+- **Source:** FP-05 initialization (2026-03-14)
+- **Evidence:** `init_project.sh --fill` → 21 templates copied and bulk-filled → project.yaml from research example → PROJECT_BRIEF filled with full thesis/RQs/scope/data → GitHub repo created and pushed. Total time from `mkdir` to `git push`: ~30 minutes (mostly writing the brief, not fighting tooling).
+- **Lesson:** The automation flywheel is working. Compare to FP-01 where setup took most of a session due to placeholder tedium, missing project.yaml, and no publication governance. The v2.4 improvements removed all three bottlenecks.
+
+---
+
+## Issues Found (continued — v2.4 session)
+
+### ISS-025: SSH key / git push not verified in Phase 0
+- **Source:** FP-05 Phase 0 (2026-03-14)
+- **Problem:** Same issue as ISS-017 — `git push` failed due to SSH key not loaded in agent. Phase 0 gate in IMPLEMENTATION_PLAYBOOK now includes "Git remote configured" but doesn't verify the push actually succeeds.
+- **Impact:** Blocks provenance tracking and GitHub deployment. Discovered at end of setup, not beginning.
+- **Proposed fix:** Phase 0 gate should include `git push --dry-run` or `ssh -T git@github.com` as a verification command. Or add to `preflight.sh`.
+- **Status:** IDENTIFIED
+
+### ISS-026: CLAUDE_MD.md not fully auto-filled by --fill
+- **Source:** FP-05 scaffolding (2026-03-14)
+- **Problem:** `--fill` correctly fills PROJECT_NAME and TIER docs in CLAUDE_MD.md but the template has additional context fields (Current Phase, Phase Commands, AI Division of Labor) that are project-specific. After --fill, CLAUDE_MD still needs significant manual editing.
+- **Impact:** CLAUDE_MD is the highest-leverage single template (WIN-002). If it's not filled, every Claude Code session wastes 10 minutes on orientation.
+- **Proposed fix:** Either (a) generate CLAUDE_MD from project.yaml (read phases, experiments, authority) or (b) add a `gen_claude_md.py` generator that reads project.yaml and produces a fully-filled CLAUDE_MD.
+- **Status:** IDENTIFIED — high value for v2.5
+
+### ISS-027: Smoke testing pattern (--sample-frac) not codified in templates
+- **Source:** FP-01 WIN-011 + FP-05 PROJECT_BRIEF (2026-03-14)
+- **Problem:** The `--sample-frac 0.01` pattern was the single most impactful development practice discovered in FP-01. It catches bugs 10x faster. But it's not mentioned in SCRIPT_ENTRYPOINTS_SPEC, IMPLEMENTATION_PLAYBOOK, or any template — it only exists in LESSONS_LEARNED.
+- **Impact:** Future projects won't discover this pattern unless they read LESSONS_LEARNED. It should be a first-class recommendation.
+- **Proposed fix:** Add "Smoke Test Convention" section to SCRIPT_ENTRYPOINTS_SPEC: "Every experiment script SHOULD accept `--sample-frac` (default 1.0). Before running any full experiment, smoke test with `--sample-frac 0.01` to catch bugs on 1% data."
+- **Status:** IDENTIFIED
+
+---
+
+## Resolved Issues Summary (v2.4)
+
+v2.4 resolved **9 issues** in a single session:
+
+| Issue | Resolution |
+|-------|-----------|
+| ISS-001 | PROJECT_BRIEF.tmpl.md — forces thesis, RQs, scope, cluster targets before code |
+| ISS-006 | project.yaml.research-example — non-academic self-directed research config |
+| ISS-007 | download_method field in project.yaml.research-example (direct_url/api/manual/kaggle) |
+| ISS-009 | --fill flag copies project.yaml automatically |
+| ISS-012 | --fill reads project.yaml, bulk-substitutes common placeholders across all templates |
+| ISS-015 | Decision logging mandatory at every phase gate in IMPLEMENTATION_PLAYBOOK |
+| ISS-017 | Git remote check added to Phase 0 gate |
+| ISS-024 | PUBLICATION_PIPELINE.tmpl.md — governs entire blog workflow from draft to distribution |
+| security-ml | Profile updated: 19 → 21 templates (added PROJECT_BRIEF + PUBLICATION_PIPELINE) |
+
+**Open issues remaining: 10** (ISS-002, 003, 005, 008, 011, 013, 014, 022, 023 + 3 new: 025, 026, 027)
+
+---
+
 ## Revision Log
 
 | Date | Entry | Source |
@@ -361,3 +438,4 @@ Places where Claude Code agents can run in parallel for maximum throughput:
 | 2026-03-14 | Added ISS-018–019, WIN-011: pipeline return contract, label remapping, smoke testing pattern | FP-01 Phase 2a |
 | 2026-03-14 | Added ISS-020–022, WIN-012–013: ART gradient attacks on sklearn, attack selection guide, code duplication, full pipeline velocity, feature controllability pattern | FP-01 Phase 2b-2d |
 | 2026-03-14 | Added ISS-023–024, WIN-014–015: stratified split threshold, publication pipeline, right-sized governance, feature controllability as govML IP | FP-01 Phase 2d completion |
+| 2026-03-14 | v2.4 shipped: 9 issues resolved (ISS-001,006,007,009,012,015,017,024 + security-ml). Added WIN-016–020, ISS-025–027. Backlog updated with resolved status. | v2.4 development + FP-05 scaffolding + brand strategy synthesis |
