@@ -14,7 +14,7 @@
 | CS 7641 OL Report | — | optimization | Complete |
 | CS 7641 UL Report | — | unsupervised | Complete |
 | CS 7641 RL Report | — | rl-agent | Complete |
-| Vuln Prioritization Engine | FP-05 / PUB-043 | security-ml (v2.4) | Phase 0 in progress |
+| Vuln Prioritization Engine | FP-05 / PUB-043 | security-ml (v2.4) | **Pipeline complete** — all 4 RQs answered |
 | CS 6200 P3 IPC (parallel) | PUB-006/007 | systems-benchmark (planned) | Not started |
 | CS 6200 P4 DFS (parallel) | PUB-008/009 | systems-benchmark (planned) | Not started |
 
@@ -396,6 +396,25 @@ Places where Claude Code agents can run in parallel for maximum throughput:
 
 ---
 
+### WIN-023: Full FP-05 pipeline (ingest → features → baselines → models → SHAP → adversarial) in one session
+- **Source:** FP-05 (2026-03-14)
+- **Evidence:** 338K CVEs ingested from 3 sources, 49 features engineered, temporal split, 3 baselines + 3 ML models + SHAP + adversarial eval — all in one session. PROJECT_BRIEF + CLAUDE_MD + govML v2.4 --fill eliminated all setup friction.
+- **Lesson:** govML v2.4 + thesis-first PROJECT_BRIEF + pre-written scripts = research velocity multiplier. FP-01 took multiple sessions for a simpler pipeline. FP-05 completed end-to-end in one session with a larger dataset. The flywheel is compounding.
+
+### WIN-024: Ground truth lag as a research finding, not a failure
+- **Source:** FP-05 RQ1 results (2026-03-14)
+- **Evidence:** Test set (2024+ CVEs) has only 0.3% exploit rate vs 10.5% in train. ExploitDB labels for recent CVEs are incomplete — exploits exist but haven't been catalogued yet. This depresses F1 for all models. Rather than treating this as a methodological flaw, it's a finding: temporal splits expose ground truth lag, which is a real problem for production vuln prioritization systems.
+- **Lesson:** Negative or unexpected results are findings if you can explain the mechanism. The blog post angle shifts from "we beat EPSS" to "here's what happens when you apply temporal discipline to vuln prediction" — more honest, more interesting, more consistent with builder-showing-work voice.
+
+### ISS-031: pyarrow missing from environment.yml
+- **Source:** FP-05 build_features.py (2026-03-14)
+- **Problem:** `to_parquet()` failed because pyarrow wasn't in the conda env. Had to `pip install pyarrow` ad-hoc.
+- **Impact:** 5 minutes wasted on debugging. Should be in environment.yml or project.yaml known issues.
+- **Proposed fix:** Add pyarrow to environment.yml for any project using parquet. Or switch to CSV (simpler, no extra dependency).
+- **Status:** RESOLVED (installed manually for FP-05)
+
+---
+
 ### ISS-028: No govML template for multi-source data ingestion
 - **Source:** FP-05 Phase 0 (2026-03-14)
 - **Problem:** FP-05 requires 4 data sources (NVD API, ExploitDB CSV, EPSS API, GitHub Advisory API), each with different download methods (REST API, git clone, CSV dump). No govML template captures the ingestion pattern: source → download method → rate limits → known issues → local path → metadata.json → checksum.
@@ -475,3 +494,4 @@ v2.4 resolved **9 issues** in a single session:
 | 2026-03-14 | Added ISS-023–024, WIN-014–015: stratified split threshold, publication pipeline, right-sized governance, feature controllability as govML IP | FP-01 Phase 2d completion |
 | 2026-03-14 | v2.4 shipped: 9 issues resolved (ISS-001,006,007,009,012,015,017,024 + security-ml). Added WIN-016–020, ISS-025–027. Backlog updated with resolved status. | v2.4 development + FP-05 scaffolding + brand strategy synthesis |
 | 2026-03-14 | Added ISS-028–030, WIN-021–022: API ingestion pattern, feature controllability reuse, multi-source join pattern, data ingestion as generator candidate, NVD API key as Phase 0 decision | FP-05 Phase 0 execution |
+| 2026-03-14 | Added WIN-023–024, ISS-031: full pipeline in single session, ground truth lag as finding, pyarrow missing from env | FP-05 full pipeline completion |
