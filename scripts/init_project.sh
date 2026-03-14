@@ -2,7 +2,7 @@
 # init_project.sh — Copy governance templates to a new project
 #
 # Usage:
-#   bash scripts/init_project.sh /path/to/project --profile <profile>
+#   bash scripts/init_project.sh /path/to/project --profile <profile> [--fill]
 #
 # Profiles:
 #   minimal          — 3 core contracts (Environment, Data, Metrics)
@@ -10,6 +10,7 @@
 #   optimization     — 11 templates for optimizer comparisons and ablation studies
 #   unsupervised     — 23 templates for clustering and dimensionality reduction
 #   rl-agent         — 24 templates for reinforcement learning projects
+#   security-ml       — 19 templates: supervised + ADVERSARIAL_EVALUATION + TEST_ARCHITECTURE
 #   systems-benchmark — 12 templates for C/C++ systems projects with performance benchmarking
 #   full             — All 32 templates + IEEE reference
 #
@@ -21,11 +22,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TEMPLATES_DIR="${SCRIPT_DIR}/templates"
 
 usage() {
-    echo "Usage: bash $0 <project-dir> [--profile <profile>] [--generate]"
+    echo "Usage: bash $0 <project-dir> [--profile <profile>] [--generate] [--fill]"
     echo ""
     echo "Options:"
     echo "  --profile <profile>  Choose a template profile (default: supervised)"
     echo "  --generate           Copy project.yaml.example and run generators"
+    echo "  --fill               Copy project.yaml, then bulk-replace common placeholders in all templates"
     echo ""
     echo "Profiles:"
     echo "  minimal          — 3 core contracts (Environment, Data, Metrics)"
@@ -33,6 +35,7 @@ usage() {
     echo "  optimization     — 11 templates for optimizer comparisons, ablation studies"
     echo "  unsupervised     — 23 templates for clustering, dimensionality reduction"
     echo "  rl-agent         — 24 templates for reinforcement learning (full delivery)"
+    echo "  security-ml       — 19 templates: supervised + adversarial eval + test architecture"
     echo "  systems-benchmark — 12 templates for C/C++ systems projects"
     echo "  full             — All 32 templates + IEEE reference"
     echo ""
@@ -53,6 +56,7 @@ shift
 # Parse flags
 PROFILE="supervised"
 GENERATE=false
+FILL=false
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --profile)
@@ -68,7 +72,11 @@ while [[ $# -gt 0 ]]; do
             GENERATE=true
             shift
             ;;
-        minimal|standard|supervised|optimization|unsupervised|rl-agent|systems-benchmark|full)
+        --fill)
+            FILL=true
+            shift
+            ;;
+        minimal|standard|supervised|optimization|unsupervised|rl-agent|security-ml|systems-benchmark|full)
             PROFILE="$1"
             shift
             ;;
@@ -85,7 +93,7 @@ case "$PROFILE" in
 esac
 
 # Validate profile
-VALID_PROFILES="minimal supervised optimization unsupervised rl-agent systems-benchmark full"
+VALID_PROFILES="minimal supervised optimization unsupervised rl-agent security-ml systems-benchmark full"
 if ! echo "$VALID_PROFILES" | grep -qw "$PROFILE"; then
     echo "Error: Unknown profile '${PROFILE}'."
     echo "Available: ${VALID_PROFILES}"
@@ -217,6 +225,34 @@ RL_AGENT_FILES=(
     "${PUB}/ACADEMIC_INTEGRITY_FIREWALL.tmpl.md"
 )
 
+SECURITY_ML_FILES=(
+    # Core — supervised baseline + adversarial + test architecture (11)
+    "${CORE}/ENVIRONMENT_CONTRACT.tmpl.md"
+    "${CORE}/DATA_CONTRACT.tmpl.md"
+    "${CORE}/METRICS_CONTRACT.tmpl.md"
+    "${CORE}/EXPERIMENT_CONTRACT.tmpl.md"
+    "${CORE}/FIGURES_TABLES_CONTRACT.tmpl.md"
+    "${CORE}/HYPOTHESIS_CONTRACT.tmpl.md"
+    "${CORE}/ADVERSARIAL_EVALUATION.tmpl.md"
+    "${CORE}/TEST_ARCHITECTURE.tmpl.md"
+    "${CORE}/SCRIPT_ENTRYPOINTS_SPEC.tmpl.md"
+    "${CORE}/ARTIFACT_MANIFEST_SPEC.tmpl.md"
+    "${CORE}/CONFIGURATION_SPEC.tmpl.md"
+    # Management (3)
+    "${MGMT}/DECISION_LOG.tmpl.md"
+    "${MGMT}/IMPLEMENTATION_PLAYBOOK.tmpl.md"
+    "${MGMT}/RISK_REGISTER.tmpl.md"
+    # Report (5)
+    "${REPORT}/REPORT_ASSEMBLY_PLAN.tmpl.md"
+    "${REPORT}/REPRODUCIBILITY_SPEC.tmpl.md"
+    "${REPORT}/PRE_SUBMISSION_CHECKLIST.tmpl.md"
+    "${REPORT}/REPORT_CONSISTENCY_SPEC.tmpl.md"
+    "${REPORT}/RUBRIC_TRACEABILITY.tmpl.md"
+    # Publishing (2)
+    "${PUB}/PROJECT_BRIEF.tmpl.md"
+    "${PUB}/PUBLICATION_PIPELINE.tmpl.md"
+)
+
 SYSTEMS_BENCHMARK_FILES=(
     # Core (8)
     "${CORE}/ENVIRONMENT_CONTRACT.tmpl.md"
@@ -267,10 +303,12 @@ FULL_FILES=(
     "${REPORT}/EXECUTION_MANIFEST.tmpl.md"
     "${REPORT}/REPORT_CONSISTENCY_SPEC.tmpl.md"
     "${REPORT}/RUBRIC_TRACEABILITY.tmpl.md"
-    # Publishing (3)
+    # Publishing (5)
     "${PUB}/PUBLICATION_BRIEF.tmpl.md"
     "${PUB}/ACADEMIC_INTEGRITY_FIREWALL.tmpl.md"
     "${PUB}/LEAN_HYPOTHESIS.tmpl.md"
+    "${PUB}/PROJECT_BRIEF.tmpl.md"
+    "${PUB}/PUBLICATION_PIPELINE.tmpl.md"
 )
 
 # --- Copy templates based on profile ---
@@ -300,6 +338,10 @@ case "$PROFILE" in
         echo "Copying RL / agent study templates (24 files):"
         for f in "${RL_AGENT_FILES[@]}"; do copy_template "$f"; done
         ;;
+    security-ml)
+        echo "Copying security ML templates (21 files):"
+        for f in "${SECURITY_ML_FILES[@]}"; do copy_template "$f"; done
+        ;;
     systems-benchmark)
         echo "Copying systems benchmark templates (12 files):"
         for f in "${SYSTEMS_BENCHMARK_FILES[@]}"; do copy_template "$f"; done
@@ -313,7 +355,7 @@ case "$PROFILE" in
         ;;
     *)
         echo "Error: Unknown profile '${PROFILE}'."
-        echo "Available: minimal, supervised, optimization, unsupervised, rl-agent, systems-benchmark, full"
+        echo "Available: minimal, supervised, optimization, unsupervised, rl-agent, security-ml, systems-benchmark, full"
         exit 1
         ;;
 esac
@@ -347,18 +389,115 @@ if [[ "$GENERATE" == true ]]; then
     fi
 fi
 
+# --- Bulk placeholder fill if --fill flag is set ---
+if [[ "$FILL" == true ]]; then
+    echo ""
+    echo "--- Bulk Placeholder Fill ---"
+
+    # Copy project.yaml if it doesn't exist
+    if [[ ! -f "${PROJECT_DIR}/project.yaml" ]]; then
+        # Use research example for security-ml, academic example for others
+        if [[ "$PROFILE" == "security-ml" ]] && [[ -f "${SCRIPT_DIR}/project.yaml.research-example" ]]; then
+            cp "${SCRIPT_DIR}/project.yaml.research-example" "${PROJECT_DIR}/project.yaml"
+            echo "  + project.yaml (from research example — edit before running generators)"
+        else
+            cp "${SCRIPT_DIR}/project.yaml.example" "${PROJECT_DIR}/project.yaml"
+            echo "  + project.yaml (from example — edit before running generators)"
+        fi
+    fi
+
+    # Read common values from project.yaml using grep/sed (no python dependency)
+    YAML_FILE="${PROJECT_DIR}/project.yaml"
+    if [[ -f "$YAML_FILE" ]]; then
+        # Extract values (simple grep — works for flat YAML keys)
+        PROJ_NAME=$(grep -m1 '^\s*name:' "$YAML_FILE" | sed 's/.*name:\s*"\?\([^"]*\)"\?.*/\1/' | xargs)
+        PY_VERSION=$(grep -m1 '^\s*python_version:' "$YAML_FILE" | sed 's/.*python_version:\s*"\?\([^"]*\)"\?.*/\1/' | xargs)
+        ENV_NAME=$(grep -m1 '^\s*conda_env:' "$YAML_FILE" | sed 's/.*conda_env:\s*"\?\([^"]*\)"\?.*/\1/' | xargs)
+        TIER1=$(grep -m1 '^\s*tier1:' "$YAML_FILE" | sed 's/.*tier1:\s*"\?\([^"]*\)"\?.*/\1/' | xargs)
+        TIER2=$(grep -m1 '^\s*tier2:' "$YAML_FILE" | sed 's/.*tier2:\s*"\?\([^"]*\)"\?.*/\1/' | xargs)
+        TIER3=$(grep -m1 '^\s*tier3:' "$YAML_FILE" | sed 's/.*tier3:\s*"\?\([^"]*\)"\?.*/\1/' | xargs)
+
+        # Default env file
+        ENV_FILE="environment.yml"
+
+        FILL_COUNT=0
+
+        # Perform substitutions across all docs/*.md files
+        for doc in "${DOCS_DIR}"/*.md; do
+            [[ -f "$doc" ]] || continue
+            changed=false
+
+            if [[ -n "$PROJ_NAME" ]] && grep -q '{{PROJECT_NAME}}' "$doc" 2>/dev/null; then
+                sed -i "s|{{PROJECT_NAME}}|${PROJ_NAME}|g" "$doc"
+                changed=true
+            fi
+            if [[ -n "$PY_VERSION" ]] && grep -q '{{PYTHON_VERSION}}' "$doc" 2>/dev/null; then
+                sed -i "s|{{PYTHON_VERSION}}|${PY_VERSION}|g" "$doc"
+                changed=true
+            fi
+            if [[ -n "$ENV_NAME" ]] && grep -q '{{ENV_NAME}}' "$doc" 2>/dev/null; then
+                sed -i "s|{{ENV_NAME}}|${ENV_NAME}|g" "$doc"
+                changed=true
+            fi
+            if [[ -n "$ENV_FILE" ]] && grep -q '{{ENV_FILE}}' "$doc" 2>/dev/null; then
+                sed -i "s|{{ENV_FILE}}|${ENV_FILE}|g" "$doc"
+                changed=true
+            fi
+            if [[ -n "$TIER1" ]] && [[ "$TIER1" != "null" ]] && grep -q '{{TIER1_DOC}}' "$doc" 2>/dev/null; then
+                sed -i "s|{{TIER1_DOC}}|${TIER1}|g" "$doc"
+                changed=true
+            fi
+            if [[ -n "$TIER2" ]] && [[ "$TIER2" != "null" ]] && grep -q '{{TIER2_DOC}}' "$doc" 2>/dev/null; then
+                sed -i "s|{{TIER2_DOC}}|${TIER2}|g" "$doc"
+                changed=true
+            fi
+            if [[ -n "$TIER3" ]] && [[ "$TIER3" != "null" ]] && grep -q '{{TIER3_DOC}}' "$doc" 2>/dev/null; then
+                sed -i "s|{{TIER3_DOC}}|${TIER3}|g" "$doc"
+                changed=true
+            fi
+            # Default ENV_MANAGER to conda
+            if grep -q '{{ENV_MANAGER}}' "$doc" 2>/dev/null; then
+                sed -i "s|{{ENV_MANAGER}}|conda|g" "$doc"
+                changed=true
+            fi
+
+            if [[ "$changed" == true ]]; then
+                FILL_COUNT=$((FILL_COUNT + 1))
+            fi
+        done
+
+        # Count remaining placeholders
+        REMAINING=$(grep -roh '{{[A-Z_]*}}' "${DOCS_DIR}"/*.md 2>/dev/null | sort -u | wc -l)
+
+        echo "  Filled placeholders in ${FILL_COUNT} files."
+        echo "  ${REMAINING} unique content placeholders remain (fill these during project phases)."
+    else
+        echo "  WARNING: No project.yaml found. Skipping bulk fill."
+    fi
+fi
+
 echo ""
 echo "Done. Next steps:"
-echo "  1. Open each file in docs/ and fill in {{PLACEHOLDER}} values"
-echo "  2. Start with ENVIRONMENT_CONTRACT.md and DATA_CONTRACT.md"
+if [[ "$FILL" == true ]]; then
+    echo "  1. Edit project.yaml with your specific experiment matrix and datasets"
+    echo "  2. Fill PROJECT_BRIEF.md first (thesis, research questions, scope)"
+    echo "  3. Fill PUBLICATION_PIPELINE.md (blog title, pillar, structure)"
+    echo "  4. Fill remaining {{PLACEHOLDER}} values in docs/"
+    echo "  5. Start with ENVIRONMENT_CONTRACT.md and DATA_CONTRACT.md"
+    echo "  6. (Optional) Run generators: python scripts/generators/generate_all.py project.yaml"
+else
+    echo "  1. Open each file in docs/ and fill in {{PLACEHOLDER}} values"
+    echo "  2. Start with ENVIRONMENT_CONTRACT.md and DATA_CONTRACT.md"
+fi
 if [[ "$GENERATE" == true ]]; then
     echo "  3. Edit project.yaml with your experiment matrix, phases, and artifacts"
     echo "  4. Re-run generators: python scripts/generators/generate_all.py project.yaml"
     echo "  5. Fill in {{PLACEHOLDER}} values in docs/CLAUDE_MD.md"
-else
+elif [[ "$FILL" != true ]]; then
     echo "  3. Use the Prompt Playbook for AI-assisted customization:"
     echo "     https://github.com/<your-org>/ml-governance-templates/blob/main/PROMPT_PLAYBOOK.md"
-    echo "  4. (Optional) Add --generate flag to also set up project.yaml + generators"
+    echo "  4. (Optional) Add --fill flag for bulk placeholder substitution from project.yaml"
+    echo "  5. (Optional) Add --generate flag to also set up project.yaml + generators"
 fi
 echo "  Delete the Customization Guide section from each file when done"
 echo "  Commit: git add docs/ && git commit -m 'Initialize project governance'"

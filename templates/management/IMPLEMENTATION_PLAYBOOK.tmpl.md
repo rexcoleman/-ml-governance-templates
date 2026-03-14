@@ -84,12 +84,14 @@ Each phase has a hard gate. No work in phase N+1 may begin until phase N's gate 
 - [ ] Data splits present with recorded hashes
 - [ ] Budget config fully populated; cross-part constraints satisfied
 - [ ] Baseline metrics config present
+- [ ] Git remote configured and test push succeeds
 - [ ] All files committed as `CONTRACT_CHANGE`
 - [ ] CHANGELOG entry recorded
+- [ ] **All tradeoff decisions from this phase logged in DECISION_LOG.md** (ADR format: context, decision, consequences, contracts affected)
 
 **Integration hooks:**
 - RISK_REGISTER: Verify all Phase 0 risks (R-A1, R-A2, R-A3, R-C2, R-H*) are addressed
-- DECISION_LOG: Record any ADRs for ambiguities resolved during setup
+- DECISION_LOG: Record any ADRs for ambiguities resolved during setup — **this is mandatory, not optional**
 - TASK_BOARD: Mark all Phase 0 tasks as Done
 
 ---
@@ -110,9 +112,11 @@ Each phase has a hard gate. No work in phase N+1 may begin until phase N's gate 
 - [ ] `check_leakage.py` exits 0
 - [ ] EDA summaries exist for all datasets
 - [ ] Initial weights saved
+- [ ] **All tradeoff decisions from this phase logged in DECISION_LOG.md**
 
 **Integration hooks:**
 - RISK_REGISTER: Verify R-A1 through R-A5 addressed
+- DECISION_LOG: Record any data preprocessing or split decisions
 - TASK_BOARD: Mark Phase 1 tasks Done
 
 ---
@@ -165,10 +169,11 @@ Each phase has a hard gate. No work in phase N+1 may begin until phase N's gate 
 - [ ] Init weight consistency verified *(where required)*
 - [ ] `summary.json` schema validation passes
 - [ ] `config_resolved.yaml` written for every run
+- [ ] **All tradeoff decisions from this phase logged in DECISION_LOG.md**
 
 **Integration hooks:**
 - RISK_REGISTER: Verify all Phase {{N}} risks are addressed (see phase-gate risk ownership table)
-- DECISION_LOG: Record any ADRs (e.g., threshold ℓ value, method-specific choices)
+- DECISION_LOG: **Mandatory** — Record all ADRs (e.g., threshold values, method-specific choices, attack selection rationale, defense strategy decisions). Every phase should produce at least 1 ADR.
 - CHANGELOG: Record any `CONTRACT_CHANGE` commits triggered during experiments
 - TASK_BOARD: Mark all Phase {{N}} tasks Done
 

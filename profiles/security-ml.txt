@@ -1,0 +1,46 @@
+# security-ml profile
+# Extends supervised with ADVERSARIAL_EVALUATION + TEST_ARCHITECTURE
+# Use: bash scripts/init_project.sh /path/to/project --profile security-ml
+#
+# Includes all supervised templates (11) plus:
+#   - ADVERSARIAL_EVALUATION (core) — threat model, attack methods, feature controllability, robustness metrics
+#   - TEST_ARCHITECTURE (core) — test strategy, coverage, determinism
+#   - SCRIPT_ENTRYPOINTS_SPEC (core) — experiment script contracts
+#   - ARTIFACT_MANIFEST_SPEC (core) — output artifact governance
+#   - CONFIGURATION_SPEC (core) — hyperparameter and config governance
+#   - DECISION_LOG (management) — ADR-format decision tracking
+#   - IMPLEMENTATION_PLAYBOOK (management) — phase gates and checklists
+#   - RISK_REGISTER (management) — adversarial-specific risk entries
+#
+# v2.4: Added PROJECT_BRIEF and PUBLICATION_PIPELINE for blog-track projects
+#
+# Total: 21 templates
+
+# --- Core (11) ---
+core/ENVIRONMENT_CONTRACT.tmpl.md
+core/DATA_CONTRACT.tmpl.md
+core/METRICS_CONTRACT.tmpl.md
+core/EXPERIMENT_CONTRACT.tmpl.md
+core/FIGURES_TABLES_CONTRACT.tmpl.md
+core/HYPOTHESIS_CONTRACT.tmpl.md
+core/ADVERSARIAL_EVALUATION.tmpl.md
+core/TEST_ARCHITECTURE.tmpl.md
+core/SCRIPT_ENTRYPOINTS_SPEC.tmpl.md
+core/ARTIFACT_MANIFEST_SPEC.tmpl.md
+core/CONFIGURATION_SPEC.tmpl.md
+
+# --- Management (3) ---
+management/DECISION_LOG.tmpl.md
+management/IMPLEMENTATION_PLAYBOOK.tmpl.md
+management/RISK_REGISTER.tmpl.md
+
+# --- Report (5) ---
+report/REPORT_ASSEMBLY_PLAN.tmpl.md
+report/REPRODUCIBILITY_SPEC.tmpl.md
+report/PRE_SUBMISSION_CHECKLIST.tmpl.md
+report/REPORT_CONSISTENCY_SPEC.tmpl.md
+report/RUBRIC_TRACEABILITY.tmpl.md
+
+# --- Publishing (2) ---
+publishing/PROJECT_BRIEF.tmpl.md
+publishing/PUBLICATION_PIPELINE.tmpl.md
