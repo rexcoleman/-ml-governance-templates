@@ -82,7 +82,26 @@ When a parameter can be set in multiple places, the resolution order is:
 
 The fully resolved configuration MUST be saved as `config_resolved.yaml` in every run directory.
 
-### 2.4 Exit Codes
+### 2.4 Smoke Test & Dry-Run Conventions
+
+Every experiment script SHOULD support these flags for development velocity:
+
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--sample-frac` | float | 1.0 | Run on a fraction of data (e.g., 0.01 = 1%). Use for smoke testing before full runs. |
+| `--dry-run` | flag | false | Validate setup, config loading, and imports without making API calls or running experiments. |
+
+**Smoke test protocol (WIN-011, WIN-029):**
+1. Before ANY full experiment run, smoke test with `--sample-frac 0.01` (or `--dry-run` for API-dependent scripts)
+2. Fix all errors on small data / dry-run before scaling up
+3. This pattern catches bugs 10x faster (28K rows in 4 min vs 283K rows in 30+ min)
+
+**Dry-run protocol (for API-dependent scripts):**
+1. `--dry-run` must validate: config loading, agent/model setup, tool registration, type imports
+2. `--dry-run` must NOT make any external API calls or write experiment outputs
+3. Use for: CI testing without API keys, offline development, cost control
+
+### 2.5 Exit Codes
 
 | Code | Meaning |
 |------|---------|

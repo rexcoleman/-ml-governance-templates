@@ -60,6 +60,68 @@ This contract locks the compute environment for the **{{PROJECT_NAME}}** project
 
 ---
 
+## 2b) Compute Resource Assessment
+
+Assess BEFORE creating the environment. If any resource is insufficient, resolve before Phase 0.
+
+### Storage Budget
+
+| Item | Estimated Size | Path |
+|------|---------------|------|
+| Conda environment | __ GB | `miniconda3/envs/{{ENV_NAME}}` |
+| Raw data | __ GB | `data/raw/` |
+| Processed data | __ GB | `data/processed/` |
+| Model artifacts / outputs | __ GB | `outputs/` |
+| **Total project footprint** | **__ GB** | |
+| **Available disk** | **__ GB** | `df -h` |
+| **Headroom after project** | **__ GB** | Must be ≥ 20% of disk |
+
+### Compute Profile
+
+| Dimension | Requirement | Current Platform | Sufficient? |
+|-----------|-------------|-----------------|-------------|
+| CPU cores | __ (CPU-bound: ≥4; I/O-bound: 2 fine) | __ cores | ☐ |
+| RAM | __ GB (datasets must fit in memory for pandas) | __ GB | ☐ |
+| GPU | ☐ Required ☐ Optional ☐ Not needed | __ | ☐ |
+| Disk | __ GB total project footprint | __ GB free | ☐ |
+| Network | ☐ API-dependent ☐ Large downloads ☐ Offline OK | __ Mbps | ☐ |
+
+### Workload Type (check primary)
+
+- ☐ **CPU-bound** (model training, feature engineering) → scale cores/RAM
+- ☐ **I/O-bound** (API calls, web scraping) → network matters, cores don't
+- ☐ **Storage-bound** (large datasets, many experiments) → add data disk
+- ☐ **RAM-bound** (in-memory datasets, large feature matrices) → scale RAM
+
+### Resolution (if insufficient)
+
+| Gap | Fix | Cost | Time |
+|-----|-----|------|------|
+| Disk | Add data disk / clean caches / expand OS disk | ~$2-5/mo | 10 min |
+| CPU/RAM | Resize VM | ~2x monthly cost | 5 min (reboot) |
+| GPU | Switch to GPU VM or cloud GPU | $$$ | 30 min |
+
+---
+
+## 2c) API Key Inventory
+
+For projects that make LLM API calls, verify keys BEFORE Phase 0 coding.
+
+| Provider | Key Type | Env Variable | Source | Verified? |
+|----------|----------|-------------|--------|-----------|
+| *(e.g., Anthropic)* | Personal API key | `ANTHROPIC_API_KEY` | console.anthropic.com → Create Key | ☐ |
+| *(e.g., OpenAI)* | Personal API key | `OPENAI_API_KEY` | platform.openai.com/api-keys | ☐ |
+
+> **Warning:** Claude Code API keys (auto-created, listed under "Claude Code" workspace) are NOT usable by your scripts. Only personal API keys work in the SDK. See ISS-040.
+
+**Verification:** Run a minimal SDK call before writing any experiment scripts:
+```python
+from anthropic import Anthropic
+print(Anthropic().messages.create(model="claude-sonnet-4-20250514", max_tokens=10, messages=[{"role":"user","content":"hi"}]).content)
+```
+
+---
+
 ## 3) Locked Language & Runtime
 
 - **Language:** Python {{PYTHON_VERSION}}

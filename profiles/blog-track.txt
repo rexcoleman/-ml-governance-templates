@@ -1,0 +1,25 @@
+# blog-track profile — Lightweight governance for publication-track projects
+#
+# Confirmed by 3 projects (FP-01, FP-05, FP-02): these ~8 docs carry the project,
+# the other 14 in security-ml are decoration for single-researcher, blog-output projects.
+#
+# Use for: 3-6 week scope, single researcher, blog post as primary output.
+# Use security-ml or full for: academic projects, multi-week, multi-person.
+#
+# ISS-035 resolution (identified 2026-03-14, confirmed across 3 projects)
+
+# --- Core (4) ---
+core/ADVERSARIAL_EVALUATION.tmpl.md
+core/TEST_ARCHITECTURE.tmpl.md
+core/CONFIGURATION_SPEC.tmpl.md
+core/SCRIPT_ENTRYPOINTS_SPEC.tmpl.md
+
+# --- Management (3) ---
+management/DECISION_LOG.tmpl.md
+management/IMPLEMENTATION_PLAYBOOK.tmpl.md
+management/RISK_REGISTER.tmpl.md
+
+# --- Publishing (3) ---
+publishing/PROJECT_BRIEF.tmpl.md
+publishing/PUBLICATION_PIPELINE.tmpl.md
+management/CLAUDE_MD.tmpl.md

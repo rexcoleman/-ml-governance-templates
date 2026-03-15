@@ -10,7 +10,8 @@
 #   optimization     — 11 templates for optimizer comparisons and ablation studies
 #   unsupervised     — 23 templates for clustering and dimensionality reduction
 #   rl-agent         — 24 templates for reinforcement learning projects
-#   security-ml       — 19 templates: supervised + ADVERSARIAL_EVALUATION + TEST_ARCHITECTURE
+#   security-ml       — 21 templates: supervised + ADVERSARIAL_EVALUATION + TEST_ARCHITECTURE + publishing
+#   blog-track        — 10 templates: lightweight governance for publication-track projects (ISS-035)
 #   systems-benchmark — 12 templates for C/C++ systems projects with performance benchmarking
 #   full             — All 32 templates + IEEE reference
 #

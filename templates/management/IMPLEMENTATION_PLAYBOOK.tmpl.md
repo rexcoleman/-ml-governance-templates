@@ -66,25 +66,37 @@ Each phase has a hard gate. No work in phase N+1 may begin until phase N's gate 
 
 **Goal:** Infrastructure ready, budgets locked, splits frozen, prior work integrated.
 
+> **Phase 0 is split into two sub-phases (ISS-036):**
+> - **Phase 0a (Scaffold — offline):** Env creation, generators, directory structure, base code. Zero internet required.
+> - **Phase 0b (Research — online):** Data downloads, API validation, literature review. Tolerates fetch failures.
+>
+> **Commit after 0a completes.** If 0b fails (network, API), scaffold work is preserved.
+
 | # | Step | Command / Action | DoD | Verification |
 |---|------|-----------------|-----|-------------|
-| 0.1 | Create environment | `{{ENV_MANAGER}} env create -f {{ENV_FILE}}` | Exits 0; env active | `{{ENV_MANAGER}} env list \| grep {{ENV_NAME}}` |
-| 0.2 | Verify environment | `bash scripts/verify_env.sh` | Exits 0; versions printed | Script prints Python + all key library versions |
-| 0.3 | Vendor prior work *(if applicable)* | See [PRIOR_WORK_REUSE](PRIOR_WORK_REUSE.tmpl.md) §8 | Provenance record written; hashes verified | `python scripts/verify_{{PRIOR_PROJECT}}_snapshot.py` exits 0 |
-| 0.4 | Convert/verify data splits | `python scripts/check_data_ready.py` | Exits 0; split files in `data/splits/` | SHA-256 hashes match provenance record |
-| 0.5 | Populate budgets | Fill all keys in `{{BUDGET_CONFIG}}` | All keys non-null | Assert cross-part budget constraints (e.g., `part3.grad_evals == part2.grad_evals`) |
-| 0.6 | Lock baseline metrics | Populate `{{BASELINE_CONFIG}}` | Contains baseline test metrics per dataset | File committed alongside budgets |
-| 0.7 | Run config schema validation | `python scripts/validate_config.py` *(if available)* | Exits 0; all required keys present | Required keys per EXPERIMENT_CONTRACT §2 |
-| 0.8 | Commit governance | `git commit -m "CONTRACT_CHANGE: Phase 0 lock"` | All contracts + configs committed | `git diff --cached` shows expected files |
+| 0.1 | **Compute assessment** | Fill ENVIRONMENT_CONTRACT §2b | Disk, CPU, RAM, GPU sufficient | `df -h` shows ≥20% headroom |
+| 0.2 | Create environment | `{{ENV_MANAGER}} env create -f {{ENV_FILE}}` | Exits 0; env active | `{{ENV_MANAGER}} env list \| grep {{ENV_NAME}}` |
+| 0.3 | Verify environment | `bash scripts/verify_env.sh` | Exits 0; versions printed | Script prints Python + all key library versions |
+| 0.4 | **Run govML generators** | `python generate_all.py project.yaml --output-dir .` | sweep.sh, verify_manifests.py, check_phase_*.sh created | `ls scripts/*.sh scripts/*.py` |
+| 0.5 | **Verify API keys** (if API-dependent) | Fill ENVIRONMENT_CONTRACT §2c; run SDK test | API call succeeds | Minimal SDK call returns response |
+| 0.6 | **Verify git remote + SSH** | `git remote -v && ssh -T git@github.com` | Remote set, SSH auth works | Push succeeds |
+| 0.7 | **Commit Phase 0a** | `git commit -m "Phase 0a: scaffold"` | All scaffold files committed | `git status` clean |
+| — | *— Phase 0b boundary (online work below) —* | | | |
+| 0.8 | Vendor prior work *(if applicable)* | See [PRIOR_WORK_REUSE](PRIOR_WORK_REUSE.tmpl.md) §8 | Provenance record written; hashes verified | `python scripts/verify_{{PRIOR_PROJECT}}_snapshot.py` exits 0 |
+| 0.9 | Convert/verify data | `python scripts/check_data_ready.py` | Exits 0; data files present | SHA-256 hashes match provenance record |
+| 0.10 | Populate budgets / config | Fill all keys in `{{BUDGET_CONFIG}}` | All keys non-null | Config validation passes |
+| 0.11 | Commit Phase 0b | `git commit -m "CONTRACT_CHANGE: Phase 0 lock"` | All contracts + configs committed | `git diff --cached` shows expected files |
 
 **Gate Definition of Done:**
+- [ ] Compute resource assessment completed (ENVIRONMENT_CONTRACT §2b)
 - [ ] Environment creates and activates without errors
 - [ ] `verify_env.sh` exits 0
+- [ ] **govML generators run** (G1/G5/G6 produce scripts from project.yaml)
+- [ ] **API keys verified** (if project makes API calls; see §2c)
 - [ ] Prior work snapshot verified *(if applicable)*
-- [ ] Data splits present with recorded hashes
+- [ ] Data present with recorded hashes
 - [ ] Budget config fully populated; cross-part constraints satisfied
-- [ ] Baseline metrics config present
-- [ ] Git remote configured and test push succeeds
+- [ ] **Git remote configured and `git push` succeeds** (not just `git remote -v`)
 - [ ] All files committed as `CONTRACT_CHANGE`
 - [ ] CHANGELOG entry recorded
 - [ ] **All tradeoff decisions from this phase logged in DECISION_LOG.md** (ADR format: context, decision, consequences, contracts affected)

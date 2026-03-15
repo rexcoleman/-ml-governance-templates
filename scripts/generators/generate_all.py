@@ -141,6 +141,15 @@ def main() -> None:
         print("--- G16: Skipped (no ai_governance config) ---")
 
     print()
+
+    # G17: CLAUDE_MD.md generator
+    print("--- G17: Generating CLAUDE_MD.md ---")
+    results["claude_md"] = run_generator(
+        "gen_claude_md.py", project_yaml,
+        ["--output-dir", str(output_dir / "docs")]
+    )
+
+    print()
     print("=" * 60)
     total = len(results)
     passed = sum(1 for r in results.values() if r == 0)
