@@ -7,6 +7,8 @@
 # Use security-ml or full for: academic projects, multi-week, multi-person.
 #
 # ISS-035 resolution (identified 2026-03-14, confirmed across 3 projects)
+# ISS-044: IMPLEMENTATION_PLAYBOOK includes Phase N+3 (Publication Artifacts gate)
+#   → blog/draft.md, blog/images/, blog/conference_abstract.md required at project completion
 
 # --- Core (4) ---
 core/ADVERSARIAL_EVALUATION.tmpl.md

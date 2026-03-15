@@ -231,6 +231,30 @@ Each phase has a hard gate. No work in phase N+1 may begin until phase N's gate 
 | Pre-flight checklist | Run full checklist | All items pass |
 | Deliver | Upload to delivery platform | By delivery date |
 
+### Phase {{N+3}} — Publication Artifacts *(blog-track and self-directed projects)*
+
+**Goal:** All publication deliverables ready before project is marked "complete." (ISS-044: don't defer publication to a separate cleanup session.)
+
+| Step | Action | DoD |
+|------|--------|-----|
+| FINDINGS.md | Write key results + limitations | File exists with quantitative results |
+| Blog draft | Write ~1500 words in `blog/draft.md` | Builder voice, ≥1 architecture diagram, code examples |
+| Figures | Generate publication-ready charts | ≥1 results chart + ≥1 architecture diagram in `blog/images/` |
+| Conference abstract | Write 250 words in `blog/conference_abstract.md` | Title, abstract, keywords, honest bio |
+| Fill PUBLICATION_PIPELINE | Complete evidence inventory + distribution checklist | 0 `{{PLACEHOLDER}}` values remaining |
+| Update LESSONS_LEARNED | Add project issues + wins to govML | ≥1 issue + ≥1 win documented |
+
+**Gate Definition of Done:**
+- [ ] `FINDINGS.md` exists with quantitative results
+- [ ] `blog/draft.md` exists (~1500 words, builder voice)
+- [ ] `blog/images/` contains ≥2 figures (1 results + 1 architecture)
+- [ ] `blog/conference_abstract.md` exists (250 words)
+- [ ] `PUBLICATION_PIPELINE.md` has 0 placeholders
+- [ ] LESSONS_LEARNED in govML updated with project issues + wins
+- [ ] **All tradeoff decisions logged in DECISION_LOG.md**
+
+> **Why this gate exists:** 4 projects were completed with FINDINGS.md but no blog drafts, figures, or abstracts. Publication cleanup had to be done in a separate batch session (WIN-044). Building publication artifacts INTO the pipeline prevents this drift.
+
 ---
 
 ## 3) Iteration Loop

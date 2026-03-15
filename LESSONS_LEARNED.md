@@ -746,6 +746,63 @@ Assess BEFORE creating the environment. If any resource is insufficient, resolve
 
 ## Revision Log
 
+## Issues Found (continued — publication artifact audit)
+
+### ISS-044: Publication artifacts should be a Phase gate, not deferred
+- **Source:** Cross-project audit (2026-03-15): FP-01 has no blog draft/abstract/PUBLICATION_PIPELINE. FP-05 has 9 placeholders in PUBLICATION_PIPELINE. FP-03 had no blog draft/figures until today.
+- **Problem:** We're excellent at building + FINDINGS.md but inconsistent on publication artifacts. FP-02 is the only project that had all 5 deliverables (FINDINGS, blog draft, figures, conference abstract, filled PUBLICATION_PIPELINE) at project completion. The other 3 required a separate "publication cleanup" pass.
+- **Root cause:** IMPLEMENTATION_PLAYBOOK Phase 4/5 says "report" and "publication" but doesn't enforce blog draft, figures, and conference abstract as gate items. The govML PUBLICATION_PIPELINE template exists but isn't checked by any gate.
+- **Impact:** 4 projects complete, 0 published. Publication cleanup is low-energy work that gets deferred indefinitely. Brand infra (Hugo + Substack) is ready to receive content but content isn't ready.
+- **Proposed fix:** Add to IMPLEMENTATION_PLAYBOOK final phase gate:
+  - [ ] Blog draft exists in `blog/draft.md`
+  - [ ] ≥1 architecture diagram in `blog/images/`
+  - [ ] ≥1 results chart in `blog/images/`
+  - [ ] Conference abstract in `blog/conference_abstract.md`
+  - [ ] PUBLICATION_PIPELINE has 0 `{{PLACEHOLDER}}` values
+- **Status:** RESOLVED — v2.5.2 Phase N+3 (Publication Artifacts) gate added to IMPLEMENTATION_PLAYBOOK
+
+### ISS-045: Background agents fail on write permissions — foreground work duplicates effort
+- **Source:** FP-01/FP-05 publication artifact session (2026-03-15)
+- **Problem:** Launched 2 background agents to write blog drafts for FP-01 and FP-05. Both hit permission walls and failed. Meanwhile, wrote the same files directly in the foreground. Wasted agent compute.
+- **Impact:** 2 agents ran for 2+ minutes each, produced nothing. Work was done faster manually.
+- **Proposed fix:** Don't use background agents for file creation — they often lack write permissions. Use them only for read-only research tasks. Or: ensure agent permissions match main session.
+- **Status:** IDENTIFIED — workflow optimization
+
+### ISS-046: Pre-v2.4 projects (FP-01) lack PUBLICATION_PIPELINE entirely
+- **Source:** Cross-project publication audit (2026-03-15)
+- **Problem:** FP-01 was built before govML v2.4 shipped PUBLICATION_PIPELINE template. It has no publication governance doc. Adding one retroactively is awkward.
+- **Impact:** FP-01 blog post has no evidence inventory or distribution checklist. Publication governance is inconsistent across projects.
+- **Proposed fix:** When shipping a new template in a govML version, provide a migration guide for existing projects. Or: accept that pre-v2.4 projects won't have it.
+- **Status:** IDENTIFIED — accept for FP-01, enforce for new projects
+
+---
+
+## What's Working Well (continued — FP-03 completion + cross-project)
+
+### WIN-042: Cross-domain ACA figure is the strongest brand visual
+- **Source:** FP-03 generate_figures.py (2026-03-15)
+- **Evidence:** The 4-domain controllability analysis comparison chart (IDS → CVE → Agents → Crypto) is the single most powerful visual across all projects. It proves the methodology generalizes. One figure tells the entire career story: "I apply the same architectural principle across security domains."
+- **Lesson:** Cross-project synthesis figures have higher brand value than any single-project figure. Generate these as standard practice after each project.
+
+### WIN-043: FP-05 NVD data → FP-03 crypto extraction = compound efficiency
+- **Source:** FP-03 extract_crypto_cves.py (2026-03-15)
+- **Evidence:** 21,142 crypto CVEs extracted from FP-05's 338K NVD download in <60 seconds. Zero download time, zero API cost. The data was already there.
+- **Lesson:** Cross-project data reuse should be a first-class govML pattern. Consider a DATA_REGISTRY or PRIOR_DATA_REUSE section in project.yaml.
+
+### WIN-044: All 4 projects publication-ready in one session — batch publication cleanup works
+- **Source:** Cross-project publication audit (2026-03-15)
+- **Evidence:** Wrote blog drafts for FP-01 and FP-05, generated figures for FP-03, copied figures for FP-01 and FP-05 — all in one focused session. 4 projects went from "FINDINGS done, nothing else" to "blog draft + conference abstract + figures + evidence inventory."
+- **Lesson:** Batch publication cleanup is effective when done deliberately. But ISS-044 is the real fix — building publication artifacts INTO the project pipeline prevents the cleanup session entirely.
+
+### WIN-045: 4-project cross-domain narrative is the strongest brand asset
+- **Source:** Blog draft writing across FP-01/02/03/05 (2026-03-15)
+- **Evidence:** Every blog draft references the controllability analysis methodology validated across 4 domains. The cross-domain table (IDS → CVE → Agents → Crypto) appears in all 4 posts. This is not 4 separate projects — it's one methodology story told through 4 applications.
+- **Lesson:** The compound value of a consistent methodology across projects exceeds the sum of individual projects. Brand strategy should emphasize the methodology narrative, not individual project results.
+
+---
+
+## Revision Log
+
 | Date | Entry | Source |
 |------|-------|--------|
 | 2026-03-13 | Initial: ISS-001–006, WIN-001–005 | Parallel project audit + FP-01 setup |
@@ -767,3 +824,7 @@ Assess BEFORE creating the environment. If any resource is insufficient, resolve
 | 2026-03-14 | Added ISS-041–042, WIN-032–035: Full FP-02 pipeline (Phase 0→3) in single session. 4/4 RQs answered. govML PROJECT_BRIEF RQ criteria drove evaluation design. Layered defense = govML-inspired architecture. Reasoning hijack = novel finding. | FP-02 Phases 1-3 completion |
 | 2026-03-14 | Added ISS-043, WIN-036–038: CrewAI target validates cross-framework attacks (80% prompt injection — same as LangChain). 3 publication-ready figures generated. CLI entry point + pyproject.toml + README shipped. PUBLICATION_PIPELINE voice check passes. All DoD items satisfied. | FP-02 project completion |
 | 2026-03-14 | Added WIN-039–041: Multi-seed stable (3 seeds identical except prompt injection 80/80/100%). LLM-as-judge defense is the only layer that catches reasoning hijack (100%→33%). Full 3-layer defense: 67% avg reduction. Semantic > pattern for novel attacks. | FP-02 stretch goals |
+| 2026-03-15 | govML v2.5 shipped: blog-track profile + gen_claude_md (G17) + ENVIRONMENT_CONTRACT §2b/§2c + Phase 0 overhaul. FP-03 scaffolded in <10 min (first blog-track user). | govML v2.5 Batch 1 |
+| 2026-03-15 | FP-03 complete: 21K crypto CVEs, ML scoring +14pp vs baseline, controllability analysis 4th domain. Blog-track profile validated — 10 docs sufficient. $0 cost (reused FP-05 data). Data reuse across projects = compound efficiency. | FP-03 completion |
+| 2026-03-15 | Added ISS-044, WIN-042–043: Publication artifacts (blog draft, figures, abstract, PUBLICATION_PIPELINE) should be a Phase gate, not deferred. FP-02 did this right; FP-01/FP-03/FP-05 didn't. Cross-domain ACA figure = strongest brand visual (4 projects, 1 methodology). | Publication artifact audit across 4 projects |
+| 2026-03-15 | Added ISS-044–046, WIN-042–045: Publication artifacts should be phase gate (ISS-044). Background agents fail on writes (ISS-045). Pre-v2.4 projects lack PUBLICATION_PIPELINE (ISS-046). Cross-domain ACA figure is strongest brand visual (WIN-042). Data reuse compounds (WIN-043). Batch publication cleanup works (WIN-044). 4-project methodology narrative is strongest brand asset (WIN-045). | Cross-project publication audit + govML v2.5 + FP-03 completion |
