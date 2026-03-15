@@ -109,16 +109,49 @@ For projects that make LLM API calls, verify keys BEFORE Phase 0 coding.
 
 | Provider | Key Type | Env Variable | Source | Verified? |
 |----------|----------|-------------|--------|-----------|
-| *(e.g., Anthropic)* | Personal API key | `ANTHROPIC_API_KEY` | console.anthropic.com → Create Key | ☐ |
+| *(e.g., Anthropic orchestration project)* | Personal API key | `ORCHESTRATION_ANTHROPIC_API_KEY` | console.anthropic.com → Create Key | ☐ |
 | *(e.g., OpenAI)* | Personal API key | `OPENAI_API_KEY` | platform.openai.com/api-keys | ☐ |
 
 > **Warning:** Claude Code API keys (auto-created, listed under "Claude Code" workspace) are NOT usable by your scripts. Only personal API keys work in the SDK. See ISS-040.
 
 **Verification:** Run a minimal SDK call before writing any experiment scripts:
 ```python
+from dotenv import load_dotenv
 from anthropic import Anthropic
-print(Anthropic().messages.create(model="claude-sonnet-4-20250514", max_tokens=10, messages=[{"role":"user","content":"hi"}]).content)
+import os
+
+load_dotenv()
+client = Anthropic(api_key=os.getenv("ORCHESTRATION_ANTHROPIC_API_KEY"))
+print(client.messages.create(model="claude-sonnet-4-20250514", max_tokens=10, messages=[{"role":"user","content":"hi"}]).content)
 ```
+
+---
+
+## 2d) Auth Context Isolation
+
+Projects using Claude tooling operate across multiple auth contexts that **must not leak into each other**.
+
+| Context | Auth Source | How It's Set | Scope |
+|---------|-----------|--------------|-------|
+| **Claude Code CLI** | OAuth / Console login | `claude login` → `~/.claude/.credentials` | Interactive development |
+| **SDK scripts** (generators, orchestrator) | Personal API key | `.env` file loaded by `python-dotenv` | Per-project |
+| **MCP servers** | None — inherits from caller | stdio pipe (Claude Code provides context) | Per-session |
+
+**Rules:**
+1. **Never export `ANTHROPIC_API_KEY` globally** in shell profiles (`~/.bashrc`, `~/.zshrc`). This causes Claude Code to prefer the env var over interactive login.
+2. **SDK projects:** Store keys in a project-local `.env` file using a project-specific variable name such as `ORCHESTRATION_ANTHROPIC_API_KEY`.
+3. **Load the project key explicitly** in code:
+   ```python
+   from dotenv import load_dotenv
+   from anthropic import Anthropic
+   import os
+
+   load_dotenv()
+   client = Anthropic(api_key=os.getenv("ORCHESTRATION_ANTHROPIC_API_KEY"))
+   ```
+4. **If auth conflict appears** (Claude Code 401s, or SDK picks up wrong key): exit Claude Code, run `unset ANTHROPIC_API_KEY`, close the terminal, open a new terminal, and relaunch Claude Code.
+5. **Do not use `ANTHROPIC_API_KEY`** in project `.env` files for orchestration projects that share a machine with Claude Code interactive sessions. The Anthropic SDK auto-reads `ANTHROPIC_API_KEY`; if `direnv` or `dotenv` loads it, Claude Code will see it and fail.
+6. **`.env.example`** in project repos SHOULD show `ORCHESTRATION_ANTHROPIC_API_KEY=` (not `ANTHROPIC_API_KEY=`) to prevent accidental conflicts.
 
 ---
 

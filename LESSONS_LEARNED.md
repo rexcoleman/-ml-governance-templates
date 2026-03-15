@@ -654,7 +654,7 @@ Assess BEFORE creating the environment. If any resource is insufficient, resolve
   | Anthropic | Personal API key | ANTHROPIC_API_KEY | console.anthropic.com → Create Key | ☐ `python -c "from anthropic import Anthropic; print(Anthropic().messages.create(...))"` |
   ```
   **Critical:** Claude Code keys (auto-created, listed under "Claude Code" workspace) ≠ personal API keys. Only personal keys work in user scripts.
-- **Status:** IDENTIFIED — ENVIRONMENT_CONTRACT enhancement for v2.5
+- **Status:** RESOLVED — ENVIRONMENT_CONTRACT §2c (API Key Inventory) and §2d (Auth Context Isolation) added in v2.5.3; project `.env` uses `ORCHESTRATION_ANTHROPIC_API_KEY` to avoid Claude Code conflicts
 
 ---
 
