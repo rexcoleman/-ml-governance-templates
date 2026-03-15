@@ -9,7 +9,7 @@
 
 | Project | ID | Profile Used | Status |
 |---------|-----|-------------|--------|
-| Adversarial ML on IDS | FP-01 / PUB-012 | supervised + manual additions | Phase 2d complete, findings written |
+| Adversarial ML on IDS | FP-01 / PUB-012 | supervised + manual additions | **COMPLETE** — blog draft, conference abstract, figures added |
 | CS 7641 SL Report | — | supervised | Complete |
 | CS 7641 OL Report | — | optimization | Complete |
 | CS 7641 UL Report | — | unsupervised | Complete |
@@ -18,6 +18,7 @@
 | Agent Security Red-Team | FP-02 / PUB-040 | security-ml (v2.4) | **COMPLETE** — 7 attack classes, 19 scenarios, 4 defense layers, all RQs answered |
 | PQC Migration Analyzer | FP-03 | blog-track (v2.5) | **COMPLETE** — 21K crypto CVEs, ML scorer +14pp, 4th domain ACA |
 | Financial Anomaly Detection | FP-04 | blog-track (v2.5) | **COMPLETE** — CFA × ML, XGBoost 0.987, 5th domain ACA, Streamlit app, CI/CD |
+| AI Supply Chain Scanner | FP-10 | blog-track (v2.5) | **COMPLETE** — 20 findings across 5 projects, 13 CRITICAL, 6th domain ACA |
 | CS 6200 P3 IPC (parallel) | PUB-006/007 | systems-benchmark (planned) | Not started |
 | CS 6200 P4 DFS (parallel) | PUB-008/009 | systems-benchmark (planned) | Not started |
 
@@ -801,6 +802,28 @@ Assess BEFORE creating the environment. If any resource is insufficient, resolve
 - **Evidence:** Every blog draft references the controllability analysis methodology validated across 4 domains. The cross-domain table (IDS → CVE → Agents → Crypto) appears in all 4 posts. This is not 4 separate projects — it's one methodology story told through 4 applications.
 - **Lesson:** The compound value of a consistent methodology across projects exceeds the sum of individual projects. Brand strategy should emphasize the methodology narrative, not individual project results.
 
+## Issues Found (continued — FP-10)
+
+### ISS-047: Scanner finds risks in own projects — govML doesn't cover supply chain
+- **Source:** FP-10 self-scan (2026-03-15)
+- **Problem:** Scanned 5 govML-governed projects. Found 20 supply chain risks including 13 CRITICAL (pickle serialization). govML's 32 templates cover experiment design, reproducibility, and publication — none cover dependency scanning or serialization safety.
+- **Proposed fix:** Either (a) add a SUPPLY_CHAIN_SPEC template to govML, or (b) integrate ai-supply-chain-scanner as a Phase 0 gate check in IMPLEMENTATION_PLAYBOOK.
+- **Status:** IDENTIFIED — v2.6 candidate
+
+---
+
+## What's Working Well (continued — FP-10)
+
+### WIN-046: FP-03 scanner pattern transfers directly to FP-10 — 80% code reuse
+- **Source:** FP-10 development (2026-03-15)
+- **Evidence:** FP-03 (PQC scanner) architecture: regex detection → risk scoring → CLI output. FP-10 reuses the same pattern with different risk categories. The scanner archetype is now a repeatable project template.
+- **Lesson:** The "security scanner" archetype (detect → score → report → CLI) should be a govML project template or generator. Three projects now follow this pattern (FP-03, FP-05, FP-10).
+
+### WIN-047: 6 projects, 6 domains, 1 methodology — compound career narrative
+- **Source:** FP-10 cross-domain ACA figure (2026-03-15)
+- **Evidence:** The controllability analysis figure now has 6 bars (IDS → CVE → Agents → Crypto → Fraud → Supply Chain). Each new domain strengthens the methodology claim exponentially, not linearly. This is not a project portfolio — it's a research program with a unifying principle.
+- **Lesson:** Every future project should include controllability analysis as a standard phase. The marginal cost is <1 hour; the marginal brand value is high.
+
 ---
 
 ## Revision Log
@@ -831,3 +854,4 @@ Assess BEFORE creating the environment. If any resource is insufficient, resolve
 | 2026-03-15 | Added ISS-044, WIN-042–043: Publication artifacts (blog draft, figures, abstract, PUBLICATION_PIPELINE) should be a Phase gate, not deferred. FP-02 did this right; FP-01/FP-03/FP-05 didn't. Cross-domain ACA figure = strongest brand visual (4 projects, 1 methodology). | Publication artifact audit across 4 projects |
 | 2026-03-15 | Added ISS-044–046, WIN-042–045: Publication artifacts should be phase gate (ISS-044). Background agents fail on writes (ISS-045). Pre-v2.4 projects lack PUBLICATION_PIPELINE (ISS-046). Cross-domain ACA figure is strongest brand visual (WIN-042). Data reuse compounds (WIN-043). Batch publication cleanup works (WIN-044). 4-project methodology narrative is strongest brand asset (WIN-045). | Cross-project publication audit + govML v2.5 + FP-03 completion |
 | 2026-03-15 | FP-04 complete with ISS-044 gate: Streamlit app + GitHub Actions CI + 3 tests + 4 ADRs. Synthetic data makes rule baselines unrealistically strong — document as finding, not failure (ADR-0004). CFA domain expertise = feature engineering multiplier (8/20 SHAP features). 5th domain ACA: 81% adversary-resistant floor. First project with Streamlit deployment + CI/CD (P3 gate path). | FP-04 completion |
+| 2026-03-15 | FP-10 complete: AI Supply Chain Scanner. 20 findings across 5 own projects, 13 CRITICAL (pickle serialization). 6th domain ACA (75% developer-controlled). ISS-047: govML doesn't cover supply chain. WIN-046: scanner pattern reusable (3rd project). WIN-047: 6-domain ACA figure. Active sources: FP-01 updated to COMPLETE, FP-10 added. | FP-10 completion |
