@@ -15,7 +15,9 @@
 | CS 7641 UL Report | — | unsupervised | Complete |
 | CS 7641 RL Report | — | rl-agent | Complete |
 | Vuln Prioritization Engine | FP-05 / PUB-043 | security-ml (v2.4) | **Pipeline complete** — all 4 RQs answered |
-| Agent Security Red-Team | FP-02 / PUB-040 | security-ml (v2.4) | **Phase 0 partial** — scaffold + env done, no code |
+| Agent Security Red-Team | FP-02 / PUB-040 | security-ml (v2.4) | **COMPLETE** — 7 attack classes, 19 scenarios, 4 defense layers, all RQs answered |
+| PQC Migration Analyzer | FP-03 | blog-track (v2.5) | **COMPLETE** — 21K crypto CVEs, ML scorer +14pp, 4th domain ACA |
+| Financial Anomaly Detection | FP-04 | blog-track (v2.5) | **COMPLETE** — CFA × ML, XGBoost 0.987, 5th domain ACA, Streamlit app, CI/CD |
 | CS 6200 P3 IPC (parallel) | PUB-006/007 | systems-benchmark (planned) | Not started |
 | CS 6200 P4 DFS (parallel) | PUB-008/009 | systems-benchmark (planned) | Not started |
 
