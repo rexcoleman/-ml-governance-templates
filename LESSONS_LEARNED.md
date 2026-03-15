@@ -32,7 +32,7 @@
 - **Impact:** Projects start without clear research questions → scope creep → weak artifacts.
 - **Resolution:** Manually wrote specific theses for IPC Transport Benchmark and Distributed Consistency Benchmark in the audit doc.
 - **Proposed fix:** Consider a lightweight `PROJECT_BRIEF.tmpl.md` that forces: thesis statement, workload/data definition, success criteria, and cluster targets before any code is written.
-- **Status:** IDENTIFIED — not yet templated
+- **Status:** RESOLVED v2.4 — PROJECT_BRIEF.tmpl.md shipped
 
 ### ISS-002: systems-benchmark profile covers threads but not IPC/RPC/distributed
 - **Source:** CS 6200 P3/P4 deep dive (2026-03-13)
@@ -200,7 +200,7 @@ Places where Claude Code agents can run in parallel for maximum throughput:
 - **Root cause:** init_project.sh copies templates verbatim — it doesn't accept project metadata and substitute.
 - **Impact:** 20+ minutes of mechanical replacement. ISS-009 (no project.yaml scaffolding) compounds this — if project.yaml existed, a script could read it and fill all templates automatically.
 - **Proposed fix:** `init_project.sh --fill` flag that reads project.yaml and performs bulk substitution of common placeholders (PROJECT_NAME, TIER1/2/3_DOC, PYTHON_VERSION, ENV_NAME, ENV_FILE, DEFAULT_SEED, SEED_LIST) across all copied templates. Remaining content placeholders stay as `{{...}}` for phase-specific filling.
-- **Status:** IDENTIFIED — highest-leverage UX improvement for govML
+- **Status:** RESOLVED v2.4 — --fill flag shipped, 20 files in <1 second
 
 ### ISS-010: No template for adversarial feature controllability analysis
 - **Source:** FP-01 Phase 1 preprocessing (2026-03-13)
@@ -428,14 +428,14 @@ Places where Claude Code agents can run in parallel for maximum throughput:
 - **Impact:** Governance docs are decoration, not functional. The "governance lock" step in IMPLEMENTATION_PLAYBOOK was skipped.
 - **Root cause:** The rapid single-session pipeline prioritized execution velocity over governance compliance. When the CLAUDE_MD and PROJECT_BRIEF are filled, Claude Code has enough context to run experiments without the intermediate contracts.
 - **Lesson:** There's a tension between govML's governance depth and single-session research velocity. For blog-track projects, consider a "lite governance" profile that requires only PROJECT_BRIEF + DECISION_LOG + PUBLICATION_PIPELINE + FINDINGS — skip the full contract suite. The full suite is for multi-week academic projects where governance prevents drift.
-- **Status:** IDENTIFIED — consider "blog-track" profile for v2.5
+- **Status:** RESOLVED v2.5 — blog-track profile shipped, validated on FP-03/FP-04
 
 ### ISS-034: HYPOTHESIS_CONTRACT not filled before experiments (Phase 2 gate violation)
 - **Source:** FP-05 audit (2026-03-14)
 - **Problem:** IMPLEMENTATION_PLAYBOOK requires hypotheses committed before experiments run (Phase 2 gate). FP-05 had research questions in PROJECT_BRIEF but never translated them into formal hypotheses in HYPOTHESIS_CONTRACT.
 - **Impact:** RQs were answered, but the hypothesis-first methodology (predict → experiment → resolve) was not followed. Results are valid but the process is out of compliance.
 - **Proposed fix:** For blog-track projects, either (a) treat RQs in PROJECT_BRIEF as sufficient (they serve the same purpose), or (b) add a quick "hypothesis lock" step to the blog-track profile.
-- **Status:** IDENTIFIED — design decision for v2.5
+- **Status:** RESOLVED v2.5 — blog-track treats PROJECT_BRIEF RQs as sufficient (no HYPOTHESIS_CONTRACT)
 
 ---
 
@@ -449,7 +449,7 @@ Places where Claude Code agents can run in parallel for maximum throughput:
 - **Problem:** FP-05 used security-ml profile (21 templates) but only ~8 were meaningfully filled. HYPOTHESIS_CONTRACT, EXPERIMENT_CONTRACT, METRICS_CONTRACT, DATA_CONTRACT remained mostly template placeholders. The PROJECT_BRIEF + DECISION_LOG + PUBLICATION_PIPELINE + FINDINGS.md carried the project.
 - **Impact:** 13 unfilled governance docs create noise in the repo. For blog-track projects (3-4 week scope, single researcher, publication as primary output), the full contract suite is overhead.
 - **Proposed fix:** Create a `blog-track` profile with: PROJECT_BRIEF, DECISION_LOG, IMPLEMENTATION_PLAYBOOK (simplified), ADVERSARIAL_EVALUATION (if security), PUBLICATION_PIPELINE, CLAUDE_MD. ~8 templates instead of 21. Full profiles reserved for academic and multi-week projects.
-- **Status:** IDENTIFIED — v2.5
+- **Status:** RESOLVED v2.5 — blog-track profile (10 templates) shipped
 
 ---
 
