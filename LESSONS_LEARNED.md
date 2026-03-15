@@ -169,6 +169,18 @@ Places where Claude Code agents can run in parallel for maximum throughput:
 | MEDIUM | ISS-026: No CLAUDE.md auto-fill from project.yaml | Small | CLAUDE_MD.md still has raw placeholders after --fill | v2.5 |
 | LOW | ISS-027: No `--sample-frac` convention in SCRIPT_ENTRYPOINTS_SPEC | Tiny | Smoke testing pattern (WIN-011) not codified in templates | v2.5 |
 | **HIGH** | **ISS-039: No compute/storage assessment before project kickoff** | **Medium** | **Disk full 3x (FP-01, FP-02, FP-05). 75+ min wasted + mid-project Azure disk provisioning. Blocks Phase 0.** | **v2.5 — ENV_CONTRACT §2b + project.yaml infra section + G6 preflight** |
+| **HIGH** | **ISS-067: 7 projects at breadth, 0 at depth** | **Large** | **CS 7641 rigor not transferred to self-directed work. Depth-first strategy needed.** | **Immediate — FP-05 + FP-02 deep dives** |
+| **HIGH** | **ISS-068: No publication-track profile** | **Medium** | **Blog-track too light for workshop/conference. Need 20+ templates, 50+ tests.** | **v2.6 (depends on ISS-057–066)** |
+| MEDIUM | ISS-057: Learning curves absent from FP projects | Small | Best overfitting diagnostic, standard in coursework | v2.6 — LEARNING_CURVE_SPEC |
+| MEDIUM | ISS-058: Model complexity curves absent from FP projects | Small | Hyperparameter justification missing | v2.6 — MODEL_COMPLEXITY_SPEC |
+| MEDIUM | ISS-059: Hypothesis pre-registration absent from FP projects | Small | Prevents post-hoc narrative fitting | v2.6 — HYPOTHESIS_REGISTRY |
+| MEDIUM | ISS-060: Sanity baselines absent from FP projects | Small | No performance floor established | v2.6 — SANITY_BASELINE_SPEC |
+| MEDIUM | ISS-061: Provenance chains absent from FP projects | Small | Experiments not reproducible | v2.6 — PROVENANCE_SPEC |
+| MEDIUM | ISS-062: Test count disparity (294 vs 8) | Medium | Profile-specific test minimums needed | v2.6 — TEST_ARCHITECTURE tiers |
+| MEDIUM | ISS-063: Ablation studies absent from FP projects | Small | No "why" evidence, only "what" | v2.6 — EXPERIMENT_CONTRACT ablation |
+| MEDIUM | ISS-064: Test-access barriers absent from FP projects | Small | Test data leakage possible | v2.6 — SCRIPT_ENTRYPOINTS_SPEC |
+| MEDIUM | ISS-065: Figures from hardcoded values | Small | Figures can diverge from data | v2.6 — FIGURES_TABLES_CONTRACT |
+| MEDIUM | ISS-066: Inconsistent dispersion reporting | Small | Point estimates without uncertainty | v2.6 — METRICS_CONTRACT |
 
 ---
 
@@ -870,6 +882,81 @@ Assess BEFORE creating the environment. If any resource is insufficient, resolve
 - **Proposed fix:** IMPLEMENTATION_PLAYBOOK now includes Phase N+2 (Findings Integrity Gate) with G18 + G19 as required checks before publication.
 - **Status:** RESOLVED — Phase N+2 added to IMPLEMENTATION_PLAYBOOK
 
+## Issues Found (continued — CS 7641 benchmark session)
+
+### ISS-057: CS 7641 rigor gap — learning curves absent from all frontier projects
+- **Source:** CS 7641 benchmark session (2026-03-15)
+- **Problem:** Learning curves present in ALL 4 CS 7641 reports but ZERO frontier projects (FP-01 through FP-10). Learning curves are the single best diagnostic for underfitting/overfitting, sample efficiency, and data sufficiency — and they were standard practice in coursework but never transferred to self-directed work.
+- **Root cause:** No template enforcing diagnostic curves. EXPERIMENT_CONTRACT has no learning curve protocol.
+- **Proposed fix:** LEARNING_CURVE_SPEC template + EXPERIMENT_CONTRACT mandatory protocol requiring learning curves as a Phase 2 gate item.
+- **Status:** IDENTIFIED — v2.6 candidate
+
+### ISS-058: CS 7641 rigor gap — model complexity curves absent from all frontier projects
+- **Source:** CS 7641 benchmark session (2026-03-15)
+- **Problem:** Model complexity curves (validation vs training error as function of model capacity) in ALL 4 CS 7641 reports but ZERO FP projects. These curves are essential for hyperparameter justification and preventing underfitting.
+- **Proposed fix:** MODEL_COMPLEXITY_SPEC template.
+- **Status:** IDENTIFIED — v2.6 candidate
+
+### ISS-059: CS 7641 rigor gap — hypothesis pre-registration absent from all frontier projects
+- **Source:** CS 7641 benchmark session (2026-03-15)
+- **Problem:** Hypothesis pre-registration in ALL 4 CS 7641 reports (13 total hypotheses) but ZERO FP projects. Pre-registration prevents post-hoc narrative fitting and forces experimental discipline.
+- **Proposed fix:** HYPOTHESIS_REGISTRY template + Phase 1 gate requiring hypotheses registered before any experiment runs.
+- **Status:** IDENTIFIED — v2.6 candidate
+
+### ISS-060: CS 7641 rigor gap — sanity baselines absent from all frontier projects
+- **Source:** CS 7641 benchmark session (2026-03-15)
+- **Problem:** Sanity baselines (DummyClassifier + shuffled-label) in 3/4 CS 7641 reports but ZERO FP projects. Sanity baselines establish the performance floor — without them, a model achieving 70% accuracy could be worse than random on imbalanced data.
+- **Proposed fix:** SANITY_BASELINE_SPEC template.
+- **Status:** IDENTIFIED — v2.6 candidate
+
+### ISS-061: CS 7641 rigor gap — provenance chains absent from all frontier projects
+- **Source:** CS 7641 benchmark session (2026-03-15)
+- **Problem:** Provenance chains (config_resolved.yaml, git SHA, versions.txt) in ALL 4 CS 7641 reports but ZERO FP projects. Without provenance, experiment results cannot be reproduced even by the original author.
+- **Proposed fix:** PROVENANCE_SPEC template + gen_provenance.py generator that captures environment state at experiment time.
+- **Status:** IDENTIFIED — v2.6 candidate
+
+### ISS-062: CS 7641 rigor gap — test count disparity between coursework and frontier projects
+- **Source:** CS 7641 benchmark session (2026-03-15)
+- **Problem:** OL had 294 tests, RL had 72. FP projects average ~8 tests. Two orders of magnitude difference in test coverage between coursework (where testing was required) and self-directed work (where it wasn't enforced).
+- **Proposed fix:** TEST_ARCHITECTURE minimum tiers (T1-T5) with profile-specific minimums: blog-track 25+, security-ml 40+, publication-track 50+.
+- **Status:** IDENTIFIED — v2.6 candidate
+
+### ISS-063: CS 7641 rigor gap — ablation studies absent from all frontier projects
+- **Source:** CS 7641 benchmark session (2026-03-15)
+- **Problem:** Ablation studies in ALL 4 CS 7641 reports (OL: momentum=82% decomposition, UL: 12-combo DR×clustering, RL: 4-grid discretization) but ZERO FP projects. Ablations are the primary mechanism for understanding WHY a result holds, not just THAT it holds.
+- **Proposed fix:** EXPERIMENT_CONTRACT ablation protocol — every Phase 3 must include at least one ablation study isolating the key variable.
+- **Status:** IDENTIFIED — v2.6 candidate
+
+### ISS-064: CS 7641 rigor gap — test-access barriers absent from all frontier projects
+- **Source:** CS 7641 benchmark session (2026-03-15)
+- **Problem:** Test-access barriers (final_eval.py pattern) code-enforced in SL/OL reports but ZERO FP projects. Without a barrier, it's trivial to peek at test data during development, invalidating generalization claims.
+- **Proposed fix:** SCRIPT_ENTRYPOINTS_SPEC final_eval.py pattern — test data only accessible through a specific script that logs access and verifies no data leakage.
+- **Status:** IDENTIFIED — v2.6 candidate
+
+### ISS-065: CS 7641 rigor gap — figures generated from hardcoded values instead of raw data
+- **Source:** CS 7641 benchmark session (2026-03-15)
+- **Problem:** Figure generation deterministic from raw data (make_report_artifacts.py) in ALL 4 CS 7641 reports. FP-02 used hardcoded values in generate_figures.py (also ISS-055). This means FP figures can silently diverge from actual experiment outputs.
+- **Proposed fix:** FIGURES_TABLES_CONTRACT rule requiring all figures generated from raw experiment outputs + gen_learning_curves.py / gen_complexity_curves.py generators.
+- **Status:** IDENTIFIED — v2.6 candidate (extends ISS-055)
+
+### ISS-066: CS 7641 rigor gap — inconsistent dispersion reporting in frontier projects
+- **Source:** CS 7641 benchmark session (2026-03-15)
+- **Problem:** Dispersion reporting (mean±std, IQR, CI) in OL/RL reports but inconsistent in FP projects. Some report point estimates only, some report mean±std for some metrics but not others. Without dispersion, the reader cannot assess result reliability.
+- **Proposed fix:** METRICS_CONTRACT dispersion reporting requirement — every numeric claim must include a dispersion measure (mean±std for normal, median±IQR for skewed, CI for small samples).
+- **Status:** IDENTIFIED — v2.6 candidate
+
+### ISS-067: Frontier project depth — 7 projects at breadth, 0 at depth
+- **Source:** CS 7641 benchmark session (2026-03-15)
+- **Problem:** Academic coursework shows top-1% capability (learning curves, ablations, 294 tests, hypothesis pre-registration) that is NOT transferred to self-directed frontier work. 7 projects completed at breadth, but none approach the methodological rigor of CS 7641 reports. The gap is not skill — it's enforcement.
+- **Proposed fix:** Depth-first strategy: FP-05 deep dive (learning curves, ablations, multi-seed, provenance) + FP-02 hardening (multi-seed stable, test-access barriers) using CS 7641 methodology as the benchmark.
+- **Status:** IDENTIFIED — immediate priority
+
+### ISS-068: No publication-track profile in govML
+- **Source:** CS 7641 benchmark session (2026-03-15)
+- **Problem:** Blog-track profile (10-12 templates) is too light for workshop/conference submissions. Publication-track work requires learning curves, ablation protocols, hypothesis pre-registration, provenance chains, sanity baselines, and 50+ tests — none of which blog-track enforces.
+- **Proposed fix:** Publication-track profile (20+ templates, 50+ test minimum) that bundles ISS-057–066 fixes into a single profile. Separate from blog-track which is right-sized for its purpose.
+- **Status:** IDENTIFIED — v2.6 candidate (depends on ISS-057–066 templates)
+
 ---
 
 ## What's Working Well (continued — FP-10)
@@ -915,6 +1002,40 @@ Assess BEFORE creating the environment. If any resource is insufficient, resolve
 
 ---
 
+## What's Working Well (continued — CS 7641 benchmark session)
+
+### WIN-053: CS 7641 as internal benchmark — your own coursework sets the rigor bar
+- **Source:** CS 7641 benchmark session (2026-03-15)
+- **Evidence:** Discovering that your own coursework (top 1%) is the right rigor benchmark eliminates guesswork about "how good is good enough." The bar is your own demonstrated capability — learning curves, ablation studies, 294 tests, hypothesis pre-registration, provenance chains. The gap between coursework and frontier projects is not skill, it's enforcement.
+- **Lesson:** Stop benchmarking against external standards (industry blogs, Kaggle notebooks). The internal benchmark is higher AND already demonstrated. Use it.
+
+### WIN-054: govML v2.5 claim integrity system — automated checks caught real publication-damaging errors
+- **Source:** Portfolio deep review + govML v2.5 development (2026-03-15)
+- **Evidence:** 4-tier claim strength taxonomy (DEMONSTRATED/SUGGESTED/PROJECTED/HYPOTHESIZED) + gen_findings_audit.py (G18) + gen_voice_lint.py (G19) caught real errors: FP-05 SHAP discrepancy (unscaled vs scaled feature rankings contradicted claims), FP-02 overclaiming ("5 novel attacks" → "7 systematized attack classes"). Both would have damaged credibility if published as-is.
+- **Lesson:** Claim integrity must be automated and mandatory. Human reviewers — including the author — habituate to their own overclaiming patterns.
+
+### WIN-055: Portfolio narrative power — single methodology across 6 domains creates 10x more compelling story
+- **Source:** CS 7641 benchmark session (2026-03-15)
+- **Evidence:** Single methodology (Adversarial Controllability Analysis) applied across 6 domains (IDS, CVE, Agents, Crypto, Fraud, Supply Chain) creates a story 10x more compelling than 6 disconnected projects. The narrative IS the product, not the individual projects. A hiring manager seeing "one methodology, six domains" thinks "researcher" — seeing "six projects, six techniques" thinks "tutorial follower."
+- **Lesson:** Future project selection should optimize for domain diversity under the ACA umbrella. Each new domain adds compound value to the narrative.
+
+### WIN-056: Systematic self-critique protocol — portfolio deep review format should be repeated after every project batch
+- **Source:** CS 7641 benchmark session (2026-03-15)
+- **Evidence:** The portfolio deep review format (world-class researcher lens, claim-by-claim evaluation, frontier classification, CS 7641 benchmark comparison) surfaced 12 new issues (ISS-057–068) and reframed the entire strategy from breadth to depth. No individual project review would have caught the cross-cutting rigor gaps.
+- **Lesson:** Schedule a portfolio deep review after every 3-4 project completions. The format: (1) apply world-class researcher lens, (2) evaluate every claim against evidence, (3) classify each project on the frontier scale, (4) benchmark against your own best work.
+
+### WIN-057: govML as competitive moat evidence — using and upgrading govML across 7 projects demonstrates both the product and the methodology
+- **Source:** CS 7641 benchmark session (2026-03-15)
+- **Evidence:** Using govML across 7 projects while simultaneously upgrading it from v2.4→v2.5→v2.5.3 demonstrates both the product AND the methodology. Each project exposed gaps (ISS entries), each gap drove an upgrade (resolved entries), each upgrade improved the next project. The compound effect — not any single project — is the real differentiation.
+- **Lesson:** govML should always be used and always be upgraded. The LESSONS_LEARNED.md file is the most honest product development log possible — it shows real problems found in real usage.
+
+### WIN-058: Depth vs breadth inflection point — 7 projects signals diminishing returns on breadth
+- **Source:** CS 7641 benchmark session (2026-03-15)
+- **Evidence:** After 7 projects, adding an 8th breadth project produces marginal narrative value (the cross-domain story is already told). But deepening 2 projects (FP-05 deep dive + FP-02 hardening with CS 7641 methodology) to publication-track quality would demonstrate that the breadth is backed by depth. The next 80 hours of depth work will produce more career value than 3 more breadth projects.
+- **Lesson:** Recognize inflection points in strategy. Breadth was correct for the first 7 projects. Depth is correct for the next 2-3. The signal is when new projects stop adding new narrative elements.
+
+---
+
 ## Revision Log
 
 | Date | Entry | Source |
@@ -945,3 +1066,4 @@ Assess BEFORE creating the environment. If any resource is insufficient, resolve
 | 2026-03-15 | Added ISS-044–046, WIN-042–045: Publication artifacts should be phase gate (ISS-044). Background agents fail on writes (ISS-045). Pre-v2.4 projects lack PUBLICATION_PIPELINE (ISS-046). Cross-domain ACA figure is strongest brand visual (WIN-042). Data reuse compounds (WIN-043). Batch publication cleanup works (WIN-044). 4-project methodology narrative is strongest brand asset (WIN-045). | Cross-project publication audit + govML v2.5 + FP-03 completion |
 | 2026-03-15 | FP-04 complete with ISS-044 gate: Streamlit app + GitHub Actions CI + 3 tests + 4 ADRs. Synthetic data makes rule baselines unrealistically strong — document as finding, not failure (ADR-0004). CFA domain expertise = feature engineering multiplier (8/20 SHAP features). 5th domain ACA: 81% adversary-resistant floor. First project with Streamlit deployment + CI/CD (P3 gate path). | FP-04 completion |
 | 2026-03-15 | FP-10 complete: AI Supply Chain Scanner. 20 findings across 5 own projects, 13 CRITICAL (pickle serialization). 6th domain ACA (75% developer-controlled). ISS-047: govML doesn't cover supply chain. WIN-046: scanner pattern reusable (3rd project). WIN-047: 6-domain ACA figure. Active sources: FP-01 updated to COMPLETE, FP-10 added. | FP-10 completion |
+| 2026-03-15 | Added ISS-057–068, WIN-053–058: CS 7641 benchmark session. 12 rigor gaps identified by benchmarking frontier projects against own CS 7641 coursework (top 1%). Gaps: learning curves, complexity curves, hypothesis pre-registration, sanity baselines, provenance chains, test counts (294 vs 8), ablation studies, test-access barriers, hardcoded figures, dispersion reporting, breadth-without-depth, no publication-track profile. Wins: internal benchmark eliminates guesswork, claim integrity system catches real errors, single-methodology narrative power, systematic self-critique protocol, govML compound evidence, depth-vs-breadth inflection point recognized. | CS 7641 benchmark session |

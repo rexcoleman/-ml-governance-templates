@@ -10,13 +10,17 @@
 # ISS-044: IMPLEMENTATION_PLAYBOOK includes Phase N+3 (Publication Artifacts gate)
 #   → blog/draft.md, blog/images/, blog/conference_abstract.md required at project completion
 
-# --- Core (6) ---
+# --- Core (10) ---
 core/ADVERSARIAL_EVALUATION.tmpl.md
 core/TEST_ARCHITECTURE.tmpl.md
 core/CONFIGURATION_SPEC.tmpl.md
 core/SCRIPT_ENTRYPOINTS_SPEC.tmpl.md
 core/STATISTICAL_ANALYSIS_SPEC.tmpl.md
 core/CLAIM_STRENGTH_SPEC.tmpl.md
+core/LEARNING_CURVE_SPEC.tmpl.md
+core/MODEL_COMPLEXITY_SPEC.tmpl.md
+core/HYPOTHESIS_REGISTRY.tmpl.md
+core/SANITY_BASELINE_SPEC.tmpl.md
 
 # --- Management (3) ---
 management/DECISION_LOG.tmpl.md

@@ -67,6 +67,24 @@ This contract defines how metrics are computed, thresholds are set, and evaluati
 
 ---
 
+## 2b) Dispersion Reporting (Mandatory)
+
+> Every metric must be reported with dispersion across seeds.
+
+**Required format:** `metric = X.XXX ± Y.YYY (95% CI: [lo, hi])`
+
+- Mean ± std across all seeds
+- 95% CI via bootstrap (1000 resamples) or analytical
+- For single-seed projects (legacy): report as `metric = X.XXX [SINGLE-SEED]`
+
+**Sanity baseline comparison (Mandatory):**
+Every results table must include:
+- Row: DummyClassifier (stratified) — the chance-level floor
+- Row: DummyClassifier (most_frequent) — the majority-class floor
+- Delta column: model metric minus best dummy metric
+
+---
+
 ## 3) Primary Optimization Objective
 
 All experiments optimize: **{{OPTIMIZATION_OBJECTIVE}}**

@@ -1,0 +1,40 @@
+# Publication-track: CS 7641 rigor as floor + publication-quality additions. ≥50 tests required.
+#
+# Extends blog-track with full experiment governance, reproducibility,
+# and statistical rigor templates. Use for: academic submissions, conference
+# papers, or any project requiring external peer review.
+#
+# Use blog-track for: 3-6 week scope, single researcher, blog post as primary output.
+# Use publication-track for: academic projects, multi-week, multi-person, or journal/conference targets.
+
+# --- Core (16) ---
+core/ADVERSARIAL_EVALUATION.tmpl.md
+core/TEST_ARCHITECTURE.tmpl.md
+core/CONFIGURATION_SPEC.tmpl.md
+core/SCRIPT_ENTRYPOINTS_SPEC.tmpl.md
+core/STATISTICAL_ANALYSIS_SPEC.tmpl.md
+core/CLAIM_STRENGTH_SPEC.tmpl.md
+core/LEARNING_CURVE_SPEC.tmpl.md
+core/MODEL_COMPLEXITY_SPEC.tmpl.md
+core/HYPOTHESIS_REGISTRY.tmpl.md
+core/SANITY_BASELINE_SPEC.tmpl.md
+core/PROVENANCE_SPEC.tmpl.md
+core/FIGURES_TABLES_CONTRACT.tmpl.md
+core/METRICS_CONTRACT.tmpl.md
+core/EXPERIMENT_CONTRACT.tmpl.md
+core/HYPOTHESIS_CONTRACT.tmpl.md
+core/DATA_CONTRACT.tmpl.md
+
+# --- Management (3) ---
+management/DECISION_LOG.tmpl.md
+management/IMPLEMENTATION_PLAYBOOK.tmpl.md
+management/RISK_REGISTER.tmpl.md
+
+# --- Publishing (3) ---
+publishing/PROJECT_BRIEF.tmpl.md
+publishing/PUBLICATION_PIPELINE.tmpl.md
+management/CLAUDE_MD.tmpl.md
+
+# --- Report (2) ---
+report/REPRODUCIBILITY_SPEC.tmpl.md
+report/REPORT_CONSISTENCY_SPEC.tmpl.md

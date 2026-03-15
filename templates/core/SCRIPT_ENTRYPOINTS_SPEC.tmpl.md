@@ -179,6 +179,24 @@ Every experiment script SHOULD support these flags for development velocity:
 
 ---
 
+## 4b) Test-Access Barrier (final_eval.py Pattern)
+
+> Test data must be accessed by exactly ONE script: `final_eval.py`. All other scripts use train/validation only.
+
+- `final_eval.py` is the ONLY script that imports or reads test data
+- It is called ONCE at the end of experimentation
+- It writes results to `outputs/final/`
+- All model selection, HP tuning, threshold selection happen on train/val splits
+- **Enforcement:** Add a test in T1 (Data Integrity) that greps all scripts except final_eval.py for test data access patterns
+
+### Smoke Test Convention
+
+- `--sample-frac 0.01`: Run on 1% of data for pipeline verification
+- `--dry-run`: Check paths, configs, imports without executing experiments
+- Both flags documented in every entrypoint script's argparse
+
+---
+
 ## 5) Phase 2 Scripts (Post-Experiment)
 
 ### 5.1 `scripts/final_eval.py`

@@ -338,6 +338,23 @@ In environments without real datasets (CI pipelines, reviewer machines), tests m
 
 ---
 
+## 5b) Minimum Test Tiers
+
+| Tier | Category | What to Test | Minimum Count |
+|------|----------|-------------|---------------|
+| T1 | Data Integrity | No leakage (temporal/random), correct splits, label distribution, feature shape | 5 |
+| T2 | Pipeline | Preprocessing produces expected shapes, models save/load correctly, features match schema | 5 |
+| T3 | Sanity | Dummy baseline runs, shuffled baseline runs, real model > dummy by ≥5pp | 3 |
+| T4 | Reproducibility | Same seed = same output (bitwise or within tolerance), config_resolved.yaml exists | 3 |
+| T5 | Output | FINDINGS.md exists, all claim strength tags present, figures generated from data | 3 |
+
+**Minimum test counts:**
+- Blog-track profile: ≥25 tests (T1-T4 mandatory)
+- Security-ml profile: ≥40 tests (T1-T5 mandatory)
+- Publication-track profile: ≥50 tests (T1-T5 mandatory, additional domain-specific)
+
+---
+
 ## 6) Coverage Expectations
 
 | Category | Minimum Expectation |
