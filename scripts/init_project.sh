@@ -94,11 +94,17 @@ case "$PROFILE" in
 esac
 
 # Validate profile
-VALID_PROFILES="minimal supervised optimization unsupervised rl-agent security-ml systems-benchmark full"
-if ! echo "$VALID_PROFILES" | grep -qw "$PROFILE"; then
+VALID_PROFILES="minimal supervised optimization unsupervised rl-agent security-ml systems-benchmark blog-track full"
+# Check for custom profile file first
+CUSTOM_PROFILE_FILE="${SCRIPT_DIR}/profiles/${PROFILE}.txt"
+if [[ -f "$CUSTOM_PROFILE_FILE" ]]; then
+    USE_CUSTOM_PROFILE=true
+elif ! echo "$VALID_PROFILES" | grep -qw "$PROFILE"; then
     echo "Error: Unknown profile '${PROFILE}'."
     echo "Available: ${VALID_PROFILES}"
     exit 1
+else
+    USE_CUSTOM_PROFILE=false
 fi
 
 if [[ ! -d "$PROJECT_DIR" ]]; then
@@ -354,10 +360,39 @@ case "$PROFILE" in
             copy_raw "${REPORT}/IEEE_Report_Template.tex"
         fi
         ;;
+    blog-track)
+        echo "Copying blog-track templates (10 files):"
+        # Read from profile file, skip comments and empty lines
+        while IFS= read -r line; do
+            line="$(echo "$line" | sed 's/#.*//' | xargs)"
+            [[ -z "$line" ]] && continue
+            template_path="${TEMPLATES_DIR}/${line}"
+            if [[ -f "$template_path" ]]; then
+                copy_template "$template_path"
+            else
+                echo "  WARNING: Template not found: ${line}"
+            fi
+        done < "${SCRIPT_DIR}/profiles/blog-track.txt"
+        ;;
     *)
-        echo "Error: Unknown profile '${PROFILE}'."
-        echo "Available: minimal, supervised, optimization, unsupervised, rl-agent, security-ml, systems-benchmark, full"
-        exit 1
+        # Try loading from custom profile file
+        if [[ "$USE_CUSTOM_PROFILE" == "true" ]] && [[ -f "$CUSTOM_PROFILE_FILE" ]]; then
+            echo "Copying custom profile '${PROFILE}' templates:"
+            while IFS= read -r line; do
+                line="$(echo "$line" | sed 's/#.*//' | xargs)"
+                [[ -z "$line" ]] && continue
+                template_path="${TEMPLATES_DIR}/${line}"
+                if [[ -f "$template_path" ]]; then
+                    copy_template "$template_path"
+                else
+                    echo "  WARNING: Template not found: ${line}"
+                fi
+            done < "$CUSTOM_PROFILE_FILE"
+        else
+            echo "Error: Unknown profile '${PROFILE}'."
+            echo "Available: ${VALID_PROFILES}"
+            exit 1
+        fi
         ;;
 esac
 
@@ -397,8 +432,8 @@ if [[ "$FILL" == true ]]; then
 
     # Copy project.yaml if it doesn't exist
     if [[ ! -f "${PROJECT_DIR}/project.yaml" ]]; then
-        # Use research example for security-ml, academic example for others
-        if [[ "$PROFILE" == "security-ml" ]] && [[ -f "${SCRIPT_DIR}/project.yaml.research-example" ]]; then
+        # Use research example for security-ml and blog-track, academic example for others
+        if [[ "$PROFILE" == "security-ml" || "$PROFILE" == "blog-track" ]] && [[ -f "${SCRIPT_DIR}/project.yaml.research-example" ]]; then
             cp "${SCRIPT_DIR}/project.yaml.research-example" "${PROJECT_DIR}/project.yaml"
             echo "  + project.yaml (from research example — edit before running generators)"
         else
