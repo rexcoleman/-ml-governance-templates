@@ -72,6 +72,46 @@ The threat model MUST be defined before any adversarial evaluation begins. It co
 
 **Verification:** Report Methods section contains a threat model paragraph specifying all properties above. `config_resolved.yaml` records `threat_model`, `perturbation_norm`, and `epsilon` for every adversarial run.
 
+### 2b. Formal Threat Model Specification
+
+> Fill this YAML block to formalize the threat model. Every field is required for security ML projects.
+
+```yaml
+threat_model:
+  adversary_knowledge: {{ADVERSARY_KNOWLEDGE}}  # white_box | gray_box | black_box
+  adversary_capability:
+    perturbation_type: {{PERTURBATION_TYPE}}  # noise | gradient | transferability | adaptive
+    perturbation_budget:
+      norm: {{NORM}}  # L_inf | L_2 | L_0 | semantic
+      epsilon: {{EPSILON}}
+    access:  # what the adversary can interact with
+      - {{ACCESS_1}}  # e.g., model_queries, training_data, feature_values, source_code
+    constraints:  # what the adversary CANNOT do
+      - {{CONSTRAINT_1}}  # e.g., "cannot modify packet headers", "cannot change timestamp"
+  adversary_goal: {{ADVERSARY_GOAL}}  # targeted | untargeted | availability | integrity | confidentiality
+  attack_surface:
+    controllable_features:  # features the adversary CAN manipulate
+      - {{CONTROLLABLE_1}}
+    observable_features:  # features the defender observes but adversary cannot change
+      - {{OBSERVABLE_1}}
+    system_features:  # features determined by system/environment
+      - {{SYSTEM_1}}
+  attacks_tested:
+    - type: {{ATTACK_TYPE_1}}
+      sophistication: {{SOPHISTICATION_1}}  # low | medium | high | adaptive
+      tool: {{TOOL_1}}  # e.g., IBM ART, custom, manual
+    - type: {{ATTACK_TYPE_2}}
+      sophistication: {{SOPHISTICATION_2}}
+      tool: {{TOOL_2}}
+  attacks_NOT_tested:  # REQUIRED — what was out of scope and why
+    - type: {{UNTESTED_ATTACK_1}}
+      reason: {{REASON_1}}  # e.g., "sklearn models lack gradients", "out of scope for this study"
+  limitation_acknowledgment: |
+    {{LIMITATION_TEXT}}
+```
+
+> **Gate rule:** If `attacks_NOT_tested` is empty, the threat model is incomplete. Every study has untested attack types — document them.
+
 ---
 
 ## 3) Perturbation Types

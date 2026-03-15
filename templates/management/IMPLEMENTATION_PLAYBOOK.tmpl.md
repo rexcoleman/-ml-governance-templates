@@ -219,7 +219,33 @@ Each phase has a hard gate. No work in phase N+1 may begin until phase N's gate 
 
 ---
 
-### Phase {{N+2}} — Report Writing & Delivery
+### Phase {{N+2}} — Findings Integrity Gate
+
+> **Purpose:** Red-team your own findings before publication. Catches claim/data mismatches, overclaiming, and statistical gaps.
+> **Gate:** All 6 checks must pass before proceeding to publication artifacts.
+
+#### Checklist
+
+| # | Check | Tool/Generator | Pass Condition |
+|---|-------|---------------|----------------|
+| 1 | **Raw data ↔ claims reconciliation** | `gen_findings_audit.py` (G18) | Zero mismatches between FINDINGS.md numbers and `outputs/**/*.json` |
+| 2 | **Claim strength classification** | Manual + CLAIM_STRENGTH_SPEC | 100% of quantitative claims tagged [DEMONSTRATED/SUGGESTED/PROJECTED/HYPOTHESIZED] |
+| 3 | **Statistical rigor** | STATISTICAL_ANALYSIS_SPEC checklist | ≥3 seeds, CI reported, ≥2 baselines, HP strategy documented |
+| 4 | **Threat model formalization** (security projects) | ADVERSARIAL_EVALUATION §2b | All YAML fields populated, `attacks_NOT_tested` non-empty |
+| 5 | **Competitive landscape** | PROJECT_BRIEF §Competitive Landscape | ≥2 existing solutions listed, frontier classification assigned |
+| 6 | **Publication voice audit** | `gen_voice_lint.py` (G19) | No "novel" without evidence, no "proved" for ML, synthetic data qualified |
+
+#### Decision Point
+
+- All 6 pass → proceed to Phase {{N+3}} (report writing & delivery)
+- Any fail → fix findings, re-run check, document fix in DECISION_LOG
+- Statistical rigor fail on completed project → add to Limitations, tag claims as [SUGGESTED]
+
+> **Automation:** Run `govml_check_findings_integrity` (MCP tool) to execute checks 1, 3, 6 automatically.
+
+---
+
+### Phase {{N+3}} — Report Writing & Delivery
 
 **Goal:** Report + REPRO delivered by delivery date.
 
@@ -232,7 +258,7 @@ Each phase has a hard gate. No work in phase N+1 may begin until phase N's gate 
 | Pre-flight checklist | Run full checklist | All items pass |
 | Deliver | Upload to delivery platform | By delivery date |
 
-### Phase {{N+3}} — Publication Artifacts *(blog-track and self-directed projects)*
+### Phase {{N+4}} — Publication Artifacts *(blog-track and self-directed projects)*
 
 **Goal:** All publication deliverables ready before project is marked "complete." (ISS-044: don't defer publication to a separate cleanup session.)
 

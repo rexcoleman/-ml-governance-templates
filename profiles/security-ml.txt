@@ -14,9 +14,9 @@
 #
 # v2.4: Added PROJECT_BRIEF and PUBLICATION_PIPELINE for blog-track projects
 #
-# Total: 21 templates
+# Total: 23 templates
 
-# --- Core (11) ---
+# --- Core (13) ---
 core/ENVIRONMENT_CONTRACT.tmpl.md
 core/DATA_CONTRACT.tmpl.md
 core/METRICS_CONTRACT.tmpl.md
@@ -28,6 +28,8 @@ core/TEST_ARCHITECTURE.tmpl.md
 core/SCRIPT_ENTRYPOINTS_SPEC.tmpl.md
 core/ARTIFACT_MANIFEST_SPEC.tmpl.md
 core/CONFIGURATION_SPEC.tmpl.md
+core/STATISTICAL_ANALYSIS_SPEC.tmpl.md
+core/CLAIM_STRENGTH_SPEC.tmpl.md
 
 # --- Management (3) ---
 management/DECISION_LOG.tmpl.md

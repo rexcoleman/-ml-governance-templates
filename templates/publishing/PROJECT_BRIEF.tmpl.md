@@ -63,6 +63,37 @@ Fill in all `{{PLACEHOLDER}}` values before use. Delete this section when custom
 
 ---
 
+## 2b) Competitive Landscape
+
+> Required for self-directed research projects. Ensures the project addresses a real gap.
+
+#### Existing Solutions
+
+| Solution | Organization | What It Does | Your Differentiation |
+|----------|-------------|-------------|---------------------|
+| {{SOLUTION_1}} | {{ORG_1}} | {{DESCRIPTION_1}} | {{DIFFERENTIATION_1}} |
+
+#### Academic Prior Art
+
+| Paper/Project | Venue/Year | Relevance | Your Differentiation |
+|---------------|-----------|-----------|---------------------|
+| {{PAPER_1}} | {{VENUE_1}} | {{RELEVANCE_1}} | {{DIFFERENTIATION_1}} |
+
+#### Frontier Moat Test
+
+| Question | Answer |
+|----------|--------|
+| **Novelty check:** <5 similar projects on GitHub/arXiv? | {{NOVELTY_ANSWER}} |
+| **Timing check:** What changed in the last 6 months enabling this? | {{TIMING_ANSWER}} |
+| **Moat check:** What stops a funded competitor replicating in 1 month? | {{MOAT_ANSWER}} |
+| **Buyer urgency:** Who is losing money/security today without this? | {{BUYER_ANSWER}} |
+| **10x test:** Is this 10x better than alternatives, or is there no alternative? | {{TEN_X_ANSWER}} |
+
+> **Classification:** {{FRONTIER_CLASSIFICATION}} (Table Stakes / Near-Frontier / Frontier)
+> **Minimum Viable Novelty:** {{MVN_STATEMENT}} — the ONE thing this project does that nobody else has published.
+
+---
+
 ## 3) Scope Definition
 
 ### In Scope

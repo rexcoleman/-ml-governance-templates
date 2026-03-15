@@ -822,6 +822,54 @@ Assess BEFORE creating the environment. If any resource is insufficient, resolve
 - **Proposed fix:** Either (a) add a SUPPLY_CHAIN_SPEC template to govML, or (b) integrate ai-supply-chain-scanner as a Phase 0 gate check in IMPLEMENTATION_PLAYBOOK.
 - **Status:** IDENTIFIED — v2.6 candidate
 
+### ISS-049: SHAP discrepancy pattern — unscaled vs scaled SHAP values produced contradictory feature rankings
+- **Source:** FP-05 portfolio deep review (2026-03-15)
+- **Problem:** StandardScaler applied to features but SHAP run on unscaled data. Unscaled SHAP showed different top features than scaled SHAP, producing contradictory claims in FINDINGS.md. Went unnoticed for weeks.
+- **Proposed fix:** gen_findings_audit.py (G18) now catches claim/data mismatches. STATISTICAL_ANALYSIS_SPEC requires documenting scaling status of SHAP inputs.
+- **Status:** RESOLVED — G18 deployed, FP-05 FINDINGS.md corrected
+
+### ISS-050: Claim overclaiming pattern — "novel", "validated", "proved" used without evidence strength backing
+- **Source:** Portfolio deep review across 7 projects (2026-03-15)
+- **Problem:** Multiple projects used strong language ("novel", "validated", "proved") without calibrating to actual evidence strength. FP-02 claimed "5 novel attacks" when they were systematized from literature. FP-08 claimed "90% reduction" as measured when it was projected.
+- **Proposed fix:** CLAIM_STRENGTH_SPEC template + gen_voice_lint.py (G19) enforce 4-tier taxonomy (DEMONSTRATED/SUGGESTED/PROJECTED/HYPOTHESIZED).
+- **Status:** RESOLVED — CLAIM_STRENGTH_SPEC created, G19 deployed, all 7 FINDINGS.md files updated
+
+### ISS-051: Synthetic data conflation — FP-04 presented synthetic PaySim findings as empirical results
+- **Source:** FP-04 portfolio deep review (2026-03-15)
+- **Problem:** FP-04 used PaySim synthetic data but FINDINGS.md presented results without qualifying that all metrics are synthetic-data-scoped. Reader could infer real-world fraud detection performance.
+- **Proposed fix:** DATA_TYPE annotation required in STATISTICAL_ANALYSIS_SPEC. All claims from synthetic data must carry [SYNTHETIC-SCOPED] qualifier.
+- **Status:** RESOLVED — FP-04 FINDINGS.md updated with synthetic-data scope qualifiers
+
+### ISS-052: Noise-only attack qualification — FP-01 didn't explicitly state gradient attacks were untested
+- **Source:** FP-01 portfolio deep review (2026-03-15)
+- **Problem:** FP-01 ADVERSARIAL_EVALUATION tested noise-based attacks only. Gradient-based attacks (FGSM/PGD) were not feasible on sklearn models but this was not explicitly documented as a limitation.
+- **Proposed fix:** ADVERSARIAL_EVALUATION §2b requires attacks_NOT_tested field listing attack classes considered but not executed, with rationale.
+- **Status:** RESOLVED — ADVERSARIAL_EVALUATION template upgraded, FP-01 FINDINGS.md updated
+
+### ISS-053: Single-seed reporting — FP-05 ran only seed 42 despite METRICS_CONTRACT requiring multi-seed
+- **Source:** FP-05 portfolio deep review (2026-03-15)
+- **Problem:** METRICS_CONTRACT specifies ≥3 seeds for statistical validity. FP-05 ran only seed 42, making all variance estimates unreliable.
+- **Proposed fix:** STATISTICAL_ANALYSIS_SPEC enforces ≥3 seeds and requires reporting mean ± std across seeds.
+- **Status:** RESOLVED — STATISTICAL_ANALYSIS_SPEC created with seed requirements
+
+### ISS-054: No competitive landscape — 4/7 projects are table stakes but weren't identified as such before building
+- **Source:** Portfolio deep review (2026-03-15)
+- **Problem:** FP-01 (adversarial IDS), FP-04 (fraud detection), FP-05 (vuln prioritization), and FP-10 (supply chain scanning) are well-covered problem spaces. None had competitive landscape analysis before building. Projects were positioned as novel when they're methodology demonstrations.
+- **Proposed fix:** PROJECT_BRIEF competitive landscape section added — requires listing existing tools, academic baselines, and honest differentiation claim.
+- **Status:** RESOLVED — PROJECT_BRIEF template upgraded
+
+### ISS-055: Hardcoded figure values — FP-02 generate_figures.py uses hardcoded data
+- **Source:** FP-02 portfolio deep review (2026-03-15)
+- **Problem:** generate_figures.py contains hardcoded metric values instead of reading from raw experiment outputs. If experiments are re-run with different seeds, figures won't update.
+- **Proposed fix:** FIGURES_TABLES_CONTRACT should require generation from raw outputs (JSON/CSV), not hardcoded values in plotting scripts.
+- **Status:** IDENTIFIED — template upgrade candidate
+
+### ISS-056: Phase N+2 missing — no integrity gate between findings draft and publication
+- **Source:** Portfolio deep review (2026-03-15)
+- **Problem:** Multiple projects had claim/data mismatches that persisted through FINDINGS.md drafting. No automated gate existed between "findings written" and "blog published" to catch these.
+- **Proposed fix:** IMPLEMENTATION_PLAYBOOK now includes Phase N+2 (Findings Integrity Gate) with G18 + G19 as required checks before publication.
+- **Status:** RESOLVED — Phase N+2 added to IMPLEMENTATION_PLAYBOOK
+
 ---
 
 ## What's Working Well (continued — FP-10)
@@ -838,10 +886,40 @@ Assess BEFORE creating the environment. If any resource is insufficient, resolve
 
 ---
 
+## What's Working Well (continued — Portfolio Deep Review)
+
+### WIN-048: Cross-domain ACA narrative — applying one methodology across 6 domains creates a compelling portfolio story
+- **Source:** Portfolio deep review (2026-03-15)
+- **Evidence:** Adversarial Controllability Analysis applied across IDS, CVE, Agents, Crypto, Fraud, and Supply Chain. The cross-domain figure tells a stronger story than any individual project. Each domain adds a data point to the methodology validation, not just another project.
+- **Lesson:** The portfolio's value is in the methodology narrative, not individual project results. Future projects should be selected partly for domain diversity.
+
+### WIN-049: Execution velocity — 7 projects in ~2 weeks demonstrates govML's productivity multiplier effect
+- **Source:** Portfolio deep review (2026-03-15)
+- **Evidence:** FP-01 through FP-10 (7 projects) completed in approximately 2 weeks. Each successive project was faster due to govML template reuse, blog-track profile, and compound learning. FP-10 scaffolded and completed in a single session.
+- **Lesson:** govML's productivity multiplier is the strongest evidence for the product itself. Track and publish time-to-completion metrics.
+
+### WIN-050: govML compound evidence — using govML across 7 projects creates both the product evidence AND the methodology evidence simultaneously
+- **Source:** Portfolio deep review (2026-03-15)
+- **Evidence:** Every project that uses govML serves double duty: (1) it produces research findings in its domain, and (2) it validates govML as a governance product. The LESSONS_LEARNED.md file itself is the product development log.
+- **Lesson:** This compound evidence loop is the core brand differentiator. Every future project should use govML, even if the project itself doesn't need heavy governance.
+
+### WIN-051: Claim strength taxonomy — the 4-tier system catches overclaiming before publication
+- **Source:** Portfolio deep review (2026-03-15)
+- **Evidence:** The DEMONSTRATED/SUGGESTED/PROJECTED/HYPOTHESIZED taxonomy with qualifiers ([SYNTHETIC-SCOPED], [SINGLE-SEED], etc.) caught overclaiming in 6/7 projects. FP-02 "5 novel attacks" → "7 systematized attack classes". FP-08 "90% reduction" → [PROJECTED]. FP-04 all claims → [SYNTHETIC-SCOPED].
+- **Lesson:** Claim strength should be a Phase N+2 gate check, not a post-hoc audit. gen_voice_lint.py (G19) automates this.
+
+### WIN-052: Findings integrity gate — automated Phase N+2 catches claim/data mismatches that manual review missed for weeks
+- **Source:** Portfolio deep review (2026-03-15)
+- **Evidence:** gen_findings_audit.py (G18) found the SHAP discrepancy in FP-05 that had persisted through 3 manual review cycles. gen_voice_lint.py (G19) found overclaiming in every project. Automated checks are strictly superior to manual review for these pattern-matching tasks.
+- **Lesson:** Every govML quality gate that can be automated should be automated. Manual review is for judgment calls (framing, narrative), not pattern matching (claim strength, data consistency).
+
+---
+
 ## Revision Log
 
 | Date | Entry | Source |
 |------|-------|--------|
+| 2026-03-15 | Added ISS-049–056, WIN-048–052: Portfolio deep review findings — SHAP discrepancy, claim overclaiming, synthetic data conflation, noise-only attack qualification, single-seed reporting, competitive landscape gap, hardcoded figures, Phase N+2 gate. Wins: cross-domain ACA narrative, execution velocity, compound evidence, claim strength taxonomy, findings integrity gate. | Portfolio deep review |
 | 2026-03-13 | Initial: ISS-001–006, WIN-001–005 | Parallel project audit + FP-01 setup |
 | 2026-03-13 | Added ISS-007–009: data download, disk preflight, project.yaml scaffolding | FP-01 Phase 0 execution |
 | 2026-03-13 | Added WIN-006, parallelization map, ISS-010–012 | FP-01 Phase 0 continued |
