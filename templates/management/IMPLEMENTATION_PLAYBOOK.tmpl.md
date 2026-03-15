@@ -97,6 +97,7 @@ Each phase has a hard gate. No work in phase N+1 may begin until phase N's gate 
 - [ ] Data present with recorded hashes
 - [ ] Budget config fully populated; cross-part constraints satisfied
 - [ ] **Git remote configured and `git push` succeeds** (not just `git remote -v`)
+- [ ] **Repository hygiene complete:** README.md, LICENSE, pyproject.toml, environment.yml, .gitignore, tests/ directory all exist *(ISS-048: engineering quality must be scaffolded at Phase 0, not retrofitted)*
 - [ ] All files committed as `CONTRACT_CHANGE`
 - [ ] CHANGELOG entry recorded
 - [ ] **All tradeoff decisions from this phase logged in DECISION_LOG.md** (ADR format: context, decision, consequences, contracts affected)

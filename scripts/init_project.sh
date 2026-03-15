@@ -401,6 +401,62 @@ if [[ -f "${MGMT}/CLAUDE_MD.tmpl.md" ]]; then
     copy_template "${MGMT}/CLAUDE_MD.tmpl.md"
 fi
 
+# --- Scaffold repo hygiene files (ISS-048) ---
+echo ""
+echo "Scaffolding repo hygiene files:"
+
+# .gitignore
+if [[ ! -f "${PROJECT_DIR}/.gitignore" ]]; then
+    cat > "${PROJECT_DIR}/.gitignore" << 'GITIGNORE'
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.env
+data/raw/
+data/processed/
+outputs/*.json
+GITIGNORE
+    echo "  + .gitignore"
+fi
+
+# LICENSE (MIT)
+if [[ ! -f "${PROJECT_DIR}/LICENSE" ]]; then
+    cat > "${PROJECT_DIR}/LICENSE" << 'LICENSE_TEXT'
+MIT License
+
+Copyright (c) 2026 Rex Coleman
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+LICENSE_TEXT
+    echo "  + LICENSE (MIT)"
+fi
+
+# tests/ directory
+mkdir -p "${PROJECT_DIR}/tests"
+if [[ ! -f "${PROJECT_DIR}/tests/__init__.py" ]]; then
+    touch "${PROJECT_DIR}/tests/__init__.py"
+    echo "  + tests/__init__.py"
+fi
+
 # --- Generate scaffolding if --generate flag is set ---
 if [[ "$GENERATE" == true ]]; then
     echo ""

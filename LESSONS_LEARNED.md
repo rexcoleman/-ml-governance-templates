@@ -802,6 +802,18 @@ Assess BEFORE creating the environment. If any resource is insufficient, resolve
 - **Evidence:** Every blog draft references the controllability analysis methodology validated across 4 domains. The cross-domain table (IDS → CVE → Agents → Crypto) appears in all 4 posts. This is not 4 separate projects — it's one methodology story told through 4 applications.
 - **Lesson:** The compound value of a consistent methodology across projects exceeds the sum of individual projects. Brand strategy should emphasize the methodology narrative, not individual project results.
 
+## Issues Found (continued — engineering quality audit)
+
+### ISS-048: Engineering quality not scaffolded at project init
+- **Source:** Comprehensive audit of 6 repos (2026-03-15)
+- **Problem:** 19 gaps across 6 repos: 4 missing READMEs, 5 missing LICENSEs, 5 missing pyproject.toml, 2 missing environment.yml, 4 repos with 0 test files. govML governs research methodology but doesn't enforce engineering quality. Later projects (FP-03/04/10) had excellent governance docs but looked like hackathon code.
+- **Root cause:** init_project.sh scaffolds governance docs but not repo hygiene files.
+- **Impact:** Required separate polish session to retrofit 19 files. Hiring managers visiting GitHub would see incomplete repos.
+- **Fix:** (a) init_project.sh now scaffolds .gitignore, LICENSE, tests/ automatically. (b) Phase 0 gate now requires: README, LICENSE, pyproject.toml, environment.yml, .gitignore, tests/.
+- **Status:** RESOLVED v2.5.3
+
+---
+
 ## Issues Found (continued — FP-10)
 
 ### ISS-047: Scanner finds risks in own projects — govML doesn't cover supply chain
