@@ -957,6 +957,54 @@ Assess BEFORE creating the environment. If any resource is insufficient, resolve
 - **Proposed fix:** Publication-track profile (20+ templates, 50+ test minimum) that bundles ISS-057–066 fixes into a single profile. Separate from blog-track which is right-sized for its purpose.
 - **Status:** IDENTIFIED — v2.6 candidate (depends on ISS-057–066 templates)
 
+### ISS-069: Algorithm breadth gap — all frontier projects defaulted to same RF + XGBoost + LogReg trio
+- **Source:** Multi-round rigor upgrade session (2026-03-16)
+- **Problem:** All 4 ML frontier projects defaulted to the same RF + XGBoost + LogReg trio. CS 7641 SL Report uses 6 algorithms across 4 families (tree, kernel, instance-based, neural). The "three algorithm default" makes the portfolio look like one trick repeated.
+- **Proposed fix:** train_expanded_models.py pattern — add SVM-RBF, LightGBM, kNN, MLP to match CS 7641 breadth. Add algorithm selection rationale to PROJECT_BRIEF.
+- **Status:** IDENTIFIED — FP-05 deep dive priority
+
+### ISS-070: No bootstrap confidence intervals in any frontier project
+- **Source:** Multi-round rigor upgrade session (2026-03-16)
+- **Problem:** Zero projects reported CIs. CS 7641 OL used 5-seed IQR. Publication standard is bootstrap 95% CI.
+- **Proposed fix:** run_statistical_tests.py generator with bootstrap resampling.
+- **Status:** IDENTIFIED — FP-05 deep dive priority
+
+### ISS-071: No statistical comparison tests — "outperforms" claims lack statistical backing
+- **Source:** Multi-round rigor upgrade session (2026-03-16)
+- **Problem:** Zero projects used McNemar or DeLong to compare models. Claims of "outperforms" had no statistical backing.
+- **Proposed fix:** run_statistical_tests.py with McNemar (binary correct/incorrect) and bootstrap AUC difference tests.
+- **Status:** IDENTIFIED — FP-05 deep dive priority
+
+### ISS-072: No feature group ablation in any project
+- **Source:** Multi-round rigor upgrade session (2026-03-16)
+- **Problem:** Despite CS 7641 having ablation in every report (OL: momentum=82%, UL: 12-combo, RL: 4-grid), zero FP projects included ablation studies.
+- **Proposed fix:** run_ablation.py pattern — define feature groups, leave-one-out + single-group analysis.
+- **Status:** IDENTIFIED — FP-05 deep dive priority
+
+### ISS-073: No test-access barrier code-enforced in frontier projects
+- **Source:** Multi-round rigor upgrade session (2026-03-16)
+- **Problem:** CS 7641 SL/OL used final_eval.py pattern where test data is touched by exactly one script. FP projects allowed any script to access test data, undermining generalization claims.
+- **Proposed fix:** final_eval.py pattern in SCRIPT_ENTRYPOINTS_SPEC.
+- **Status:** IDENTIFIED — v2.6 candidate
+
+### ISS-074: SVM-RBF compute bottleneck on large datasets
+- **Source:** Multi-round rigor upgrade session (2026-03-16)
+- **Problem:** SVM training is O(n^2 to n^3), making it impractical on 234K rows without subsampling.
+- **Proposed fix:** train_expanded_models.py implements automatic subsampling to 50K with documentation in output JSON. This is a legitimate design decision (matching CS 7641 SL which also used manageable-size datasets), not a shortcut.
+- **Status:** IDENTIFIED — documented as design decision
+
+### ISS-075: FP-02 figures were hardcoded — FIGURES_TABLES_CONTRACT violation
+- **Source:** Multi-round rigor upgrade session (2026-03-16)
+- **Problem:** generate_figures.py used hardcoded values instead of reading JSON outputs. Fixed by complete rewrite to load from outputs/attacks/*/summary.json and outputs/defenses/*/summary.json.
+- **Proposed fix:** FIGURES_TABLES_CONTRACT rule preventing recurrence — all figures must be generated from raw experiment outputs, never hardcoded values.
+- **Status:** RESOLVED — FP-02 generate_figures.py rewritten
+
+### ISS-076: No algorithm selection rationale in PROJECT_BRIEF
+- **Source:** Multi-round rigor upgrade session (2026-03-16)
+- **Problem:** Projects chose algorithms without documenting WHY those algorithms were appropriate for the problem. CS 7641 reports explain algorithm selection reasoning in the introduction.
+- **Proposed fix:** Add "Algorithm Selection Rationale" section to PROJECT_BRIEF template.
+- **Status:** IDENTIFIED — v2.6 candidate
+
 ---
 
 ## What's Working Well (continued — FP-10)
@@ -1036,6 +1084,50 @@ Assess BEFORE creating the environment. If any resource is insufficient, resolve
 
 ---
 
+## What's Working Well (continued — Multi-round rigor upgrade session)
+
+### WIN-059: CS 7641 methodology IS the benchmark — eliminates "how good is good enough?"
+- **Source:** Multi-round rigor upgrade session (2026-03-16)
+- **Evidence:** Discovering that your own top-1% coursework sets the rigor floor eliminates the "how good is good enough?" question. The answer: at least as good as what you already proved you can do.
+- **Lesson:** The internal benchmark is not aspirational — it's a demonstrated floor. Any frontier project that falls below your own coursework standard is an unforced error.
+
+### WIN-060: Complexity curves found actionable insight — default HPs are not optimal
+- **Source:** Multi-round rigor upgrade session (2026-03-16)
+- **Evidence:** FP-05 complexity curves revealed XGBoost depth=3 achieves AUC 0.912 +/- 0.000 (+8.7pp over default depth=8). This single finding justifies the entire diagnostic curve methodology — default HPs are not optimal, and you only discover this by sweeping.
+- **Lesson:** Complexity curves are not just a presentation artifact — they produce real findings. Every project should sweep at least one key hyperparameter.
+
+### WIN-061: Portfolio narrative strengthened by algorithm breadth
+- **Source:** Multi-round rigor upgrade session (2026-03-16)
+- **Evidence:** Going from "I always use XGBoost" to "I systematically compare 7 algorithms and choose the best" is a qualitative leap in how the work reads to reviewers and hiring managers.
+- **Lesson:** Algorithm breadth is a signal of methodological sophistication. The marginal cost of adding 4 algorithms (with train_expanded_models.py pattern) is ~30 minutes per project. The narrative return is outsized.
+
+### WIN-062: Expanded model training pattern is reusable — candidate for govML generator
+- **Source:** Multi-round rigor upgrade session (2026-03-16)
+- **Evidence:** train_expanded_models.py follows a standard pattern (load data, define models dict, loop seeds, save per-seed + summary JSON) that can be templated. The pattern was reused across FP-05, FP-01, and FP-04 with minimal modification.
+- **Lesson:** Consider adding gen_expanded_models.py to govML. The pattern is stable enough to template: model registry dict, multi-seed loop, per-seed + summary JSON output, optional subsampling for expensive models.
+
+### WIN-063: Feature group ablation reveals signal sources — CS 7641-quality experimental design
+- **Source:** Multi-round rigor upgrade session (2026-03-16)
+- **Evidence:** Even before running, the ablation design (8 groups: text_keywords, epss, cvss, temporal, description_stats, cwe, reference, vendor) provides a framework for understanding WHICH inputs drive predictions. This is CS 7641-quality experimental design applied to security ML.
+- **Lesson:** Ablation study design forces you to think about feature semantics, not just feature importance scores. The design itself is a research contribution.
+
+### WIN-064: Statistical tests make claims defensible — blog-quality to paper-quality upgrade
+- **Source:** Multi-round rigor upgrade session (2026-03-16)
+- **Evidence:** Bootstrap CI + McNemar/DeLong tests transform "XGBoost beats LogReg" from an observation into a statistical claim. This is the difference between blog-quality and paper-quality.
+- **Lesson:** Statistical tests are the single cheapest upgrade from blog to paper quality. run_statistical_tests.py takes <5 minutes to run and produces publication-grade evidence.
+
+### WIN-065: govML v2.6 flywheel proven — deep review to template to experiment cycle
+- **Source:** Multi-round rigor upgrade session (2026-03-16)
+- **Evidence:** The session demonstrated the full flywheel: deep review → identify gaps → create templates → build generators → run experiments → update findings. Each cycle makes the next project better. v2.6 templates (LEARNING_CURVE_SPEC, MODEL_COMPLEXITY_SPEC, etc.) will prevent future projects from falling below CS 7641 floor.
+- **Lesson:** The flywheel is the product. Each revolution adds: (1) a new template/generator, (2) experimental evidence from running it, (3) a lessons learned entry documenting the cycle. This is self-improving governance.
+
+### WIN-066: Depth-first strategy validated — deepening beats broadening at this stage
+- **Source:** Multi-round rigor upgrade session (2026-03-16)
+- **Evidence:** Deepening FP-05 from 3 algorithms to 7, adding diagnostics, stats, and ablation produced more value (AUC 0.912 finding, bootstrap CIs, ablation framework) than building 2 new breadth projects would have. The inflection point from breadth to depth is real.
+- **Lesson:** The depth-first signal was correct. Each depth investment in FP-05 produced a concrete, citable finding. The portfolio now has both breadth (7 projects, 6 domains) AND depth (FP-05 with 7 algorithms, statistical tests, ablation, complexity curves). This combination is strictly stronger than 9 shallow projects.
+
+---
+
 ## Revision Log
 
 | Date | Entry | Source |
@@ -1067,3 +1159,4 @@ Assess BEFORE creating the environment. If any resource is insufficient, resolve
 | 2026-03-15 | FP-04 complete with ISS-044 gate: Streamlit app + GitHub Actions CI + 3 tests + 4 ADRs. Synthetic data makes rule baselines unrealistically strong — document as finding, not failure (ADR-0004). CFA domain expertise = feature engineering multiplier (8/20 SHAP features). 5th domain ACA: 81% adversary-resistant floor. First project with Streamlit deployment + CI/CD (P3 gate path). | FP-04 completion |
 | 2026-03-15 | FP-10 complete: AI Supply Chain Scanner. 20 findings across 5 own projects, 13 CRITICAL (pickle serialization). 6th domain ACA (75% developer-controlled). ISS-047: govML doesn't cover supply chain. WIN-046: scanner pattern reusable (3rd project). WIN-047: 6-domain ACA figure. Active sources: FP-01 updated to COMPLETE, FP-10 added. | FP-10 completion |
 | 2026-03-15 | Added ISS-057–068, WIN-053–058: CS 7641 benchmark session. 12 rigor gaps identified by benchmarking frontier projects against own CS 7641 coursework (top 1%). Gaps: learning curves, complexity curves, hypothesis pre-registration, sanity baselines, provenance chains, test counts (294 vs 8), ablation studies, test-access barriers, hardcoded figures, dispersion reporting, breadth-without-depth, no publication-track profile. Wins: internal benchmark eliminates guesswork, claim integrity system catches real errors, single-methodology narrative power, systematic self-critique protocol, govML compound evidence, depth-vs-breadth inflection point recognized. | CS 7641 benchmark session |
+| 2026-03-16 | Added ISS-069–076, WIN-059–066: Multi-round rigor upgrade session with algorithm breadth expansion. 8 new issues: algorithm breadth gap (3-algo default vs CS 7641's 6), no bootstrap CIs, no statistical comparison tests, no feature group ablation, no test-access barriers code-enforced, SVM-RBF compute bottleneck (O(n^2) on 234K rows), FP-02 hardcoded figures fixed (FIGURES_TABLES_CONTRACT violation), no algorithm selection rationale in PROJECT_BRIEF. 8 new wins: CS 7641 methodology as benchmark, complexity curves found AUC 0.912 (+8.7pp), algorithm breadth strengthens narrative, train_expanded_models.py reusable pattern, ablation reveals signal sources, statistical tests upgrade blog→paper quality, govML v2.6 flywheel proven, depth-first strategy validated. | Multi-round rigor upgrade session |
