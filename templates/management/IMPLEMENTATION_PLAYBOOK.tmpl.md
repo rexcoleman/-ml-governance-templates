@@ -87,6 +87,14 @@ Each phase has a hard gate. No work in phase N+1 may begin until phase N's gate 
 | 0.10 | Populate budgets / config | Fill all keys in `{{BUDGET_CONFIG}}` | All keys non-null | Config validation passes |
 | 0.11 | Commit Phase 0b | `git commit -m "CONTRACT_CHANGE: Phase 0 lock"` | All contracts + configs committed | `git diff --cached` shows expected files |
 
+#### Phase 0 Addition: Compute Budget Estimation
+> Before any experiment runs, fill the Compute Budget table in PROJECT_BRIEF §2d:
+> 1. List every planned experiment (training, learning curves, complexity curves, ablation, statistical tests)
+> 2. For each: estimate wallclock based on algorithm × dataset size (see EXPERIMENT_CONTRACT compute table)
+> 3. Sum total estimated compute hours
+> 4. If total > 24 hours: consider subsampling, fewer seeds, or phased execution
+> 5. **SVM flag:** If using SVM-RBF on >50K rows, add subsampling plan to ENVIRONMENT_CONTRACT
+
 **Gate Definition of Done:**
 - [ ] Compute resource assessment completed (ENVIRONMENT_CONTRACT §2b)
 - [ ] Environment creates and activates without errors
@@ -216,6 +224,16 @@ Each phase has a hard gate. No work in phase N+1 may begin until phase N's gate 
 **Integration hooks:**
 - RISK_REGISTER: Re-scan ALL High-severity risks (final delivery gate)
 - TASK_BOARD: Mark Phase {{N+1}} tasks Done
+
+---
+
+#### Phase N+1 Addition: Post-Ablation Feature Selection
+> After ablation study (if run):
+> 1. Identify feature groups with positive delta (removing them IMPROVES performance)
+> 2. Create "optimized" feature set = full set minus harmful groups
+> 3. Retrain best model on optimized set
+> 4. If optimized > full: report as primary result, full model as comparison
+> 5. Document the decision in DECISION_LOG
 
 ---
 

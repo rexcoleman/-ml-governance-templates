@@ -101,6 +101,30 @@ Assess BEFORE creating the environment. If any resource is insufficient, resolve
 | CPU/RAM | Resize VM | ~2x monthly cost | 5 min (reboot) |
 | GPU | Switch to GPU VM or cloud GPU | $$$ | 30 min |
 
+### Compute Constraints and Subsampling
+
+> Document any compute constraints that affect experiment design.
+
+| Constraint | Value | Impact |
+|-----------|-------|--------|
+| Available RAM | {{RAM_GB}} GB | Limits dataset size in memory |
+| CPU cores | {{CPU_CORES}} | Enables parallel seed runs |
+| GPU | {{GPU_TYPE}} (or None) | Required for deep learning, not for sklearn |
+| Disk | {{DISK_GB}} GB available | Large datasets, model checkpoints |
+
+#### Subsampling Decisions
+> If any algorithm requires subsampling due to compute constraints:
+
+| Algorithm | Original N | Subsampled N | Reason | Impact on Claims |
+|-----------|-----------|-------------|--------|-----------------|
+| {{ALGO}} | {{ORIG_N}} | {{SUB_N}} | {{REASON}} | {{IMPACT}} |
+
+> **Rule:** Any claim based on subsampled data must note this: "[DEMONSTRATED, SUBSAMPLED]" or "[SUGGESTED, SUBSAMPLED]"
+> **SVM guidance:** SVM-RBF is O(n²-n³). Subsample to ≤50K rows. Document the threshold.
+
+#### Memory Estimation for Large Datasets
+> Before loading, estimate memory: `rows × columns × 8 bytes × 2 (copies)`. If >80% of RAM, use chunked loading or subsampling.
+
 ---
 
 ## 2c) API Key Inventory

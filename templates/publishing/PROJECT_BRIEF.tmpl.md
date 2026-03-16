@@ -94,6 +94,32 @@ Fill in all `{{PLACEHOLDER}}` values before use. Delete this section when custom
 
 ---
 
+### 2c) Algorithm Selection Rationale
+> For each algorithm used, document WHY it was selected.
+
+| Algorithm | Family | Why Selected | What It Tests |
+|-----------|--------|-------------|---------------|
+| {{ALGO_1}} | {{FAMILY_1}} | {{RATIONALE_1}} | {{TESTS_1}} |
+
+> **Minimum diversity requirement:** ML projects must use algorithms from ≥3 families:
+> - Tree-based (RF, XGBoost, LightGBM, CatBoost, Decision Tree)
+> - Linear (LogReg, SVM-Linear, Ridge, Lasso)
+> - Kernel (SVM-RBF, SVM-Poly)
+> - Instance-based (kNN, radius-based)
+> - Neural (MLP, PyTorch custom)
+> - Ensemble meta (stacking, blending)
+>
+> **Rationale:** Using only one family (e.g., only tree ensembles) prevents discovering whether findings are algorithm-specific or data-inherent.
+
+### 2d) Compute Budget
+| Experiment | Algorithm | Dataset Size | Estimated Wallclock | Actual |
+|-----------|-----------|-------------|--------------------:|-------:|
+| {{EXP_1}} | {{ALGO_1}} | {{SIZE_1}} | {{EST_1}} | {{ACT_1}} |
+
+> Fill "Estimated" in Phase 0, "Actual" after experiments complete. Flag any >2x overrun.
+
+---
+
 ## 3) Scope Definition
 
 ### In Scope

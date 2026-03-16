@@ -431,7 +431,34 @@ Before proceeding to experiments, the following MUST pass:
 
 ---
 
-## 9) Change Control Triggers
+## 9) Feature Circularity Check
+> Identify any feature that is itself a prediction of the target variable or a closely related outcome.
+
+| Feature | Source | Circularity Risk | Mandatory Ablation |
+|---------|--------|------------------|--------------------|
+| {{FEATURE}} | {{SOURCE}} | {{RISK}} | Yes — report with and without |
+
+> **Common circular features in security ML:**
+> - EPSS score (predicts exploitability — circular if target is exploitation)
+> - Threat intelligence scores (may incorporate the signal you're predicting)
+> - Vendor severity ratings (may be derived from the same CVE data)
+>
+> **Rule:** If any feature has circularity risk, the model MUST be evaluated both WITH and WITHOUT that feature. Report both results.
+
+---
+
+## 10) Known Dataset Quirks
+> Document data-specific issues discovered during EDA or experiments.
+
+| Quirk | Impact | Mitigation |
+|-------|--------|-----------|
+| {{QUIRK_1}} | {{IMPACT_1}} | {{MITIGATION_1}} |
+
+> Examples: class imbalance >10:1, temporal leakage risk, missing values in >20% of rows, categorical features with >100 levels, synthetic data limitations.
+
+---
+
+## 11) Change Control Triggers
 
 The following changes require a `CONTRACT_CHANGE` commit and MUST be logged in `CHANGELOG.md`:
 

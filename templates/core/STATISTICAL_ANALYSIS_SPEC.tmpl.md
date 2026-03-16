@@ -82,6 +82,18 @@ Single-seed point estimates MUST NOT appear in any comparative claim. They may a
 
 **Verification:** Assert `len(completed_seeds) == len({{SEED_LIST}})` for every method before any claim is made.
 
+### Deterministic Model Variance
+> Some models (XGBoost, LogisticRegression, GradientBoosting) produce identical results across seeds when given the same data split. Reporting std=0.000 is technically correct but misleading — it reflects deterministic computation, not robust performance.
+>
+> **For deterministic models, use one of these alternative variance methods:**
+> 1. **Bootstrap over test set:** Resample the test set 1000 times, compute metric each time → 95% CI
+> 2. **Multiple train/test splits:** Create 5 different temporal or random splits → mean ± std across splits
+> 3. **Cross-validation:** k-fold CV with k=5+ → mean ± std across folds
+>
+> **Reporting convention:** If a model is deterministic and only one split is used, report as:
+> `metric = X.XXX (deterministic; 95% bootstrap CI: [lo, hi])`
+> Not as: `metric = X.XXX ± 0.000`
+
 ---
 
 ## 2) Confidence Intervals

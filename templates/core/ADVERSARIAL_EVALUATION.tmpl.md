@@ -143,6 +143,23 @@ Not all attacks work with all model types. Select attacks based on model differe
 
 **Rule:** If your model is not differentiable, do NOT attempt gradient-based attacks. Use zeroth-order optimization (ZOO) as primary and decision-based (HopSkipJump) as validation. Random noise is acceptable as a sanity check baseline but is NOT a substitute for optimization-based attacks.
 
+### Attack Method Selection Guide (by Model Type)
+> Use this decision tree to select appropriate attack methods for the model under test.
+
+| Model Type | Gradient Attacks (FGSM, PGD, C&W) | Noise Perturbation | Transferability | Semantic |
+|-----------|-----------------------------------|-------------------|-----------------|----------|
+| **sklearn (RF, XGB, LogReg)** | NOT POSSIBLE — no gradients | YES — primary method | YES — train surrogate NN | N/A |
+| **PyTorch/TF neural net** | YES — primary method | YES — as baseline | YES | N/A |
+| **LLM-based agent** | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | YES — prompt manipulation |
+| **Rule-based system** | NOT APPLICABLE | NOT APPLICABLE | NOT APPLICABLE | Code obfuscation |
+
+> **Important:** If your model is sklearn-based and you only test noise perturbation, you MUST document in `attacks_NOT_tested`:
+> - Gradient-based attacks (reason: model lacks differentiable outputs)
+> - Transferability attacks (reason: out of scope — would require training surrogate)
+> - Adaptive attacks (reason: attacker awareness of defense not tested)
+>
+> **Upgrade path:** To enable gradient attacks on sklearn models, retrain as equivalent PyTorch model (e.g., sklearn RF → PyTorch ensemble or distilled MLP).
+
 ### 3.1b Feature Controllability Matrix (Security ML)
 
 > **Activation:** Include when your adversarial evaluation targets a domain where not all features

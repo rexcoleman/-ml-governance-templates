@@ -332,6 +332,35 @@ Every run MUST log:
 - Output: outputs/diagnostics/ablation_*.json
 - Report: delta vs full model for each group removed
 
+### Compute Budget Estimation (Phase 0 Gate)
+> Before launching experiments, estimate wallclock time per algorithm × dataset size.
+
+| Algorithm | Time Complexity | Estimate Formula | Example (100K rows, 50 features) |
+|-----------|----------------|-----------------|----------------------------------|
+| RandomForest | O(n · log(n) · trees · features) | ~2-5 min for 200 trees | ~3 min |
+| XGBoost/LightGBM | O(n · log(n) · rounds · features) | ~1-3 min for 200 rounds | ~2 min |
+| LogisticRegression | O(n · features · iterations) | ~10-30 sec | ~15 sec |
+| SVM-RBF | O(n² to n³) | **Hours for n>100K. Subsample.** | ~4 hrs (subsample to 50K: ~30 min) |
+| kNN | O(n · d) per prediction | ~5-10 min for full test set | ~7 min |
+| MLP | O(n · features · hidden · epochs) | ~2-5 min for 200 epochs | ~3 min |
+
+> **SVM Warning:** SVM-RBF is O(n²-n³). For datasets >50K rows, subsample training data and document in ENVIRONMENT_CONTRACT §compute_constraints.
+> **Parallel seed opportunity:** With --parallel flag, 5-seed runs take ~same wall time as 1-seed on multi-core machines.
+
+### Post-Ablation Feature Selection (Phase N+1)
+> After ablation study reveals which feature groups are beneficial vs harmful:
+> 1. Identify groups with positive delta (removing them improves performance)
+> 2. Retrain best model WITHOUT those groups
+> 3. Compare: full model vs ablated model (expect improvement)
+> 4. Report both results in FINDINGS.md
+
+### External Prediction Feature Check
+> If any feature is itself an ML/statistical prediction (e.g., EPSS score for exploit prediction):
+> 1. Document the circularity: "Feature X is a prediction of [target], creating partial circularity"
+> 2. **Mandatory ablation:** Run model WITH and WITHOUT the circular feature
+> 3. Report both results: "With EPSS: AUC X.XX, Without EPSS: AUC Y.YY"
+> 4. The "without" result measures the model's independent contribution
+
 ---
 
 ## {{N+2}}) Output Directory Structure

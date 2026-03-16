@@ -159,7 +159,32 @@ Map key claims to supporting artifacts from the project:
 
 ---
 
-## 7) Change Control Triggers
+## 7) Pre-Publication Rigor Gate
+
+### Pre-Publication Rigor Gate
+> Every artifact (blog post, conference abstract, README) must pass this checklist before publication.
+
+| # | Check | Required For | How to Verify |
+|---|-------|-------------|---------------|
+| 1 | Multi-seed results (≥3 seeds, mean ± std) | All ML projects | Check FINDINGS.md for seed count |
+| 2 | Confidence intervals (95% bootstrap or analytical) | All primary metrics | Check for "CI" or "±" in FINDINGS.md |
+| 3 | Sanity baselines (dummy + shuffled > model check) | All classification projects | Check outputs/baselines/sanity_*.json |
+| 4 | Learning curves present | All ML projects | Check figures/learning_curves.png |
+| 5 | Complexity curves present | All ML projects | Check figures/complexity_curves.png |
+| 6 | Ablation study (if features > 10) | Feature-rich ML projects | Check outputs/diagnostics/ablation_*.json |
+| 7 | Claim strength tags (100% coverage) | All projects | Run gen_voice_lint.py — 0 errors |
+| 8 | Findings audit passed | All projects | Run gen_findings_audit.py — 0 mismatches |
+| 9 | Competitive landscape documented | Self-directed projects | Check PROJECT_BRIEF §2b |
+| 10 | Threat model YAML filled (security projects) | Security ML | Check ADVERSARIAL_EVALUATION §2b |
+| 11 | Algorithm breadth (≥3 families) | ML projects | Check PROJECT_BRIEF §2c |
+| 12 | Hypothesis registry resolved | All projects | Check HYPOTHESIS_REGISTRY.md — no PENDING |
+
+> **Gate:** All applicable checks must PASS. If any fail, fix before publishing.
+> **MCP automation:** `govml_validate_project` checks items 1-8 automatically.
+
+---
+
+## 8) Change Control Triggers
 
 The following changes require a `CONTRACT_CHANGE` commit:
 

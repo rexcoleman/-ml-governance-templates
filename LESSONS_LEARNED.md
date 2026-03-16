@@ -155,7 +155,7 @@ Places where Claude Code agents can run in parallel for maximum throughput:
 | MEDIUM | ISS-008: No disk/resource pre-flight check | Small | Env creation fails silently when disk full | v2.5 |
 | ~~LOW~~ | ~~ISS-009: init_project.sh doesn't create project.yaml~~ | ~~Small~~ | ~~Key Layer 2 artifact missing from scaffolding~~ | ~~RESOLVED v2.4 (2026-03-14) — `--fill` flag copies + pre-fills project.yaml~~ |
 | ~~MEDIUM~~ | ~~ISS-010: Feature Controllability Matrix~~ | ~~Medium~~ | ~~Security ML projects need this~~ | ~~RESOLVED 2026-03-14~~ |
-| LOW | ISS-011: CICIDS2017 column names have leading spaces | Tiny | Known issue, should be in DATA_CONTRACT common pitfalls | v2.5 |
+| ~~LOW~~ | ~~ISS-011: CICIDS2017 column names have leading spaces~~ | ~~Tiny~~ | ~~Known issue, should be in DATA_CONTRACT common pitfalls~~ | ~~RESOLVED v2.7~~ |
 | ~~**HIGH**~~ | ~~**ISS-012: Bulk placeholder fill missing from init_project.sh**~~ | ~~**Medium**~~ | ~~**20+ min wasted per project on mechanical replacement**~~ | ~~**RESOLVED v2.4 (2026-03-14) — `--fill` reads project.yaml, substitutes across all templates**~~ |
 | ~~**HIGH**~~ | ~~**ISS-020: ART gradient attacks fail on sklearn**~~ | ~~**Small**~~ | ~~**30 min wasted; redesigned attack pipeline**~~ | ~~**RESOLVED 2026-03-14**~~ |
 | ~~**HIGH**~~ | ~~**ISS-021: No attack selection guide by model type**~~ | ~~**Small**~~ | ~~**Users pick wrong attack, waste time on errors**~~ | ~~**RESOLVED 2026-03-14**~~ |
@@ -169,18 +169,18 @@ Places where Claude Code agents can run in parallel for maximum throughput:
 | MEDIUM | ISS-026: No CLAUDE.md auto-fill from project.yaml | Small | CLAUDE_MD.md still has raw placeholders after --fill | v2.5 |
 | LOW | ISS-027: No `--sample-frac` convention in SCRIPT_ENTRYPOINTS_SPEC | Tiny | Smoke testing pattern (WIN-011) not codified in templates | v2.5 |
 | **HIGH** | **ISS-039: No compute/storage assessment before project kickoff** | **Medium** | **Disk full 3x (FP-01, FP-02, FP-05). 75+ min wasted + mid-project Azure disk provisioning. Blocks Phase 0.** | **v2.5 — ENV_CONTRACT §2b + project.yaml infra section + G6 preflight** |
-| **HIGH** | **ISS-067: 7 projects at breadth, 0 at depth** | **Large** | **CS 7641 rigor not transferred to self-directed work. Depth-first strategy needed.** | **Immediate — FP-05 + FP-02 deep dives** |
-| **HIGH** | **ISS-068: No publication-track profile** | **Medium** | **Blog-track too light for workshop/conference. Need 20+ templates, 50+ tests.** | **v2.6 (depends on ISS-057–066)** |
-| MEDIUM | ISS-057: Learning curves absent from FP projects | Small | Best overfitting diagnostic, standard in coursework | v2.6 — LEARNING_CURVE_SPEC |
-| MEDIUM | ISS-058: Model complexity curves absent from FP projects | Small | Hyperparameter justification missing | v2.6 — MODEL_COMPLEXITY_SPEC |
-| MEDIUM | ISS-059: Hypothesis pre-registration absent from FP projects | Small | Prevents post-hoc narrative fitting | v2.6 — HYPOTHESIS_REGISTRY |
-| MEDIUM | ISS-060: Sanity baselines absent from FP projects | Small | No performance floor established | v2.6 — SANITY_BASELINE_SPEC |
-| MEDIUM | ISS-061: Provenance chains absent from FP projects | Small | Experiments not reproducible | v2.6 — PROVENANCE_SPEC |
-| MEDIUM | ISS-062: Test count disparity (294 vs 8) | Medium | Profile-specific test minimums needed | v2.6 — TEST_ARCHITECTURE tiers |
-| MEDIUM | ISS-063: Ablation studies absent from FP projects | Small | No "why" evidence, only "what" | v2.6 — EXPERIMENT_CONTRACT ablation |
-| MEDIUM | ISS-064: Test-access barriers absent from FP projects | Small | Test data leakage possible | v2.6 — SCRIPT_ENTRYPOINTS_SPEC |
-| MEDIUM | ISS-065: Figures from hardcoded values | Small | Figures can diverge from data | v2.6 — FIGURES_TABLES_CONTRACT |
-| MEDIUM | ISS-066: Inconsistent dispersion reporting | Small | Point estimates without uncertainty | v2.6 — METRICS_CONTRACT |
+| ~~**HIGH**~~ | ~~**ISS-067: 7 projects at breadth, 0 at depth**~~ | ~~**Large**~~ | ~~**CS 7641 rigor not transferred to self-directed work. Depth-first strategy needed.**~~ | ~~**RESOLVED v2.6 — FP-05 deep dive executed**~~ |
+| ~~**HIGH**~~ | ~~**ISS-068: No publication-track profile**~~ | ~~**Medium**~~ | ~~**Blog-track too light for workshop/conference. Need 20+ templates, 50+ tests.**~~ | ~~**RESOLVED v2.6 — publication-track profile shipped**~~ |
+| ~~MEDIUM~~ | ~~ISS-057: Learning curves absent from FP projects~~ | ~~Small~~ | ~~Best overfitting diagnostic, standard in coursework~~ | ~~RESOLVED v2.6 — LEARNING_CURVE_SPEC + G20~~ |
+| ~~MEDIUM~~ | ~~ISS-058: Model complexity curves absent from FP projects~~ | ~~Small~~ | ~~Hyperparameter justification missing~~ | ~~RESOLVED v2.6 — MODEL_COMPLEXITY_SPEC + G21~~ |
+| ~~MEDIUM~~ | ~~ISS-059: Hypothesis pre-registration absent from FP projects~~ | ~~Small~~ | ~~Prevents post-hoc narrative fitting~~ | ~~RESOLVED v2.6 — HYPOTHESIS_REGISTRY + G22~~ |
+| ~~MEDIUM~~ | ~~ISS-060: Sanity baselines absent from FP projects~~ | ~~Small~~ | ~~No performance floor established~~ | ~~RESOLVED v2.6 — SANITY_BASELINE_SPEC + G23~~ |
+| ~~MEDIUM~~ | ~~ISS-061: Provenance chains absent from FP projects~~ | ~~Small~~ | ~~Experiments not reproducible~~ | ~~RESOLVED v2.6 — PROVENANCE_SPEC + G24~~ |
+| ~~MEDIUM~~ | ~~ISS-062: Test count disparity (294 vs 8)~~ | ~~Medium~~ | ~~Profile-specific test minimums needed~~ | ~~RESOLVED v2.6 — TEST_ARCHITECTURE tiers~~ |
+| ~~MEDIUM~~ | ~~ISS-063: Ablation studies absent from FP projects~~ | ~~Small~~ | ~~No "why" evidence, only "what"~~ | ~~RESOLVED v2.6 — EXPERIMENT_CONTRACT ablation~~ |
+| ~~MEDIUM~~ | ~~ISS-064: Test-access barriers absent from FP projects~~ | ~~Small~~ | ~~Test data leakage possible~~ | ~~RESOLVED v2.6/v2.7 — SCRIPT_ENTRYPOINTS_SPEC~~ |
+| ~~MEDIUM~~ | ~~ISS-065: Figures from hardcoded values~~ | ~~Small~~ | ~~Figures can diverge from data~~ | ~~RESOLVED v2.6 — FIGURES_TABLES_CONTRACT + G20/G21~~ |
+| ~~MEDIUM~~ | ~~ISS-066: Inconsistent dispersion reporting~~ | ~~Small~~ | ~~Point estimates without uncertainty~~ | ~~RESOLVED v2.6 — METRICS_CONTRACT~~ |
 
 ---
 
@@ -227,7 +227,8 @@ Places where Claude Code agents can run in parallel for maximum throughput:
 - **Problem:** CICIDS2017 has well-known issues: leading spaces in column names, inf values in Flow Bytes/s and Flow Packets/s, inconsistent label whitespace. These are documented in dozens of papers but not in any govML template.
 - **Impact:** Every new user of this dataset wastes 30 minutes rediscovering the same cleaning steps.
 - **Proposed fix:** Add a "Known Dataset Issues" section to DATA_CONTRACT template (or a companion `DATA_ERRATA.md`) for recording dataset-specific quirks discovered during EDA.
-- **Status:** IDENTIFIED
+- **Status:** RESOLVED v2.7
+- **Resolved:** govML v2.7 — DATA_CONTRACT known dataset quirks section
 
 ### ISS-013: setuptools ≥72 breaks ART import (pkg_resources removed)
 - **Source:** FP-01 Phase 0 env creation (2026-03-13)
@@ -338,6 +339,7 @@ Places where Claude Code agents can run in parallel for maximum throughput:
 - **Impact:** User picks FGSM because it's listed first, wastes time on import errors.
 - **Proposed fix:** Add an "Attack Selection Guide" section to ADVERSARIAL_EVALUATION: model type → compatible attacks → recommended primary attack. E.g., "sklearn tree ensemble → ZOO (primary), HopSkipJump (validation), noise (sanity check)."
 - **Status:** RESOLVED (implemented in govML templates, 2026-03-14)
+- **Resolved:** govML v2.7 — ADVERSARIAL_EVALUATION attack method selection guide
 
 ### ISS-022: Attack code duplicated between adversarial_attacks.py and defenses.py
 - **Source:** FP-01 Phase 2d defense evaluation (2026-03-14)
@@ -536,7 +538,7 @@ v2.4 resolved **9 issues** in a single session:
 | ISS-024 | PUBLICATION_PIPELINE.tmpl.md — governs entire blog workflow from draft to distribution |
 | security-ml | Profile updated: 19 → 21 templates (added PROJECT_BRIEF + PUBLICATION_PIPELINE) |
 
-**Open issues remaining: 14** (ISS-002, 003, 005, 008, 011, 013, 014, 022, 023, 025, 026, 027, 036, 037, 038, 039)
+**Open issues remaining (v2.4): 14** — most now resolved in v2.5/v2.6/v2.7. See revision log for details.
 
 ---
 
@@ -839,36 +841,43 @@ Assess BEFORE creating the environment. If any resource is insufficient, resolve
 - **Problem:** StandardScaler applied to features but SHAP run on unscaled data. Unscaled SHAP showed different top features than scaled SHAP, producing contradictory claims in FINDINGS.md. Went unnoticed for weeks.
 - **Proposed fix:** gen_findings_audit.py (G18) now catches claim/data mismatches. STATISTICAL_ANALYSIS_SPEC requires documenting scaling status of SHAP inputs.
 - **Status:** RESOLVED — G18 deployed, FP-05 FINDINGS.md corrected
+- **Resolved:** govML v2.5 — gen_findings_audit.py (G18) catches claim/data mismatches
 
 ### ISS-050: Claim overclaiming pattern — "novel", "validated", "proved" used without evidence strength backing
 - **Source:** Portfolio deep review across 7 projects (2026-03-15)
 - **Problem:** Multiple projects used strong language ("novel", "validated", "proved") without calibrating to actual evidence strength. FP-02 claimed "5 novel attacks" when they were systematized from literature. FP-08 claimed "90% reduction" as measured when it was projected.
 - **Proposed fix:** CLAIM_STRENGTH_SPEC template + gen_voice_lint.py (G19) enforce 4-tier taxonomy (DEMONSTRATED/SUGGESTED/PROJECTED/HYPOTHESIZED).
 - **Status:** RESOLVED — CLAIM_STRENGTH_SPEC created, G19 deployed, all 7 FINDINGS.md files updated
+- **Resolved:** govML v2.5 — CLAIM_STRENGTH_SPEC 4-tier taxonomy + gen_voice_lint.py (G19)
 
 ### ISS-051: Synthetic data conflation — FP-04 presented synthetic PaySim findings as empirical results
 - **Source:** FP-04 portfolio deep review (2026-03-15)
 - **Problem:** FP-04 used PaySim synthetic data but FINDINGS.md presented results without qualifying that all metrics are synthetic-data-scoped. Reader could infer real-world fraud detection performance.
 - **Proposed fix:** DATA_TYPE annotation required in STATISTICAL_ANALYSIS_SPEC. All claims from synthetic data must carry [SYNTHETIC-SCOPED] qualifier.
 - **Status:** RESOLVED — FP-04 FINDINGS.md updated with synthetic-data scope qualifiers
+- **Resolved:** govML v2.5 — STATISTICAL_ANALYSIS_SPEC DATA_TYPE annotation requirement
 
 ### ISS-052: Noise-only attack qualification — FP-01 didn't explicitly state gradient attacks were untested
 - **Source:** FP-01 portfolio deep review (2026-03-15)
 - **Problem:** FP-01 ADVERSARIAL_EVALUATION tested noise-based attacks only. Gradient-based attacks (FGSM/PGD) were not feasible on sklearn models but this was not explicitly documented as a limitation.
 - **Proposed fix:** ADVERSARIAL_EVALUATION §2b requires attacks_NOT_tested field listing attack classes considered but not executed, with rationale.
 - **Status:** RESOLVED — ADVERSARIAL_EVALUATION template upgraded, FP-01 FINDINGS.md updated
+- **Resolved:** govML v2.5 — ADVERSARIAL_EVALUATION §2b attacks_NOT_tested field
+- **Resolved:** govML v2.7 — ADVERSARIAL_EVALUATION attacks_NOT_tested strengthened
 
 ### ISS-053: Single-seed reporting — FP-05 ran only seed 42 despite METRICS_CONTRACT requiring multi-seed
 - **Source:** FP-05 portfolio deep review (2026-03-15)
 - **Problem:** METRICS_CONTRACT specifies ≥3 seeds for statistical validity. FP-05 ran only seed 42, making all variance estimates unreliable.
 - **Proposed fix:** STATISTICAL_ANALYSIS_SPEC enforces ≥3 seeds and requires reporting mean ± std across seeds.
 - **Status:** RESOLVED — STATISTICAL_ANALYSIS_SPEC created with seed requirements
+- **Resolved:** govML v2.5 — STATISTICAL_ANALYSIS_SPEC multi-seed requirement (>=3 seeds)
 
 ### ISS-054: No competitive landscape — 4/7 projects are table stakes but weren't identified as such before building
 - **Source:** Portfolio deep review (2026-03-15)
 - **Problem:** FP-01 (adversarial IDS), FP-04 (fraud detection), FP-05 (vuln prioritization), and FP-10 (supply chain scanning) are well-covered problem spaces. None had competitive landscape analysis before building. Projects were positioned as novel when they're methodology demonstrations.
 - **Proposed fix:** PROJECT_BRIEF competitive landscape section added — requires listing existing tools, academic baselines, and honest differentiation claim.
 - **Status:** RESOLVED — PROJECT_BRIEF template upgraded
+- **Resolved:** govML v2.5 — PROJECT_BRIEF competitive landscape section
 
 ### ISS-055: Hardcoded figure values — FP-02 generate_figures.py uses hardcoded data
 - **Source:** FP-02 portfolio deep review (2026-03-15)
@@ -881,6 +890,7 @@ Assess BEFORE creating the environment. If any resource is insufficient, resolve
 - **Problem:** Multiple projects had claim/data mismatches that persisted through FINDINGS.md drafting. No automated gate existed between "findings written" and "blog published" to catch these.
 - **Proposed fix:** IMPLEMENTATION_PLAYBOOK now includes Phase N+2 (Findings Integrity Gate) with G18 + G19 as required checks before publication.
 - **Status:** RESOLVED — Phase N+2 added to IMPLEMENTATION_PLAYBOOK
+- **Resolved:** govML v2.5 — IMPLEMENTATION_PLAYBOOK Phase N+2 (Findings Integrity Gate)
 
 ## Issues Found (continued — CS 7641 benchmark session)
 
@@ -889,109 +899,127 @@ Assess BEFORE creating the environment. If any resource is insufficient, resolve
 - **Problem:** Learning curves present in ALL 4 CS 7641 reports but ZERO frontier projects (FP-01 through FP-10). Learning curves are the single best diagnostic for underfitting/overfitting, sample efficiency, and data sufficiency — and they were standard practice in coursework but never transferred to self-directed work.
 - **Root cause:** No template enforcing diagnostic curves. EXPERIMENT_CONTRACT has no learning curve protocol.
 - **Proposed fix:** LEARNING_CURVE_SPEC template + EXPERIMENT_CONTRACT mandatory protocol requiring learning curves as a Phase 2 gate item.
-- **Status:** IDENTIFIED — v2.6 candidate
+- **Status:** RESOLVED v2.6
+- **Resolved:** govML v2.6 — LEARNING_CURVE_SPEC template + gen_learning_curves.py (G20)
 
 ### ISS-058: CS 7641 rigor gap — model complexity curves absent from all frontier projects
 - **Source:** CS 7641 benchmark session (2026-03-15)
 - **Problem:** Model complexity curves (validation vs training error as function of model capacity) in ALL 4 CS 7641 reports but ZERO FP projects. These curves are essential for hyperparameter justification and preventing underfitting.
 - **Proposed fix:** MODEL_COMPLEXITY_SPEC template.
-- **Status:** IDENTIFIED — v2.6 candidate
+- **Status:** RESOLVED v2.6
+- **Resolved:** govML v2.6 — MODEL_COMPLEXITY_SPEC template + gen_complexity_curves.py (G21)
 
 ### ISS-059: CS 7641 rigor gap — hypothesis pre-registration absent from all frontier projects
 - **Source:** CS 7641 benchmark session (2026-03-15)
 - **Problem:** Hypothesis pre-registration in ALL 4 CS 7641 reports (13 total hypotheses) but ZERO FP projects. Pre-registration prevents post-hoc narrative fitting and forces experimental discipline.
 - **Proposed fix:** HYPOTHESIS_REGISTRY template + Phase 1 gate requiring hypotheses registered before any experiment runs.
-- **Status:** IDENTIFIED — v2.6 candidate
+- **Status:** RESOLVED v2.6
+- **Resolved:** govML v2.6 — HYPOTHESIS_REGISTRY template + gen_hypothesis_registry.py (G22)
 
 ### ISS-060: CS 7641 rigor gap — sanity baselines absent from all frontier projects
 - **Source:** CS 7641 benchmark session (2026-03-15)
 - **Problem:** Sanity baselines (DummyClassifier + shuffled-label) in 3/4 CS 7641 reports but ZERO FP projects. Sanity baselines establish the performance floor — without them, a model achieving 70% accuracy could be worse than random on imbalanced data.
 - **Proposed fix:** SANITY_BASELINE_SPEC template.
-- **Status:** IDENTIFIED — v2.6 candidate
+- **Status:** RESOLVED v2.6
+- **Resolved:** govML v2.6 — SANITY_BASELINE_SPEC template + gen_sanity_baselines.py (G23)
 
 ### ISS-061: CS 7641 rigor gap — provenance chains absent from all frontier projects
 - **Source:** CS 7641 benchmark session (2026-03-15)
 - **Problem:** Provenance chains (config_resolved.yaml, git SHA, versions.txt) in ALL 4 CS 7641 reports but ZERO FP projects. Without provenance, experiment results cannot be reproduced even by the original author.
 - **Proposed fix:** PROVENANCE_SPEC template + gen_provenance.py generator that captures environment state at experiment time.
-- **Status:** IDENTIFIED — v2.6 candidate
+- **Status:** RESOLVED v2.6
+- **Resolved:** govML v2.6 — PROVENANCE_SPEC template + gen_provenance.py (G24)
 
 ### ISS-062: CS 7641 rigor gap — test count disparity between coursework and frontier projects
 - **Source:** CS 7641 benchmark session (2026-03-15)
 - **Problem:** OL had 294 tests, RL had 72. FP projects average ~8 tests. Two orders of magnitude difference in test coverage between coursework (where testing was required) and self-directed work (where it wasn't enforced).
 - **Proposed fix:** TEST_ARCHITECTURE minimum tiers (T1-T5) with profile-specific minimums: blog-track 25+, security-ml 40+, publication-track 50+.
-- **Status:** IDENTIFIED — v2.6 candidate
+- **Status:** RESOLVED v2.6
+- **Resolved:** govML v2.6 — TEST_ARCHITECTURE minimum tiers by profile
 
 ### ISS-063: CS 7641 rigor gap — ablation studies absent from all frontier projects
 - **Source:** CS 7641 benchmark session (2026-03-15)
 - **Problem:** Ablation studies in ALL 4 CS 7641 reports (OL: momentum=82% decomposition, UL: 12-combo DR×clustering, RL: 4-grid discretization) but ZERO FP projects. Ablations are the primary mechanism for understanding WHY a result holds, not just THAT it holds.
 - **Proposed fix:** EXPERIMENT_CONTRACT ablation protocol — every Phase 3 must include at least one ablation study isolating the key variable.
-- **Status:** IDENTIFIED — v2.6 candidate
+- **Status:** RESOLVED v2.6
+- **Resolved:** govML v2.6 — EXPERIMENT_CONTRACT ablation protocol
 
 ### ISS-064: CS 7641 rigor gap — test-access barriers absent from all frontier projects
 - **Source:** CS 7641 benchmark session (2026-03-15)
 - **Problem:** Test-access barriers (final_eval.py pattern) code-enforced in SL/OL reports but ZERO FP projects. Without a barrier, it's trivial to peek at test data during development, invalidating generalization claims.
 - **Proposed fix:** SCRIPT_ENTRYPOINTS_SPEC final_eval.py pattern — test data only accessible through a specific script that logs access and verifies no data leakage.
-- **Status:** IDENTIFIED — v2.6 candidate
+- **Status:** RESOLVED v2.6
+- **Resolved:** govML v2.6 — SCRIPT_ENTRYPOINTS_SPEC final_eval.py test-access barrier pattern
 
 ### ISS-065: CS 7641 rigor gap — figures generated from hardcoded values instead of raw data
 - **Source:** CS 7641 benchmark session (2026-03-15)
 - **Problem:** Figure generation deterministic from raw data (make_report_artifacts.py) in ALL 4 CS 7641 reports. FP-02 used hardcoded values in generate_figures.py (also ISS-055). This means FP figures can silently diverge from actual experiment outputs.
 - **Proposed fix:** FIGURES_TABLES_CONTRACT rule requiring all figures generated from raw experiment outputs + gen_learning_curves.py / gen_complexity_curves.py generators.
-- **Status:** IDENTIFIED — v2.6 candidate (extends ISS-055)
+- **Status:** RESOLVED v2.6
+- **Resolved:** govML v2.6 — FIGURES_TABLES_CONTRACT raw-data-only rule + gen_learning_curves.py (G20) + gen_complexity_curves.py (G21)
 
 ### ISS-066: CS 7641 rigor gap — inconsistent dispersion reporting in frontier projects
 - **Source:** CS 7641 benchmark session (2026-03-15)
 - **Problem:** Dispersion reporting (mean±std, IQR, CI) in OL/RL reports but inconsistent in FP projects. Some report point estimates only, some report mean±std for some metrics but not others. Without dispersion, the reader cannot assess result reliability.
 - **Proposed fix:** METRICS_CONTRACT dispersion reporting requirement — every numeric claim must include a dispersion measure (mean±std for normal, median±IQR for skewed, CI for small samples).
-- **Status:** IDENTIFIED — v2.6 candidate
+- **Status:** RESOLVED v2.6
+- **Resolved:** govML v2.6 — METRICS_CONTRACT mandatory dispersion reporting
 
 ### ISS-067: Frontier project depth — 7 projects at breadth, 0 at depth
 - **Source:** CS 7641 benchmark session (2026-03-15)
 - **Problem:** Academic coursework shows top-1% capability (learning curves, ablations, 294 tests, hypothesis pre-registration) that is NOT transferred to self-directed frontier work. 7 projects completed at breadth, but none approach the methodological rigor of CS 7641 reports. The gap is not skill — it's enforcement.
 - **Proposed fix:** Depth-first strategy: FP-05 deep dive (learning curves, ablations, multi-seed, provenance) + FP-02 hardening (multi-seed stable, test-access barriers) using CS 7641 methodology as the benchmark.
-- **Status:** IDENTIFIED — immediate priority
+- **Status:** RESOLVED v2.6
+- **Resolved:** govML v2.6 — depth-first strategy executed; FP-05 deep dive (7 algorithms, ablation, complexity curves, bootstrap CI)
 
 ### ISS-068: No publication-track profile in govML
 - **Source:** CS 7641 benchmark session (2026-03-15)
 - **Problem:** Blog-track profile (10-12 templates) is too light for workshop/conference submissions. Publication-track work requires learning curves, ablation protocols, hypothesis pre-registration, provenance chains, sanity baselines, and 50+ tests — none of which blog-track enforces.
 - **Proposed fix:** Publication-track profile (20+ templates, 50+ test minimum) that bundles ISS-057–066 fixes into a single profile. Separate from blog-track which is right-sized for its purpose.
-- **Status:** IDENTIFIED — v2.6 candidate (depends on ISS-057–066 templates)
+- **Status:** RESOLVED v2.6
+- **Resolved:** govML v2.6 — publication-track profile shipped (20+ templates, ISS-057–066 dependencies all resolved)
 
 ### ISS-069: Algorithm breadth gap — all frontier projects defaulted to same RF + XGBoost + LogReg trio
 - **Source:** Multi-round rigor upgrade session (2026-03-16)
 - **Problem:** All 4 ML frontier projects defaulted to the same RF + XGBoost + LogReg trio. CS 7641 SL Report uses 6 algorithms across 4 families (tree, kernel, instance-based, neural). The "three algorithm default" makes the portfolio look like one trick repeated.
 - **Proposed fix:** train_expanded_models.py pattern — add SVM-RBF, LightGBM, kNN, MLP to match CS 7641 breadth. Add algorithm selection rationale to PROJECT_BRIEF.
-- **Status:** IDENTIFIED — FP-05 deep dive priority
+- **Status:** RESOLVED v2.7
+- **Resolved:** govML v2.7 — PROJECT_BRIEF §2c Algorithm Selection Rationale (>=3 families required)
 
 ### ISS-070: No bootstrap confidence intervals in any frontier project
 - **Source:** Multi-round rigor upgrade session (2026-03-16)
 - **Problem:** Zero projects reported CIs. CS 7641 OL used 5-seed IQR. Publication standard is bootstrap 95% CI.
 - **Proposed fix:** run_statistical_tests.py generator with bootstrap resampling.
-- **Status:** IDENTIFIED — FP-05 deep dive priority
+- **Status:** RESOLVED v2.7
+- **Resolved:** govML v2.7 — STATISTICAL_ANALYSIS_SPEC §2 + bootstrap CI requirement
 
 ### ISS-071: No statistical comparison tests — "outperforms" claims lack statistical backing
 - **Source:** Multi-round rigor upgrade session (2026-03-16)
 - **Problem:** Zero projects used McNemar or DeLong to compare models. Claims of "outperforms" had no statistical backing.
 - **Proposed fix:** run_statistical_tests.py with McNemar (binary correct/incorrect) and bootstrap AUC difference tests.
-- **Status:** IDENTIFIED — FP-05 deep dive priority
+- **Status:** RESOLVED v2.7
+- **Resolved:** govML v2.7 — STATISTICAL_ANALYSIS_SPEC §5 + EXPERIMENT_CONTRACT statistical tests
 
 ### ISS-072: No feature group ablation in any project
 - **Source:** Multi-round rigor upgrade session (2026-03-16)
 - **Problem:** Despite CS 7641 having ablation in every report (OL: momentum=82%, UL: 12-combo, RL: 4-grid), zero FP projects included ablation studies.
 - **Proposed fix:** run_ablation.py pattern — define feature groups, leave-one-out + single-group analysis.
-- **Status:** IDENTIFIED — FP-05 deep dive priority
+- **Status:** RESOLVED v2.7
+- **Resolved:** govML v2.7 — EXPERIMENT_CONTRACT ablation protocol + post-ablation feature selection
 
 ### ISS-073: No test-access barrier code-enforced in frontier projects
 - **Source:** Multi-round rigor upgrade session (2026-03-16)
 - **Problem:** CS 7641 SL/OL used final_eval.py pattern where test data is touched by exactly one script. FP projects allowed any script to access test data, undermining generalization claims.
 - **Proposed fix:** final_eval.py pattern in SCRIPT_ENTRYPOINTS_SPEC.
-- **Status:** IDENTIFIED — v2.6 candidate
+- **Status:** RESOLVED v2.7
+- **Resolved:** govML v2.7 — SCRIPT_ENTRYPOINTS_SPEC §4b test-access barrier (final_eval.py)
 
 ### ISS-074: SVM-RBF compute bottleneck on large datasets
 - **Source:** Multi-round rigor upgrade session (2026-03-16)
 - **Problem:** SVM training is O(n^2 to n^3), making it impractical on 234K rows without subsampling.
 - **Proposed fix:** train_expanded_models.py implements automatic subsampling to 50K with documentation in output JSON. This is a legitimate design decision (matching CS 7641 SL which also used manageable-size datasets), not a shortcut.
-- **Status:** IDENTIFIED — documented as design decision
+- **Status:** RESOLVED v2.7
+- **Resolved:** govML v2.7 — ENVIRONMENT_CONTRACT compute constraints + SVM subsampling guidance
 
 ### ISS-075: FP-02 figures were hardcoded — FIGURES_TABLES_CONTRACT violation
 - **Source:** Multi-round rigor upgrade session (2026-03-16)
@@ -1003,49 +1031,57 @@ Assess BEFORE creating the environment. If any resource is insufficient, resolve
 - **Source:** Multi-round rigor upgrade session (2026-03-16)
 - **Problem:** Projects chose algorithms without documenting WHY those algorithms were appropriate for the problem. CS 7641 reports explain algorithm selection reasoning in the introduction.
 - **Proposed fix:** Add "Algorithm Selection Rationale" section to PROJECT_BRIEF template.
-- **Status:** IDENTIFIED — v2.6 candidate
+- **Status:** RESOLVED v2.7
+- **Resolved:** govML v2.7 — PROJECT_BRIEF §2c Algorithm Selection Rationale
 
 ### ISS-077: SVM subsampling not documented in ENVIRONMENT_CONTRACT
 - **Source:** FP-05 algorithm breadth expansion (2026-03-16)
 - **Problem:** When SVM requires subsampling (234K rows → 50K), the decision and its impact on results aren't captured anywhere. Subsampling changes the effective training distribution but this isn't reflected in any contract or ADR.
 - **Proposed fix:** Add "compute constraints" section to ENVIRONMENT_CONTRACT or EXPERIMENT_CONTRACT documenting when/why subsampling occurs and its impact on generalizability claims.
-- **Status:** IDENTIFIED — v2.6 candidate
+- **Status:** RESOLVED v2.7
+- **Resolved:** govML v2.7 — ENVIRONMENT_CONTRACT subsampling decisions table
 
 ### ISS-078: Experiment runtime not estimated before launch
 - **Source:** FP-05 algorithm breadth expansion (2026-03-16)
 - **Problem:** Multiple experiments launched without runtime estimation. SVM on 234K is O(n²) ~hours, but this wasn't predicted. Wasted time waiting for runs that should have been subsampled or skipped.
 - **Proposed fix:** Add "compute budget estimation" step to Phase 0 in IMPLEMENTATION_PLAYBOOK. For each algorithm × dataset size, estimate wallclock before starting. Document in EXPERIMENT_CONTRACT.
-- **Status:** IDENTIFIED — v2.6 candidate
+- **Status:** RESOLVED v2.7
+- **Resolved:** govML v2.7 — EXPERIMENT_CONTRACT compute budget estimation + PROJECT_BRIEF §2d + IMPLEMENTATION_PLAYBOOK Phase 0 addition + gen_runtime_estimate.py (G25)
 
 ### ISS-079: Deterministic model results mask seed variance
 - **Source:** FP-05 multi-seed analysis (2026-03-16)
 - **Problem:** XGBoost and LogReg produce identical results across seeds (given fixed data split), making multi-seed reporting misleadingly precise (std=0.000). Only RF and kNN show real seed variance. The multi-seed protocol creates false confidence for deterministic models.
 - **Proposed fix:** Note in STATISTICAL_ANALYSIS_SPEC that deterministic models need different variance assessment (e.g., bootstrap over test set, or multiple train/test splits).
-- **Status:** IDENTIFIED — v2.6 candidate
+- **Status:** RESOLVED v2.7
+- **Resolved:** govML v2.7 — STATISTICAL_ANALYSIS_SPEC deterministic model variance section
 
 ### ISS-080: Ablation revealed 4 feature groups HURT performance
 - **Source:** FP-05 ablation study (2026-03-16)
 - **Problem:** Temporal, reference, vendor, and description features all worsen XGBoost AUC when included. This means the "49-feature model" is suboptimal — a 15-feature model (EPSS + text keywords + CVSS + CWE) would likely perform better. No protocol exists for acting on ablation findings.
 - **Proposed fix:** Add "feature selection post-ablation" step to EXPERIMENT_CONTRACT — after ablation, retrain with only beneficial groups and compare.
-- **Status:** IDENTIFIED — v2.6 candidate
+- **Status:** RESOLVED v2.7
+- **Resolved:** govML v2.7 — EXPERIMENT_CONTRACT post-ablation feature selection + IMPLEMENTATION_PLAYBOOK Phase N+1 addition
 
 ### ISS-081: EPSS as feature creates circular dependency
 - **Source:** FP-05 ablation study (2026-03-16)
 - **Problem:** EPSS is itself an ML prediction of exploitability. Using it as a feature in our exploit prediction model means we're partially predicting EPSS's output. This limits the model's independent contribution and inflates apparent performance.
 - **Proposed fix:** Add ablation condition "without EPSS" as a mandatory comparison for any model that uses EPSS as a feature. Report both "with EPSS" and "without EPSS" results.
-- **Status:** IDENTIFIED — v2.6 candidate
+- **Status:** RESOLVED v2.7
+- **Resolved:** govML v2.7 — EXPERIMENT_CONTRACT external prediction feature check + DATA_CONTRACT feature circularity check
 
 ### ISS-082: FP-01 OOM on sanity baselines
 - **Source:** FP-01 sanity baseline execution (2026-03-16)
 - **Problem:** CICIDS2017 at 10% sample still OOM-kills DummyClassifier + shuffled-label baseline. Root cause: loading full dataset into memory for the shuffled-label RF training.
 - **Proposed fix:** Use --sample-frac 0.05 or implement streaming/chunked evaluation for large datasets. ENVIRONMENT_CONTRACT should flag memory-bound operations at Phase 0.
-- **Status:** IDENTIFIED
+- **Status:** RESOLVED v2.7
+- **Resolved:** govML v2.7 — ENVIRONMENT_CONTRACT memory estimation + SANITY_BASELINE_SPEC subsample guidance
 
 ### ISS-083: No parallelization of multi-seed experiments
 - **Source:** FP-05 multi-seed execution (2026-03-16)
 - **Problem:** Each seed runs sequentially within a script. On a multi-core machine, seeds could run in parallel (multiprocessing or joblib Parallel). Estimate: 3-5x speedup on 5-seed runs.
 - **Proposed fix:** Add optional --parallel flag to training scripts. Document in IMPLEMENTATION_PLAYBOOK as a recommended pattern for multi-seed experiments.
-- **Status:** IDENTIFIED
+- **Status:** RESOLVED v2.7
+- **Resolved:** govML v2.7 — SCRIPT_ENTRYPOINTS_SPEC multi-seed parallelization convention
 
 ### ISS-084: Portfolio still has 0 published artifacts after 50+ tasks of rigor work
 - **Source:** Portfolio publication audit (2026-03-16)
@@ -1234,3 +1270,4 @@ Assess BEFORE creating the environment. If any resource is insufficient, resolve
 | 2026-03-15 | Added ISS-057–068, WIN-053–058: CS 7641 benchmark session. 12 rigor gaps identified by benchmarking frontier projects against own CS 7641 coursework (top 1%). Gaps: learning curves, complexity curves, hypothesis pre-registration, sanity baselines, provenance chains, test counts (294 vs 8), ablation studies, test-access barriers, hardcoded figures, dispersion reporting, breadth-without-depth, no publication-track profile. Wins: internal benchmark eliminates guesswork, claim integrity system catches real errors, single-methodology narrative power, systematic self-critique protocol, govML compound evidence, depth-vs-breadth inflection point recognized. | CS 7641 benchmark session |
 | 2026-03-16 | Added ISS-077–084, WIN-067–071: FP-05 ablation and algorithm breadth findings. 8 new issues: SVM subsampling undocumented, no runtime estimation, deterministic seed variance masking, harmful feature groups unacted-on, EPSS circular dependency, FP-01 OOM on baselines, no seed parallelization, 0 published artifacts after 50+ tasks. 5 new wins: ablation as most actionable finding (EPSS alone AUC 0.901 > 49-feature 0.825), harmful features novelty, algorithm breadth as finding generator, self-enforcing rigor infrastructure, multi-round review pattern. | FP-05 ablation + algorithm expansion + publication audit |
 | 2026-03-16 | Added ISS-069–076, WIN-059–066: Multi-round rigor upgrade session with algorithm breadth expansion. 8 new issues: algorithm breadth gap (3-algo default vs CS 7641's 6), no bootstrap CIs, no statistical comparison tests, no feature group ablation, no test-access barriers code-enforced, SVM-RBF compute bottleneck (O(n^2) on 234K rows), FP-02 hardcoded figures fixed (FIGURES_TABLES_CONTRACT violation), no algorithm selection rationale in PROJECT_BRIEF. 8 new wins: CS 7641 methodology as benchmark, complexity curves found AUC 0.912 (+8.7pp), algorithm breadth strengthens narrative, train_expanded_models.py reusable pattern, ablation reveals signal sources, statistical tests upgrade blog→paper quality, govML v2.6 flywheel proven, depth-first strategy validated. | Multi-round rigor upgrade session |
+| 2026-03-16 | Bulk resolution marking: 34 issues resolved. govML v2.5: ISS-049–054, ISS-056. govML v2.6: ISS-057–068. govML v2.7: ISS-011, ISS-021, ISS-052 (strengthened), ISS-069–083. New generator: gen_runtime_estimate.py (G25) for compute budget estimation. Only ISS-084 (publication) remains unresolved from this batch. | govML v2.7 template upgrade session |

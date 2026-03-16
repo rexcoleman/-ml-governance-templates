@@ -189,6 +189,40 @@ Every experiment script SHOULD support these flags for development velocity:
 - All model selection, HP tuning, threshold selection happen on train/val splits
 - **Enforcement:** Add a test in T1 (Data Integrity) that greps all scripts except final_eval.py for test data access patterns
 
+### Multi-Seed Parallelization Convention
+> Multi-seed experiments can run seeds in parallel on multi-core machines.
+
+```
+# Sequential (default)
+python scripts/train_models.py --seeds 42 123 456 789 1024
+
+# Parallel (optional, uses joblib)
+python scripts/train_models.py --seeds 42 123 456 789 1024 --parallel
+```
+
+> **Implementation pattern:**
+> ```python
+> if args.parallel:
+>     from joblib import Parallel, delayed
+>     results = Parallel(n_jobs=-1)(
+>         delayed(train_one_seed)(seed) for seed in seeds
+>     )
+> else:
+>     results = [train_one_seed(seed) for seed in seeds]
+> ```
+> **When to use:** 5+ seeds, >5 min per seed, multi-core machine available.
+> **When NOT to use:** GPU-bound training (GPU is already parallelized), or when RAM is tight (each parallel job loads a copy of data).
+
+### Enhanced Smoke Test Convention
+> Every entrypoint script must support these flags:
+
+| Flag | Purpose | Example |
+|------|---------|---------|
+| `--sample-frac 0.01` | Run on 1% of data | Pipeline verification |
+| `--dry-run` | Check paths/configs/imports only | Zero compute |
+| `--single-seed` | Run seed 42 only | Quick result check |
+| `--verbose` | Print progress per step | Debugging |
+
 ### Smoke Test Convention
 
 - `--sample-frac 0.01`: Run on 1% of data for pipeline verification
